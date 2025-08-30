@@ -1,0 +1,76 @@
+// src/Router.jsx
+import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom'
+import styled, { css } from 'styled-components'
+
+import Home from './pages/Home'
+import Communication from './pages/Communication'
+import Repair from './pages/Repair'
+import MyPage from './pages/MyPage'
+import NavBar from './components/common/NavBar'
+
+// 하단 바를 숨기고 싶은 경로
+const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/login', '/onboarding']
+
+const AppShell = styled.div`
+  --bar-h: 56px;
+  --container-w: 375px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f9f9f9;
+`
+
+const Main = styled.main`
+  flex: 1;
+  width: 100%;
+  ${({ $hasBar }) =>
+    $hasBar
+      ? css`padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));`
+      : css`padding-bottom: 0;`}
+`
+
+const BottomBar = styled.div`
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: min(100%, var(--container-w));
+  height: 74px;
+  display: flex; align-items: center;
+  background: #fff; border-top: 1px solid #eee; z-index: 100;
+`
+
+
+const Layout = () => {
+  const { pathname } = useLocation()
+  const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname)
+
+  return (
+    <AppShell>
+      <Main $hasBar={!hideBar}>
+        <Outlet />
+      </Main>
+      {!hideBar && (
+        <BottomBar>
+          <NavBar />
+        </BottomBar>
+      )}
+    </AppShell>
+  )
+}
+
+export default function AppRouter() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/communication" element={<Communication />} />
+          <Route path="/repair" element={<Repair />} />
+          <Route path="/my-page" element={<MyPage />} />
+          <Route path="*" element={<div>Not Found</div>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  )
+}
