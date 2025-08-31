@@ -33,7 +33,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     color: var(--foreground);
     background: var(--background);
-    max-width: 375px;
+    max-width: 390px;
     width: 100%;
     min-height: 100vh;
     display: flex;

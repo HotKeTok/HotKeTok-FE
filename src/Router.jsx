@@ -13,7 +13,7 @@ const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/login', '/onboarding']
 
 const AppShell = styled.div`
   --bar-h: 56px;
-  --container-w: 375px;
+  --container-w: 390px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
