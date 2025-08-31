@@ -7,6 +7,8 @@ import CommunicationIcon from '../../assets/common/icon-communication.svg?react'
 import RepairIcon from '../../assets/common/icon-repair.svg?react'
 import MyIcon from '../../assets/common/icon-my.svg?react'
 
+import {typo, color} from '../../styles/tokens'
+
 const Nav = styled.nav`
   width: 100%;
   display: flex;
@@ -21,7 +23,8 @@ const NavItem = styled(Link)`
   align-items: center;
   gap: 4px;
   text-decoration: none;
-  ${({ theme }) => theme.fonts.caption1};
+  color: ${color('grayscale.100')};
+  ${typo('caption1')}
   flex: 1;
 
   color: ${({ $active }) => ($active ? '#222' : '#323232')};
@@ -32,10 +35,10 @@ const NavItem = styled(Link)`
     transition: stroke .2s ease;
   }
 
-  ${({ $active, theme }) =>
+  ${({ $active }) =>
     $active &&
     css`
-      svg * { fill: ${theme.colors.brand.primary} !important; transition: fill .2s ease; }
+      svg * { fill: ${color('brand.primary')} !important; transition: fill .2s ease; }
     `}
 `
 
