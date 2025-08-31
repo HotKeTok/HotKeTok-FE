@@ -21,11 +21,10 @@ const NavItem = styled(Link)`
   align-items: center;
   gap: 4px;
   text-decoration: none;
-  font-size: 12px;
+  ${({ theme }) => theme.fonts.caption1};
   flex: 1;
 
   color: ${({ $active }) => ($active ? '#222' : '#323232')};
-  font-weight: ${({ $active }) => ($active ? '600' : '400')};
 
   svg { width: 22px; height: 22px; }
   svg [stroke] {
@@ -33,10 +32,10 @@ const NavItem = styled(Link)`
     transition: stroke .2s ease;
   }
 
-  ${({ $active }) =>
+  ${({ $active, theme }) =>
     $active &&
     css`
-      svg * { fill: #01D281 !important; transition: fill .2s ease; }
+      svg * { fill: ${theme.colors.brand.primary} !important; transition: fill .2s ease; }
     `}
 `
 
