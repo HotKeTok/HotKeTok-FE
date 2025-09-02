@@ -12,7 +12,7 @@ import { typo, color } from '../../styles/tokens'
 export default function Button({
   active = true,
   text,
-  width,           // undefined면 100%
+  width='full',         
   dismiss = false,
   onClick,
   ...rest

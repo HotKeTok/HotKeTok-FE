@@ -6,11 +6,11 @@ import { typo, color } from "../../styles/tokens"
  * @function ButtonSmall
  * @param {boolean} active - 활성/비활성 (기본 true)
  * @param {string} text - 버튼 텍스트
- * @param {'full'|number|string} width - 미지정: 100%, 'full': 100%, 숫자: px, 그 외 문자열 그대로
+ * @param {'full'|number|string} width - 미지정: 'full', 'full': 100%, 숫자: px, 그 외 문자열 그대로
  * @param {function} onClick - 클릭 핸들러
  */
 
-export default function ButtonSmall ({ active=true, text, width, onClick }) {
+export default function ButtonSmall ({ active=true, text, width='full', onClick }) {
     return (
         <StyledButton
             type="button"

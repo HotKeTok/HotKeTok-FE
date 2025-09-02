@@ -6,16 +6,18 @@ import { typo, color } from "../../styles/tokens"
  * @function ButtonRound
  * @param {boolean} filled - 채워진 상태 여부 (기본 true)
  * @param {string} text - 버튼 텍스트
- * @param {'full'|number|string} width - 미지정: 100%, 'full': 100%, 숫자: px, 그 외 문자열 그대로(기본값: 'auto')
+ * @param {'full'|number|string} width - 미지정: auto, 'full': 100%, 숫자: px, 그 외 문자열 그대로(기본값: 'auto')
+ * @param {number} height - 미지정: 24, 숫자: px
  * @param {function} onClick - 클릭 핸들러 (비워진 상태라면 핸들러 실행되지 않음)
  */
 
-export default function ButtonRound ({ filled=true, text, width='auto', onClick }) {
+export default function ButtonRound ({ filled=true, text, width='auto', height=24, onClick }) {
     return (
         <StyledButton
             type="button"
             $filled={filled}
             $width={width}
+            $height={height}
             onClick={filled ? onClick : undefined}
             disabled={!filled}
         >
@@ -25,8 +27,8 @@ export default function ButtonRound ({ filled=true, text, width='auto', onClick 
 }
 
 const StyledButton = styled.button`
-  height: 24px;
   width: ${({ $width }) => resolveWidth($width)};
+height: ${({ $height }) => ($height ? `${$height}px` : '24px')};
   padding: 0 12px;
   border-radius: 30px;
   ${typo('button3')};
