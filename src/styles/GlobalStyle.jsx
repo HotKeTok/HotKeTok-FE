@@ -30,6 +30,15 @@ const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
   }
 
+  button {
+    background: inherit;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    overflow: visible;
+    cursor: pointer;
+  }
+
   body {
     color: var(--foreground);
     background: var(--background);
@@ -38,6 +47,7 @@ const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
     display: flex;
   }
+
 `;
 
 export default GlobalStyle;
