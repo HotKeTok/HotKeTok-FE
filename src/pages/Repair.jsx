@@ -1,7 +1,5 @@
-import RepairTemplate from "../templates/Repair";
+import RepairTemplate from '../templates/RepairTemplate';
 
 export default function Repair() {
-    return (
-       <RepairTemplate/>
-    );
+  return <RepairTemplate />;
 }
