@@ -55,7 +55,7 @@ const Layout = () => {
   const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname);
 
   // ✅ 특정 페이지 배경 조건
-  const bgColor = pathname === '/signn' || pathname === '/signUp' ? '#ffffff' : '#f9f9f9';
+  const bgColor = pathname === '/signIn' || pathname === '/signUp' ? '#ffffff' : '#f9f9f9';
 
   return (
     <AppShell $bg={bgColor}>
