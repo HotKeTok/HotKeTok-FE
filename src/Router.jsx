@@ -19,7 +19,7 @@ const AppShell = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f9f9f9;
+  background: ${({ $bg }) => $bg}; // ✅ 동적 배경
 `;
 
 const Main = styled.main`
@@ -53,8 +53,11 @@ const Layout = () => {
   const { pathname } = useLocation();
   const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname);
 
+  // ✅ 특정 페이지 배경 조건
+  const bgColor = pathname === '/signIn' || pathname === '/signUp' ? '#ffffff' : '#f9f9f9';
+
   return (
-    <AppShell>
+    <AppShell $bg={bgColor}>
       <Main $hasBar={!hideBar}>
         <Outlet />
       </Main>
