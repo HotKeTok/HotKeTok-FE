@@ -20,6 +20,7 @@ const AppShell = styled.div`
   display: flex;
   flex-direction: column;
   background: ${({ $bg }) => $bg}; // ✅ 동적 배경
+  border: 1px solid black; // 배경 하얀색인경우 경계가 안 보여서 border 임시로 추가(배포전 삭제예정))
 `;
 
 const Main = styled.main`
