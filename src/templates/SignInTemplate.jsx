@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { color, typo } from '../styles/tokens';
 import { Column, FlexItem, Row } from '../styles/flex';
 import TextField from '../components/common/TextField';
+import Button from '../components/common/Button';
 
 export default function SignInTemplate() {
   return (
@@ -14,14 +15,21 @@ export default function SignInTemplate() {
         <Title>로그인</Title>
       </Column>
       <div style={{ height: '90px' }} />
-      <Column $gap={14}>
-        <Column $gap={4}>
-          <TextFieldTitle>아이디</TextFieldTitle>
-          <TextField placeholder={'아이디를 입력해 주세요.'} />
+
+      <Column $gap={40}>
+        <Column $gap={14}>
+          <Column $gap={4}>
+            <TextFieldTitle>아이디</TextFieldTitle>
+            <TextField placeholder={'아이디를 입력해 주세요.'} />
+          </Column>
+          <Column $gap={4}>
+            <TextFieldTitle>비밀번호</TextFieldTitle>
+            <TextField placeholder={'비밀번호를 입력해 주세요.'} />
+          </Column>
         </Column>
-        <Column $gap={4}>
-          <TextFieldTitle>비밀번호</TextFieldTitle>
-          <TextField placeholder={'비밀번호를 입력해 주세요.'} />
+        <Column $gap={30} $align="center">
+          <Button text="로그인" />
+          <SignUpButtonText>회원가입</SignUpButtonText>
         </Column>
       </Column>
     </div>
@@ -40,4 +48,9 @@ const Title = styled.div`
 const TextFieldTitle = styled.div`
   ${typo('caption1')};
   color: ${color('grayscale.600')};
+`;
+
+const SignUpButtonText = styled.div`
+  ${typo('button2')}
+  color : ${color('grayscale.600')}
 `;
