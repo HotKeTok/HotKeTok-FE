@@ -14,11 +14,13 @@ export default function TopBar({ title }) {
 
   return (
     <Container>
-      <Row $justify="space-between" style={{ padding: '0px 24px 24px 24px' }}>
-        <img src={BackButton} onClick={moveBack} style={{ cursor: 'pointer' }} alt="뒤로가기버튼" />
+      <RowForTopBar $justify="space-between" $align="center">
+        <BackButtonWrapper onClick={moveBack}>
+          <img src={BackButton} alt="뒤로가기버튼" />
+        </BackButtonWrapper>
         <Title>{title}</Title>
-        <div style={{ width: '8px', height: '14px' }} />
-      </Row>
+        <div style={{ width: '44px', height: '44px' }} />
+      </RowForTopBar>
     </Container>
   );
 }
@@ -28,7 +30,26 @@ const Container = styled.div`
   padding-top: 52px;
 `;
 
+const BackButtonWrapper = styled.div`
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  /* 아이콘 크기는 그대로 */
+  img {
+    width: 8px;
+    height: 14px;
+  }
+`;
+
+const RowForTopBar = styled(Row)`
+  padding: 0px 6px 4.5px 6px;
+`;
+
 const Title = styled.div`
-  ${typo('subtitle1')}
-  color : ${color('grayscale.800')}
+  ${typo('subtitle1')};
+  color: ${color('grayscale.800')};
 `;
