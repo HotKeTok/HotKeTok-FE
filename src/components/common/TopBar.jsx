@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import BackButton from '../../assets/common/BackButton.svg';
+import BackButton from '../../assets/common/icon-back-button.svg';
 import { color, typo } from '../../styles/tokens';
 import { Row } from '../../styles/flex';
 import { useNavigate } from 'react-router-dom';
