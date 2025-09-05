@@ -1,6 +1,6 @@
-import styled from "styled-components"
-import { resolveWidth } from "./Button"
-import { typo, color } from "../../styles/tokens"
+import styled from 'styled-components';
+import { resolveWidth } from './Button';
+import { typo, color } from '../../styles/tokens';
 
 /**
  * @function ButtonSmall
@@ -10,35 +10,34 @@ import { typo, color } from "../../styles/tokens"
  * @param {function} onClick - 클릭 핸들러
  */
 
-export default function ButtonSmall ({ active=true, text, width='full', onClick }) {
-    return (
-        <StyledButton
-            type="button"
-            $active={active}
-            $width={width}
-            onClick={active ? onClick : undefined}
-            disabled={!active}
-        >
-            <div>{text}</div>
-        </StyledButton>
-    )
+export default function ButtonSmall({ active = true, text, width = 'full', onClick }) {
+  return (
+    <StyledButton
+      type="button"
+      $active={active}
+      $width={width}
+      onClick={active ? onClick : undefined}
+      disabled={!active}
+    >
+      <div>{text}</div>
+    </StyledButton>
+  );
 }
 
 const StyledButton = styled.button`
-    height: 42px;
-    width: ${({ $width }) => resolveWidth($width)};
-    border-radius: 8px;
-    ${typo('button2')};
+  height: 44px;
+  width: ${({ $width }) => resolveWidth($width)};
+  border-radius: 8px;
+  ${typo('button2')};
 
-    background-color:  white;
-    opacity: ${({ $active }) =>
-        $active ? 1 : 0.3};
-    border: 1px solid ${color('brand.primary')};
-    color: ${color('brand.primary')};
+  background-color: white;
+  opacity: ${({ $active }) => ($active ? 1 : 0.3)};
+  border: 1px solid ${color('brand.primary')};
+  color: ${color('brand.primary')};
 
-    pointer-events: ${({ $active }) => ($active ? 'auto' : 'none')};
-    cursor: ${({ $active }) => ($active ? 'pointer' : 'default')};
+  pointer-events: ${({ $active }) => ($active ? 'auto' : 'none')};
+  cursor: ${({ $active }) => ($active ? 'pointer' : 'default')};
 
-    /* 기본 인터랙션 */
-    transition: background-color 0.15s ease, transform 0.02s ease;
-`
+  /* 기본 인터랙션 */
+  transition: background-color 0.15s ease, transform 0.02s ease;
+`;
