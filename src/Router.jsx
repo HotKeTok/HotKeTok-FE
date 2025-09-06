@@ -13,7 +13,13 @@ import InitProcess from './pages/InitProcess';
 import RequestRepair from './pages/RequestRepair';
 
 // 하단 바를 숨기고 싶은 경로
-const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/request-repair'];
+const HIDE_BOTTOM_BAR_PATHS = [
+  '/splash',
+  '/sign-in',
+  '/sign-up',
+  '/init-process',
+  '/request-repair',
+];
 
 const AppShell = styled.div`
   --bar-h: 74px;
@@ -58,9 +64,9 @@ const Layout = () => {
 
   // ✅ 특정 페이지 배경 조건
   const bgColor =
-    pathname === '/signIn' ||
-    pathname === '/signUp' ||
-    pathname === '/initprocess' ||
+    pathname === '/sign-in' ||
+    pathname === '/sign-up' ||
+    pathname === '/init-process' ||
     pathname === '/request-repair'
       ? '#ffffff'
       : '#f9f9f9';
@@ -84,17 +90,22 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
+          {/* 메인페이지 */}
           <Route path="/" element={<Home />} />
 
-          <Route path="/signIn" element={<SignIn />} />
-          <Route path="/signUp" element={<SignUp />} />
-          <Route path="/initprocess" element={<InitProcess />} />
+          {/* 온보딩 */}
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/init-process" element={<InitProcess />} />
 
+          {/* 똑똑 */}
           <Route path="/communication" element={<Communication />} />
 
+          {/* 뚝딱 */}
           <Route path="/repair" element={<Repair />} />
           <Route path="/request-repair" element={<RequestRepair />} />
 
+          {/* 마이페이지 */}
           <Route path="/my-page" element={<MyPage />} />
 
           <Route path="*" element={<div>Not Found</div>} />

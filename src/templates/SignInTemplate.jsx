@@ -11,7 +11,7 @@ export default function SignInTemplate() {
   const nav = useNavigate();
 
   const moveSignUp = () => {
-    nav('/signUp');
+    nav('/sign-up');
   };
   return (
     <div style={{ height: '100vh' }}>
