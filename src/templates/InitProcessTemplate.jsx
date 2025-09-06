@@ -47,13 +47,12 @@ function mockSearchAddresses(keyword) {
 }
 
 /* =========================================================
- * 스텝 컴포넌트들
+ * STEP 컴포넌트들 (UI 그대로 유지)
  * ======================================================= */
 
 // STEP 1: 모드 선택
 function StepRole({ onNext }) {
-  // 선택된 모드 상태 ('tenant' | 'landlord' | null)
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null); // 'tenant' | 'landlord' | null
 
   return (
     <PageWrap>
@@ -84,11 +83,9 @@ function StepRole({ onNext }) {
       <div style={{ padding: '30px 24px' }}>
         <Button
           text="선택하기"
-          active={!!selectedRole} // 하나라도 선택되면 active=true
+          active={!!selectedRole}
           onClick={() => {
-            if (selectedRole) {
-              onNext(selectedRole); // 버튼 누를 때만 다음 단계로 이동
-            }
+            if (selectedRole) onNext(selectedRole);
           }}
         />
       </div>
@@ -96,11 +93,9 @@ function StepRole({ onNext }) {
   );
 }
 
-// STEP 2: 주소 키워드 입력
-function StepAddressKeyword({ defaultKeyword, onPick }) {
+// STEP 2: 주소 키워드 입력 + 검색/선택
+function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
   const [keyword, setKeyword] = useState(defaultKeyword ?? '');
-
-  // 추가 상태
   const [results, setResults] = useState([]);
   const [showExamples, setShowExamples] = useState(true);
 
@@ -112,7 +107,7 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
 
   return (
     <PageWrap>
-      <TopBar title="회원 등록" onBack={() => window.history.back()} />
+      <TopBar title="회원 등록" onBack={onBack} />
       <ProgressBar value={66} />
       <StepTitle>{'내 거주지의 \n주소를 등록해주세요'} </StepTitle>
       <div style={{ padding: '0px 27px' }}>
@@ -128,7 +123,6 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
           </Row>
         </Column>
 
-        {/* 🔹 검색 전: 예시 문구 노출 */}
         {showExamples && (
           <Column $gap={10} style={{ marginTop: '30px' }}>
             <Row $gap={10}>
@@ -146,7 +140,6 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
           </Column>
         )}
 
-        {/* 🔹 검색 후: 결과 리스트 노출 (입력 아래) */}
         {!showExamples && results.length > 0 && (
           <ListWrap style={{ marginTop: 16 }}>
             {results.map((a) => (
@@ -166,7 +159,6 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
           </ListWrap>
         )}
 
-        {/* 검색 후 결과 없을 때 메시지 */}
         {!showExamples && results.length === 0 && (
           <div style={{ marginTop: 16, color: '#767676', fontSize: 14 }}>
             검색 결과가 없습니다. 키워드를 다시 입력해주세요.
@@ -216,7 +208,6 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
           active={canSubmit}
           onClick={() => {
             if (!canSubmit) return;
-            // 필요 시 dong/ho도 넘길 수 있음. 현재는 detail만 사용.
             onNext?.({ detail: detail.trim() });
           }}
         />
@@ -225,7 +216,7 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
   );
 }
 
-// STEP 4: 최종 확인 (요청 버튼)
+// STEP 4: 최종 확인/요청 → 완료
 function StepReview({ baseAddress, dong, ho, detail }) {
   const [requested, setRequested] = useState(false);
   const [showDoneBtn, setShowDoneBtn] = useState(false);
@@ -233,11 +224,10 @@ function StepReview({ baseAddress, dong, ho, detail }) {
 
   useEffect(() => {
     if (!requested) return;
-    const t = setTimeout(() => setShowDoneBtn(true), 800); // 0.8초 후 버튼 등장
+    const t = setTimeout(() => setShowDoneBtn(true), 800);
     return () => clearTimeout(t);
   }, [requested]);
 
-  // 요청 전: 확인 화면 + [요청하기]
   if (!requested) {
     return (
       <PageWrap>
@@ -288,7 +278,6 @@ function StepReview({ baseAddress, dong, ho, detail }) {
     );
   }
 
-  // 요청 후: 중앙 가이드 + [완료하기] (지연 노출)
   return (
     <PageWrap>
       <ContentWrapCentered>
@@ -306,79 +295,72 @@ function StepReview({ baseAddress, dong, ho, detail }) {
   );
 }
 
-// 메인 함수
-export default function InitProcessTemplate() {
-  const funnel = useFunnel({
+/* =========================================================
+ * 메인: 공식 문서 패턴으로 변경 (Funnel.Render)
+ * ======================================================= */
+export default function InitProcess() {
+  const Funnel = useFunnel({
     id: 'init-process',
     initial: { step: 'Role', context: {} },
+    steps: {}, // (문서 권장) 명시적 스텝 테이블 없이 Render 매핑 사용
+    routes: (step) => `/init/${step}`, // URL 싱크 (예: /init/Role, /init/AddressKeyword, ...)
   });
 
-  switch (funnel.step) {
-    case 'Role':
-      return <StepRole onNext={(role) => funnel.history.push('AddressKeyword', { role })} />;
-
-    case 'AddressKeyword':
-      return (
-        <StepAddressKeyword
-          defaultKeyword={funnel.context.addressKeyword}
-          onPick={(baseAddress) =>
-            funnel.history.push('UnitInput', {
-              role: funnel.context.role,
-              baseAddress,
-            })
-          }
-        />
-      );
-    case 'AddressPick':
-      return (
-        <StepAddressPick
-          keyword={funnel.context.addressKeyword}
-          onPick={(baseAddress) =>
-            funnel.history.push('UnitInput', {
-              role: funnel.context.role,
-              baseAddress,
-            })
-          }
-        />
-      );
-
-    case 'UnitInput':
-      return (
-        <StepUnitInput
-          baseAddress={funnel.context.baseAddress}
-          defaultUnit={{
-            dong: funnel.context.dong,
-            ho: funnel.context.ho,
-            detail: funnel.context.detail,
+  return (
+    <Funnel.Render
+      /* STEP 1: 모드 선택 */
+      Role={({ history }) => (
+        <StepRole
+          onNext={(role) => {
+            history.push('AddressKeyword', { role });
           }}
-          onNext={({ dong, ho, detail }) =>
-            funnel.history.push('Review', {
-              role: funnel.context.role,
-              baseAddress: funnel.context.baseAddress,
+        />
+      )}
+      /* STEP 2: 주소 키워드 입력/검색/선택 */
+      AddressKeyword={({ history, context }) => (
+        <StepAddressKeyword
+          defaultKeyword={context.addressKeyword}
+          onBack={history.back}
+          onPick={(baseAddress) => {
+            history.push('UnitInput', { ...context, baseAddress });
+          }}
+        />
+      )}
+      /* STEP 3: 상세 주소 입력 */
+      UnitInput={({ history, context }) => (
+        <StepUnitInput
+          baseAddress={context.baseAddress}
+          defaultUnit={{
+            dong: context.dong,
+            ho: context.ho,
+            detail: context.detail,
+          }}
+          onNext={({ dong, ho, detail }) => {
+            history.push('Review', {
+              ...context,
               dong,
               ho,
               detail,
-            })
-          }
+            });
+          }}
         />
-      );
-
-    case 'Review':
-      return (
+      )}
+      /* STEP 4: 최종 확인/요청 & 완료 */
+      Review={({ context }) => (
         <StepReview
-          baseAddress={funnel.context.baseAddress}
-          dong={funnel.context.dong}
-          ho={funnel.context.ho}
-          detail={funnel.context.detail}
+          baseAddress={context.baseAddress}
+          dong={context.dong}
+          ho={context.ho}
+          detail={context.detail}
         />
-      );
-
-    default:
-      return null;
-  }
+      )}
+    />
+  );
 }
 
-// 스타일
+/* =========================================================
+ * 스타일 (기존 그대로)
+ * ======================================================= */
 const PageWrap = styled.div`
   display: flex;
   flex-direction: column;
