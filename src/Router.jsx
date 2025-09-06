@@ -15,7 +15,7 @@ import InitProcess from './pages/InitProcess';
 const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess'];
 
 const AppShell = styled.div`
-  --bar-h: 56px;
+  --bar-h: 74px;
   --container-w: 390px;
   min-height: 100vh;
   display: flex;
