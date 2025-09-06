@@ -10,9 +10,10 @@ import NavBar from './components/common/NavBar';
 import SignIn from './pages/SignIn';
 import SignUp from './templates/SignUpTemplate';
 import InitProcess from './pages/InitProcess';
+import RequestRepair from './pages/RequestRepair';
 
 // 하단 바를 숨기고 싶은 경로
-const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess'];
+const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/request-repair'];
 
 const AppShell = styled.div`
   --bar-h: 74px;
@@ -57,7 +58,10 @@ const Layout = () => {
 
   // ✅ 특정 페이지 배경 조건
   const bgColor =
-    pathname === '/signIn' || pathname === '/signUp' || pathname === '/initprocess'
+    pathname === '/signIn' ||
+    pathname === '/signUp' ||
+    pathname === '/initprocess' ||
+    pathname === '/request-repair'
       ? '#ffffff'
       : '#f9f9f9';
 
@@ -81,12 +85,18 @@ export default function AppRouter() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+
           <Route path="/signIn" element={<SignIn />} />
           <Route path="/signUp" element={<SignUp />} />
-          <Route path="/communication" element={<Communication />} />
-          <Route path="/repair" element={<Repair />} />
-          <Route path="/my-page" element={<MyPage />} />
           <Route path="/initprocess" element={<InitProcess />} />
+
+          <Route path="/communication" element={<Communication />} />
+
+          <Route path="/repair" element={<Repair />} />
+          <Route path="/request-repair" element={<RequestRepair />} />
+
+          <Route path="/my-page" element={<MyPage />} />
+
           <Route path="*" element={<div>Not Found</div>} />
         </Route>
       </Routes>
