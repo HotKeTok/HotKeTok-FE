@@ -2,54 +2,27 @@
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
-import Home from './pages/Home';
-import Communication from './pages/Communication';
-import Repair from './pages/Repair';
-import MyPage from './pages/MyPage';
-import NavBar from './components/common/NavBar';
+// 로그인 관련
 import SignIn from './pages/SignIn';
 import SignUp from './templates/SignUpTemplate';
 import InitProcess from './pages/InitProcess';
+// main 관련
+import Main from './pages/main/index'
+import Bills from './pages/main/Bills'
+import Notice from './pages/main/Notice'
+import NoticeDetail from './pages/main/NoticeDetail'
+import Alarm from './pages/main/Alarm'
+// 뚝딱 관련
+import Repair from './pages/Repair'
+// 똑똑 관련
+import Communication from './pages/Communication'
+// 마이 관련
+import MyPage from './pages/MyPage'
+// 컴포넌트
+import NavBar from './components/common/NavBar'
+import IndexWelcome from './pages/main/IndexWelcome';
 
-// 하단 바를 숨기고 싶은 경로
-const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess'];
-
-const AppShell = styled.div`
-  --bar-h: 56px;
-  --container-w: 390px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: ${({ $bg }) => $bg}; // ✅ 동적 배경
-  border: 1px solid black; // 배경 하얀색인경우 경계가 안 보여서 border 임시로 추가(배포전 삭제예정))
-`;
-
-const Main = styled.main`
-  flex: 1;
-  width: 100%;
-  ${({ $hasBar }) =>
-    $hasBar
-      ? css`
-          padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
-        `
-      : css`
-          padding-bottom: 0;
-        `}
-`;
-
-const BottomBar = styled.div`
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0;
-  width: min(100%, var(--container-w));
-  height: 74px;
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border-top: 1px solid #eee;
-  z-index: 100;
-`;
+import { AppShell, MainContainer, BottomBar, HIDE_BOTTOM_BAR_PATHS, BOTTOM_BAR_HEIGHT } from './styles/layout';
 
 const Layout = () => {
   const { pathname } = useLocation();
@@ -63,9 +36,9 @@ const Layout = () => {
 
   return (
     <AppShell $bg={bgColor}>
-      <Main $hasBar={!hideBar}>
+      <MainContainer $hasBar={!hideBar}>
         <Outlet />
-      </Main>
+      </MainContainer>
       {!hideBar && (
         <BottomBar>
           <NavBar />
@@ -80,9 +53,14 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
           <Route path="/signIn" element={<SignIn />} />
           <Route path="/signUp" element={<SignUp />} />
+          <Route path="/" element={<Main />} />
+          <Route path="/welcome" element={<IndexWelcome />} />
+          <Route path="/main/bills" element={<Bills />} />
+          <Route path="/main/alarm" element={<Alarm />} />
+          <Route path="/main/notice" element={<Notice />} />
+          <Route path="/main/notice/:id" element={<NoticeDetail />} />
           <Route path="/communication" element={<Communication />} />
           <Route path="/repair" element={<Repair />} />
           <Route path="/my-page" element={<MyPage />} />
