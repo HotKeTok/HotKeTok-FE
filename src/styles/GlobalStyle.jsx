@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { CONTAINER_WIDTH } from './layout';
 
 const GlobalStyle = createGlobalStyle`
   /* Pretendard 웹폰트 import */
