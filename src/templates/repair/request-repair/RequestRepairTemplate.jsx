@@ -10,6 +10,9 @@ import Button from '../../../components/common/Button';
 import { Row, Column, Spacer } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 
+import meIcon from '../../../assets/repair/request-repair/icon-me.svg';
+import landlordIcon from '../../../assets/repair/request-repair/icon-landlord.svg';
+
 /* =========================================================
  * 공통 상수/유틸
  * ======================================================= */
@@ -72,9 +75,11 @@ function StepPayer({ draft, setDraft, onNext, onBack }) {
         <ModeItem
           selected={draft.payer === 'me'}
           onClick={() => setDraft((p) => ({ ...p, payer: 'me' }))}
+          height="100%"
+          padding="18px 24px"
         >
           <Row $gap={12}>
-            <IconCircle>👤</IconCircle>
+            <IconWrapper src={meIcon} alt="본인부담아이콘" />
             <Column>
               <BoldText>제가 부담할게요.</BoldText>
               {draft.payer === 'me' && (
@@ -90,9 +95,11 @@ function StepPayer({ draft, setDraft, onNext, onBack }) {
         <ModeItem
           selected={draft.payer === 'landlord'}
           onClick={() => setDraft((p) => ({ ...p, payer: 'landlord' }))}
+          height="100%"
+          padding="18px 24px"
         >
           <Row $gap={12}>
-            <IconCircle>🏠</IconCircle>
+            <IconWrapper src={landlordIcon} alt="집주인부담아이콘" />
             <Column>
               <BoldText>집주인이 부담할 예정이에요.</BoldText>
               {draft.payer === 'landlord' && (
@@ -411,25 +418,19 @@ const Helper = styled.div`
   color: ${color('grayscale.500')};
   margin-bottom: 8px;
 `;
-const IconCircle = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: ${color('grayscale.100')};
-  display: grid;
+const IconWrapper = styled.img`
+  width: 18px;
+  height: 18px;
   place-items: center;
-  font-size: 18px;
 `;
 const BoldText = styled.div`
-  ${typo('body1')};
-  color: ${color('grayscale.900')};
-  font-weight: 600;
+  ${typo('subtitle1')};
+  color: ${color('grayscale.800')};
 `;
 const SubBullets = styled.ul`
   ${typo('caption1')};
-  color: ${color('grayscale.600')};
-  margin: 6px 0 0 0;
-  padding-left: 18px;
+  color: ${color('grayscale.800')};
+  margin: 10px 0 0 0;
   list-style: disc;
 `;
 
