@@ -364,7 +364,7 @@ export default function InitProcess() {
 const PageWrap = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: 100vh;
 `;
 
 const ContentWrap = styled.div`

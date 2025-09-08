@@ -53,18 +53,25 @@ function getNext7Days() {
 /* =========================================================
  * STEP 1: 비용부담자 선택
  * ======================================================= */
-function StepPayer({ draft, setDraft, onNext }) {
+function StepPayer({ draft, setDraft, onNext, onBack }) {
   return (
     <StepWrap>
-      <SectionTitle>수리 비용은 누가 부담하나요?</SectionTitle>
-      <Tip>✅ 헷갈린다면, 수리 요청 전 집주인과 먼저 상의해 주세요.</Tip>
-      <Tip>명확한 합의를 통해 원활한 수리 진행이 가능합니다.</Tip>
-      <Spacer h={16} />
-      <Column $gap={12}>
+      <TopBar title="수리요청서 작성" onBack={onBack} style={{ marginBottom: '10px' }} />
+      <div style={{ height: '20px' }} />
+      <Column $gap={8} style={{ marginBottom: '24px', padding: '0px 24px' }}>
+        <SectionTitle>수리 비용은 누가 부담하나요?</SectionTitle>
+        <Tip>세부 기준은 선택 후 확인할 수 있어요</Tip>
+        <Tip>
+          헷갈린다면, 수리 요청 전 집주인과 먼저 상의해 주세요.
+          <br />
+          명확한 합의를 통해 원활한 수리 진행이 가능합니다.
+        </Tip>
+      </Column>
+
+      <Column $gap={10} style={{ padding: '0px 20px' }}>
         <ModeItem
           selected={draft.payer === 'me'}
           onClick={() => setDraft((p) => ({ ...p, payer: 'me' }))}
-          height={'80px'}
         >
           <Row $gap={12}>
             <IconCircle>👤</IconCircle>
@@ -83,7 +90,6 @@ function StepPayer({ draft, setDraft, onNext }) {
         <ModeItem
           selected={draft.payer === 'landlord'}
           onClick={() => setDraft((p) => ({ ...p, payer: 'landlord' }))}
-          height={'80px'}
         >
           <Row $gap={12}>
             <IconCircle>🏠</IconCircle>
@@ -100,8 +106,10 @@ function StepPayer({ draft, setDraft, onNext }) {
         </ModeItem>
       </Column>
 
-      <Spacer h={24} />
-      <Button text="다음" active={!!draft.payer} onClick={onNext} />
+      <Spacer />
+      <div style={{ padding: '40px 24px' }}>
+        <Button text="다음" active={!!draft.payer} onClick={onNext} />
+      </div>
     </StepWrap>
   );
 }
@@ -109,7 +117,7 @@ function StepPayer({ draft, setDraft, onNext }) {
 /* =========================================================
  * STEP 2: 작성 (AI 모드 ON/OFF)
  * ======================================================= */
-function StepForm({ draft, setDraft, days, onNext }) {
+function StepForm({ draft, setDraft, days, onNext, onBack }) {
   const [open, setOpen] = useState(false);
 
   const canComplete = useMemo(() => {
@@ -121,6 +129,8 @@ function StepForm({ draft, setDraft, days, onNext }) {
 
   return (
     <StepWrap>
+      <TopBar title="수리요청서 작성" onBack={onBack} />
+
       <HeaderToggle>
         <Row $gap={12} style={{ alignItems: 'center' }}>
           <ToggleLabel>AI로 작성하기</ToggleLabel>
@@ -134,7 +144,6 @@ function StepForm({ draft, setDraft, days, onNext }) {
         <ToggleHelp>사진을 업로드하면 AI가 수리분야와 증상 설명을 도와드려요.</ToggleHelp>
       </HeaderToggle>
 
-      {/* 분야 선택 */}
       {!draft.useAI && (
         <Section>
           <SectionTitle>어떤 분야의 견적을 받고 싶으신가요?</SectionTitle>
@@ -152,7 +161,6 @@ function StepForm({ draft, setDraft, days, onNext }) {
         </Section>
       )}
 
-      {/* 사진 업로드 */}
       <Section>
         <SectionTitle>증상 사진을 업로드 해주세요.</SectionTitle>
         <Helper>최대 8장까지 등록할 수 있어요.</Helper>
@@ -189,7 +197,6 @@ function StepForm({ draft, setDraft, days, onNext }) {
         </ThumbGrid>
       </Section>
 
-      {/* 설명 */}
       <Section>
         <SectionTitle>증상 및 불편한 점을 알려주세요.</SectionTitle>
         <TextArea
@@ -199,7 +206,6 @@ function StepForm({ draft, setDraft, days, onNext }) {
         />
       </Section>
 
-      {/* 날짜/시간 */}
       <Section>
         <SectionTitle>원하는 날짜와 시간을 선택해주세요.</SectionTitle>
         <DateRow>
@@ -244,9 +250,11 @@ function StepForm({ draft, setDraft, days, onNext }) {
 /* =========================================================
  * STEP 3: 요약
  * ======================================================= */
-function StepReview({ context, onEdit, onSubmit }) {
+function StepReview({ context, onEdit, onSubmit, onBack }) {
   return (
     <StepWrap>
+      <TopBar title="수리요청서 작성" onBack={onBack} />
+
       <TitleRow>
         <SummaryTitle>수리요청서 작성을 완료했어요!</SummaryTitle>
         <EditLink onClick={onEdit}>수정하기</EditLink>
@@ -303,7 +311,7 @@ function StepReview({ context, onEdit, onSubmit }) {
       </SummaryCard>
 
       <Spacer h={12} />
-      <Button text="제출하기" active={true} onClick={onSubmit} />
+      <Button text="제출하기" active onClick={onSubmit} />
     </StepWrap>
   );
 }
@@ -311,20 +319,21 @@ function StepReview({ context, onEdit, onSubmit }) {
 /* =========================================================
  * STEP 4: 완료
  * ======================================================= */
-function StepDone({ onHome }) {
+function StepDone({ onHome, onBack }) {
   return (
     <SuccessWrap>
+      <TopBar title="" onBack={onBack} />
       <Emoji>📝✅</Emoji>
       <SuccessTitle>수리 요청서를 제출했어요!</SuccessTitle>
       <SuccessSub>작성한 요청서를 바탕으로 견적서를 받으면 알림드릴게요.</SuccessSub>
       <Spacer h={12} />
-      <Button text="홈으로 돌아가기" active={true} onClick={onHome} />
+      <Button text="홈으로 돌아가기" active onClick={onHome} />
     </SuccessWrap>
   );
 }
 
 /* =========================================================
- * 메인
+ * 메인(컨테이너)
  * ======================================================= */
 export default function RequestRepairTemplate() {
   const navigate = useNavigate();
@@ -339,44 +348,41 @@ export default function RequestRepairTemplate() {
     desc: '',
   });
 
-  const funnel = useFunnel({
+  const Funnel = useFunnel({
     id: 'request-repair',
     initial: { step: 'Payer', context: {} },
     routes: (s) => `/request-repair/${s}`,
   });
 
   return (
-    <>
-      <TopBar
-        title={funnel.step === 'Done' ? '' : '수리요청서 작성'}
-        onBack={funnel.history.back}
-      />
-      <funnel.Render
-        Payer={({ history }) => (
-          <StepPayer
-            draft={draft}
-            setDraft={setDraft}
-            onNext={() => history.push('Form', { ...draft })}
-          />
-        )}
-        Form={({ history }) => (
-          <StepForm
-            draft={draft}
-            setDraft={setDraft}
-            days={days}
-            onNext={() => history.push('Review', { ...draft })}
-          />
-        )}
-        Review={({ history, context }) => (
-          <StepReview
-            context={context}
-            onEdit={() => history.replace('Form', context)}
-            onSubmit={() => history.push('Done')}
-          />
-        )}
-        Done={() => <StepDone onHome={() => navigate('/')} />}
-      />
-    </>
+    <Funnel.Render
+      Payer={({ history }) => (
+        <StepPayer
+          draft={draft}
+          setDraft={setDraft}
+          onBack={history.back}
+          onNext={() => history.push('Form', { ...draft })}
+        />
+      )}
+      Form={({ history }) => (
+        <StepForm
+          draft={draft}
+          setDraft={setDraft}
+          days={days}
+          onBack={history.back}
+          onNext={() => history.push('Review', { ...draft })}
+        />
+      )}
+      Review={({ history, context }) => (
+        <StepReview
+          context={context}
+          onBack={history.back}
+          onEdit={() => history.replace('Form', context)}
+          onSubmit={() => history.push('Done')}
+        />
+      )}
+      Done={({ history }) => <StepDone onHome={() => navigate('/')} onBack={history.back} />}
+    />
   );
 }
 
@@ -384,16 +390,17 @@ export default function RequestRepairTemplate() {
  * 스타일 (공통)
  * ======================================================= */
 const StepWrap = styled.div`
+  display: flex;
   width: 390px;
-  padding: 20px 16px 32px;
+  flex-direction: column;
+  min-height: 100vh;
 `;
 const Section = styled.section`
   padding: 16px 0;
 `;
 const SectionTitle = styled.h3`
   ${typo('subtitle1')};
-  color: ${color('grayscale.900')};
-  margin: 0 0 8px;
+  color: ${color('grayscale.800')};
 `;
 const Tip = styled.div`
   ${typo('caption1')};
