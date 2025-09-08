@@ -4,13 +4,13 @@ import styled, { css } from 'styled-components';
 
 import Home from './pages/Home';
 import Communication from './pages/Communication';
-import Repair from './pages/Repair';
+import Repair from './pages/repair/repair-main/Repair';
 import MyPage from './pages/MyPage';
 import NavBar from './components/common/NavBar';
 import SignIn from './pages/SignIn';
 import SignUp from './templates/SignUpTemplate';
 import InitProcess from './pages/InitProcess';
-import RequestRepair from './pages/RequestRepair';
+import RequestRepair from './pages/repair/request-repair/RequestRepair';
 
 // 하단 바를 숨기고 싶은 경로
 const HIDE_BOTTOM_BAR_PATHS = [
