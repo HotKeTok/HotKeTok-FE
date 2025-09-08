@@ -56,3 +56,8 @@ export const BottomBar = styled.footer`
 export const Page=  styled.section`
   ${({$scroll}) => ($scroll ? 'overflow: auto;' : 'overflow: hidden;')};
 `
+
+export const ScrollableFullPage = styled.section`
+  overflow: auto;
+  height: 100dvh;
+`

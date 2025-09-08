@@ -2,11 +2,11 @@ import { typo } from "../../styles/tokens"
 import Alarm from "./Alarm"
 import styled from "styled-components"
 
-export default function PageHeader({leftComponent}) {
+export default function PageHeader({leftComponent, isLightVersion=false}) {
     return (
         <Container>
             {leftComponent}
-            <Alarm />
+            <Alarm isLightVersion={isLightVersion} />
         </Container>
     )
 }

@@ -7,3 +7,25 @@ export const AUTH_TEXT = {
             "인증이 완료되면 알림을 보내드릴게요!",
         ]
     }
+
+export const NOTICE_CARD_MOCK = [
+    {
+      id: 1,
+      title: '분리수거 안내',
+      date: '2022-11-04', // 표시용은 YYYY.MM.DD로 포맷해서 쓰면 됨
+      pinned: true,       // 핀 고정
+      border: true,
+    },
+    {
+      id: 2,
+      title: '한양빌라 관리비 인하 공지',
+      date: '2024-12-01',
+      pinned: false,
+    },
+    {
+      id: 3,
+      title: '층간소음 관련 공지',
+      date: '2024-12-12',
+      pinned: false,
+    },
+  ];

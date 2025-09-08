@@ -62,7 +62,7 @@ export default function NavBar() {
         height="260px"          
         children={<AuthModal address={address}/>}
       ></BottomSheet>
-      <NavItem to="/" $active={pathname === '/' || pathname === 'welcome'}>
+      <NavItem to="/" $active={pathname === '/' || pathname === 'welcome' || pathname.startsWith('/main')}>
         <HomeIcon />
         홈
       </NavItem>
