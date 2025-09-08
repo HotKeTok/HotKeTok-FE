@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import drillImg from '../../assets/Repair/Drill.png';
-import greenCurve from '../../assets/Repair/greenCurve.svg';
+import drillImg from '../../assets/repair/repair-main/Dirll.png';
+import greenCurve from '../../assets/repair/repair-main/greenCurve.svg';
 import { color, typo } from '../../styles/tokens';
 import { Row, Column, Spacer } from '../../styles/flex';
 
