@@ -1,10 +1,11 @@
 import IcnAlarm from "../../assets/common/icon-alarm.svg?react"
 import IcnAlarmActive from "../../assets/common/icon-alarm-active.svg?react"
+import IcnAlarmWhite from "../../assets/common/icon-alarm-white.svg?react"
 import styled, { css } from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Alarm() {
+export default function Alarm({ isLightVersion = false }) {
     const navigate = useNavigate();
     const [hasAlarm, setHasAlarm] = useState(true);
     // TODO: 알림 상태 API 연동
@@ -17,7 +18,7 @@ export default function Alarm() {
         <AlarmContainer onClick={onClick}>
             <AbsoluteContainer>
                 <AbsoluteContainer>
-                    <IcnAlarm />
+                    {isLightVersion ? <IcnAlarmWhite /> : <IcnAlarm />}
                 </AbsoluteContainer>
                 <AbsoluteContainer>
                     {hasAlarm && <IcnAlarmActive style={{ bottom: 30 }} />}    
