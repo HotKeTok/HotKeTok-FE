@@ -49,12 +49,8 @@ export const BottomBar = styled.footer`
 
 /**
  * 템플릿의 최상위 부모 컨테이너입니다.
- * @params {boolean} $scroll - 
- * true일 경우 스크롤 가능한 컨테이너
- * false일 경우 스크롤 비활성화 컨테이너
  */
 export const Page=  styled.section`
-  ${({$scroll}) => ($scroll ? 'overflow: auto;' : 'overflow: hidden;')};
 `
 
 export const ScrollableFullPage = styled.section`
