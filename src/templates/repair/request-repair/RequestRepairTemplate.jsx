@@ -245,36 +245,44 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
         <div style={{ height: '40px' }} />
 
         {/* 날짜/시간 */}
-        <SectionTitle>원하는 날짜와 시간을 선택해주세요.</SectionTitle>
+        <Column $gap={2}>
+          <SectionTitle>원하는 날짜와 시간을 선택해주세요.</SectionTitle>
+          <Caption1_600>오늘부터 7일까지의 가능한 날짜를 선택해주세요.</Caption1_600>
+        </Column>
+        <Caption2_800 style={{ margin: '10px 0px' }}>수리 희망 날짜</Caption2_800>
         <DateRow>
           {days.map((d) => (
             <DateDot
               key={d.key}
               $active={draft.dateKey === d.key}
               onClick={() => setDraft((p) => ({ ...p, dateKey: d.key }))}
+              aria-pressed={draft.dateKey === d.key}
             >
               {d.justDate}
             </DateDot>
           ))}
         </DateRow>
+
         <Column $gap={6}>
-          <Caption2_800>수리 희망 시간</Caption2_800>
-          <Dropdown onClick={() => setOpen((v) => !v)}>
+          <Caption2_800 style={{ marginTop: '10px' }}>수리 희망 시간</Caption2_800>
+          <Dropdown $open={open} onClick={() => setOpen((v) => !v)}>
             <span>{draft.time || '시간 선택'}</span>
             <i>▾</i>
           </Dropdown>
+
           {open && (
             <DropdownList>
               {TIME_OPTIONS.map((t) => (
-                <li
+                <TimeItem
                   key={t}
+                  $selected={draft.time === t}
                   onClick={() => {
                     setDraft((p) => ({ ...p, time: t }));
                     setOpen(false);
                   }}
                 >
                   {t}
-                </li>
+                </TimeItem>
               ))}
             </DropdownList>
           )}
@@ -383,7 +391,7 @@ export default function RequestRepairTemplate() {
     payer: null,
     useAI: true,
     typeKey: null,
-    dateKey: null,
+    dateKey: days[0]?.key || null, // ✅ 오늘 날짜를 기본값으로 설정
     time: null,
     images: [],
     desc: '',
@@ -652,36 +660,37 @@ const DateRow = styled.div`
   gap: 8px;
 `;
 const DateDot = styled.button`
+  ${typo('body1')};
   height: 44px;
-  border-radius: 10px;
-  border: 1px solid ${color('grayscale.300')};
-  background: #fff;
+  border-radius: 50%;
+  border: 0px;
   ${(p) =>
     p.$active &&
     css`
-      border-color: ${color('brand.primary')};
-      color: ${color('brand.primary')};
-      font-weight: 700;
+      color: white;
+      background-color: black;
     `}
 `;
 
 const Dropdown = styled.div`
+  ${typo('body2')};
+  color: ${color('grayscale.800')};
   height: 44px;
-  border-radius: 10px;
-  border: 1px solid ${color('grayscale.300')};
-  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid ${color('grayscale.400')};
+  padding: 0px 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: ${color('grayscale.100')};
   cursor: pointer;
 `;
 const DropdownList = styled.ul`
   margin-top: 6px;
-  border: 1px solid ${color('grayscale.300')};
-  background: #fff;
+  border: 1px solid ${color('grayscale.400')};
+  background: ${color('grayscale.100')};
   border-radius: 10px;
-  padding: 6px 0;
+  padding: 6px 15px;
   max-height: 240px;
   overflow: auto;
   li {
@@ -689,8 +698,27 @@ const DropdownList = styled.ul`
     cursor: pointer;
   }
   li:hover {
+    background: ${color('grayscale.200')};
+  }
+`;
+
+// 시간 아이템(선택/호버 스타일)
+const TimeItem = styled.li`
+  padding: 14px 16px;
+  ${typo('body2')};
+  color: ${color('grayscale.800')};
+  cursor: pointer;
+  border-radius: 8px; /* 스크롤 중 모서리 깔끔하게 */
+
+  &:hover {
     background: ${color('grayscale.050')};
   }
+  ${(p) =>
+    p.$selected &&
+    css`
+      background: ${color('grayscale.100')};
+      font-weight: 700;
+    `}
 `;
 
 const TitleRow = styled.div`
