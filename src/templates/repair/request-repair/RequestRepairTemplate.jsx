@@ -12,6 +12,7 @@ import { color, typo } from '../../../styles/tokens';
 
 import meIcon from '../../../assets/repair/request-repair/icon-me.svg';
 import landlordIcon from '../../../assets/repair/request-repair/icon-landlord.svg';
+import cameraIcon from '../../../assets/repair/request-repair/icon-camera.svg';
 
 /* =========================================================
  * 공통 상수/유틸
@@ -159,7 +160,7 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
 
       <HeaderToggle>
         <Row $gap={12} style={{ alignItems: 'center' }}>
-          <Caption1_600>AI로 작성하기</Caption1_600>
+          <SectionTitle>AI로 작성하기</SectionTitle>
           <ToggleSwitch
             $on={draft.useAI}
             onClick={() => setDraft((p) => ({ ...p, useAI: !p.useAI }))}
@@ -167,7 +168,7 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
             <span />
           </ToggleSwitch>
         </Row>
-        <Caption1_600>사진을 업로드하면 AI가 수리분야와 증상 설명을 도와드려요.</Caption1_600>
+        <Caption1_800>사진을 업로드하면 AI가 수리분야와 증상 설명을 도와드려요.</Caption1_800>
       </HeaderToggle>
 
       {/* ❗️AI OFF일 때는 수리분야를 사진 섹션 '위'에서 노출 */}
@@ -195,7 +196,10 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
             ))}
             {draft.images.length < 8 && (
               <UploadBox>
-                <label htmlFor="repair-photos">＋</label>
+                <label htmlFor="repair-photos" className="uploader">
+                  <CameraIcon src={cameraIcon} alt="카메라 아이콘" />
+                  <UploadText>사진 {draft.images.length}/8</UploadText>
+                </label>
                 <input
                   id="repair-photos"
                   type="file"
@@ -452,8 +456,7 @@ const SubBullets = styled.ul`
 // STEP 2
 
 const HeaderToggle = styled.div`
-  border-radius: 12px;
-  background: ${color('brand.primary/10')};
+  background: ${color('grayscale.200')};
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -468,6 +471,11 @@ const Helper = styled.div`
 const Caption1_600 = styled.div`
   ${typo('caption1')};
   color: ${color('grayscale.600')};
+`;
+
+const Caption1_800 = styled.div`
+  ${typo('caption1')};
+  color: ${color('grayscale.800')};
 `;
 
 const Caption2_800 = styled.div`
@@ -517,18 +525,19 @@ const Chip = styled.button`
 
 const ThumbGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 `;
 const Thumb = styled.div`
   position: relative;
-  width: 100%;
-  padding-top: 100%;
+  height: 80px;
+  width: 80px;
   background-size: cover;
   background-position: center;
-  border-radius: 12px;
+  border-radius: 6x;
   overflow: hidden;
 `;
+
 const RemoveBtn = styled.button`
   position: absolute;
   top: 4px;
@@ -541,21 +550,40 @@ const RemoveBtn = styled.button`
   color: #fff;
 `;
 
-const UploadBox = styled.div`
+const UploadBox = styled.label`
   position: relative;
-  width: 100%;
-  padding-top: 100%;
-  border-radius: 12px;
-  background: ${color('grayscale.100')};
-  display: grid;
-  place-items: center;
-  label {
-    ${typo('title2')};
-    cursor: pointer;
-  }
+  height: 80px;
+  width: 80px;
+  border-radius: 6px;
+  border: 1px solid ${color('grayscale.400')};
+  background: #fff;
+  cursor: pointer;
+  display: block;
+
   input {
     display: none;
   }
+`;
+
+const CameraIcon = styled.img`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 👈 박스 정중앙 */
+  width: 22px;
+  height: 20px;
+  opacity: 0.6;
+  cursor: pointer;
+`;
+
+const UploadText = styled.div`
+  position: absolute;
+  bottom: 6px; /* 👈 박스 하단 */
+  left: 50%;
+  transform: translateX(-50%);
+  ${typo('caption2')};
+  color: ${color('grayscale.400')};
+  cursor: pointer;
 `;
 
 const TextArea = styled.textarea`
