@@ -542,8 +542,8 @@ const RemoveBtn = styled.button`
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border: none;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.45);
