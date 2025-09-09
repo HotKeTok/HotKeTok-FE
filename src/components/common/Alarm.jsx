@@ -1,6 +1,5 @@
 import IcnAlarm from "../../assets/common/icon-alarm.svg?react"
 import IcnAlarmActive from "../../assets/common/icon-alarm-active.svg?react"
-import IcnAlarmWhite from "../../assets/common/icon-alarm-white.svg?react"
 import styled, { css } from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,10 +15,8 @@ export default function Alarm({ isLightVersion = false }) {
 
     return (
         <AlarmContainer onClick={onClick}>
-            <AbsoluteContainer>
-                <AbsoluteContainer>
-                    {isLightVersion ? <IcnAlarmWhite /> : <IcnAlarm />}
-                </AbsoluteContainer>
+            <AbsoluteContainer style={{ top: 9, left: 15,}}>
+                  <IcnAlarm />
                 <AbsoluteContainer>
                     {hasAlarm && <IcnAlarmActive style={{ bottom: 30 }} />}    
                 </AbsoluteContainer>
@@ -30,8 +27,8 @@ export default function Alarm({ isLightVersion = false }) {
 
 const AlarmContainer = styled.div`
     position: relative;
-    width: 18px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
 
     cursor: pointer;
 `
