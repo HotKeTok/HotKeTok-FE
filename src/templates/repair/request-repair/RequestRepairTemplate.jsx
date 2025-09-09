@@ -13,6 +13,8 @@ import { color, typo } from '../../../styles/tokens';
 import meIcon from '../../../assets/repair/request-repair/icon-me.svg';
 import landlordIcon from '../../../assets/repair/request-repair/icon-landlord.svg';
 import cameraIcon from '../../../assets/repair/request-repair/icon-camera.svg';
+import iconUnchecked from '../../../assets/repair/request-repair/icon_unchecked.svg';
+import iconChecked from '../../../assets/repair/request-repair/icon_checked.svg';
 
 /* =========================================================
  * 공통 상수/유틸
@@ -137,23 +139,27 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
 
   // 수리 분야 선택 섹션을 재사용 가능하게 분리
   const TypePickerSection = ({ note }) => (
-    <>
+    <Column $gap={6}>
       <Caption2_800>수리 분야</Caption2_800>
       {note ? <Caption1_600 style={{ marginBottom: 8 }}>{note}</Caption1_600> : null}
-      <ChipRow>
-        {REPAIR_TYPES.map((t) => (
-          <Chip
-            key={t.key}
-            $active={draft.typeKey === t.key}
-            onClick={() => setDraft((p) => ({ ...p, typeKey: t.key }))}
-          >
-            {t.label}
-          </Chip>
-        ))}
-      </ChipRow>
-    </>
-  );
 
+      <TypeGrid>
+        {REPAIR_TYPES.map((t) => {
+          const selected = draft.typeKey === t.key;
+          return (
+            <TypeItem
+              key={t.key}
+              onClick={() => setDraft((p) => ({ ...p, typeKey: t.key }))}
+              $selected={selected}
+            >
+              <TypeIcon src={selected ? iconChecked : iconUnchecked} alt="" />
+              <TypeLabel $selected={selected}>{t.label}</TypeLabel>
+            </TypeItem>
+          );
+        })}
+      </TypeGrid>
+    </Column>
+  );
   return (
     <StepWrap>
       <TopBar title="수리요청서 작성" onBack={onBack} />
@@ -176,63 +182,69 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
 
       {/* 사진 업로드 */}
       <Section>
-        <SectionTitle>증상 사진을 업로드 해주세요.</SectionTitle>
-        <Caption1_600 style={{ marginBottom: '12px' }}>
-          AI가 증상을 분석하고 요청서를 완성해드릴게요.
-        </Caption1_600>
-        <Column $gap={6}>
-          <Caption2_800>증상 사진</Caption2_800>
-          <ThumbGrid>
-            {draft.images.map((url) => (
-              <Thumb key={url} style={{ backgroundImage: `url(${url})` }}>
-                <RemoveBtn
-                  onClick={() =>
-                    setDraft((p) => ({ ...p, images: p.images.filter((u) => u !== url) }))
-                  }
-                >
-                  ×
-                </RemoveBtn>
-              </Thumb>
-            ))}
-            {draft.images.length < 8 && (
-              <UploadBox>
-                <label htmlFor="repair-photos" className="uploader">
-                  <CameraIcon src={cameraIcon} alt="카메라 아이콘" />
-                  <UploadText>사진 {draft.images.length}/8</UploadText>
-                </label>
-                <input
-                  id="repair-photos"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => {
-                    const arr = Array.from(e.target.files);
-                    const remain = Math.max(0, 8 - draft.images.length);
-                    const next = arr.slice(0, remain).map((f) => URL.createObjectURL(f));
-                    if (arr.length > remain) alert('사진은 최대 8장까지 첨부할 수 있어요.');
-                    setDraft((p) => ({ ...p, images: [...p.images, ...next] }));
-                  }}
-                />
-              </UploadBox>
-            )}
-          </ThumbGrid>
+        <Column $gap={2}>
+          <SectionTitle>증상 사진을 업로드 해주세요.</SectionTitle>
+          <Caption1_600 style={{ marginBottom: '12px' }}>
+            AI가 증상을 분석하고 요청서를 완성해드릴게요.
+          </Caption1_600>
         </Column>
+        <Gap20Wrapper>
+          <Column $gap={6}>
+            <Caption2_800>증상 사진</Caption2_800>
+            <ThumbGrid>
+              {draft.images.map((url) => (
+                <Thumb key={url} style={{ backgroundImage: `url(${url})` }}>
+                  <RemoveBtn
+                    onClick={() =>
+                      setDraft((p) => ({ ...p, images: p.images.filter((u) => u !== url) }))
+                    }
+                  >
+                    ×
+                  </RemoveBtn>
+                </Thumb>
+              ))}
+              {draft.images.length < 8 && (
+                <UploadBox>
+                  <label htmlFor="repair-photos" className="uploader">
+                    <CameraIcon src={cameraIcon} alt="카메라 아이콘" />
+                    <UploadText>사진 {draft.images.length}/8</UploadText>
+                  </label>
+                  <input
+                    id="repair-photos"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      const arr = Array.from(e.target.files);
+                      const remain = Math.max(0, 8 - draft.images.length);
+                      const next = arr.slice(0, remain).map((f) => URL.createObjectURL(f));
+                      if (arr.length > remain) alert('사진은 최대 8장까지 첨부할 수 있어요.');
+                      setDraft((p) => ({ ...p, images: [...p.images, ...next] }));
+                    }}
+                  />
+                </UploadBox>
+              )}
+            </ThumbGrid>
+          </Column>
 
-        {/* ✅ AI ON일 때는 수리분야를 사진 섹션 '아래'에서 노출 (선택 가능, 선택 시 요약에 반영) */}
-        {draft.useAI && <TypePickerSection />}
+          {/* ✅ AI ON일 때는 수리분야를 사진 섹션 '아래'에서 노출 (선택 가능, 선택 시 요약에 반영) */}
+          {draft.useAI && <TypePickerSection />}
 
-        {/* 설명 */}
-        <Column $gap={6}>
-          <Caption2_800>증상 설명</Caption2_800>
-          <TextArea
-            placeholder="증상에 대한 설명을 상세하게 적어주세요."
-            value={draft.desc}
-            onChange={(e) => setDraft((p) => ({ ...p, desc: e.target.value.slice(0, 300) }))}
-          />
-          <CharCount $over={draft.desc.length >= 300}>{draft.desc.length} / 300</CharCount>
-        </Column>
+          {/* 설명 */}
+          <Column $gap={6}>
+            <Caption2_800>증상 설명</Caption2_800>
+            <TextArea
+              placeholder="증상에 대한 설명을 상세하게 적어주세요."
+              value={draft.desc}
+              onChange={(e) => setDraft((p) => ({ ...p, desc: e.target.value.slice(0, 300) }))}
+            />
+            <CharCount $over={draft.desc.length >= 300}>{draft.desc.length} / 300</CharCount>
+          </Column>
+        </Gap20Wrapper>
+
+        <div style={{ height: '40px' }} />
+
         {/* 날짜/시간 */}
-
         <SectionTitle>원하는 날짜와 시간을 선택해주세요.</SectionTitle>
         <DateRow>
           {days.map((d) => (
@@ -268,7 +280,8 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
           )}
         </Column>
 
-        <Spacer h={12} />
+        <div style={{ height: '40px' }} />
+
         <Button text="완료하기" active={canComplete} onClick={onNext} />
       </Section>
     </StepWrap>
@@ -455,6 +468,12 @@ const SubBullets = styled.ul`
 
 // STEP 2
 
+const Gap20Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
 const HeaderToggle = styled.div`
   background: ${color('grayscale.200')};
   padding: 12px;
@@ -502,27 +521,42 @@ const ToggleSwitch = styled.div`
   }
 `;
 
-const ChipRow = styled.div`
+const TypeGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-`;
-const Chip = styled.button`
-  ${typo('body2')};
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid ${color('grayscale.300')};
-  background: #fff;
-  color: ${color('grayscale.800')};
-  cursor: pointer;
-  ${(p) =>
-    p.$active &&
-    css`
-      border-color: ${color('brand.primary')};
-      box-shadow: 0 0 0 3px ${color('brand.primary/10')};
-    `}
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: 12px;
+  column-gap: 16px;
 `;
 
+const TypeItem = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  /* 터치 타겟 확보 */
+  min-height: 32px;
+
+  &:focus-visible {
+    outline: 2px solid ${color('brand.primary')};
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+`;
+
+const TypeIcon = styled.img`
+  width: 22px;
+  height: 22px;
+  flex: 0 0 28px;
+`;
+
+const TypeLabel = styled.span`
+  ${typo('subtitle2')};
+  color: ${({ $selected }) => ($selected ? color('grayscale.900') : color('grayscale.700'))};
+`;
 const ThumbGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
