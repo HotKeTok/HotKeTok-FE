@@ -4,8 +4,11 @@ import styled, { css } from 'styled-components';
 import TopBar from '../../components/common/TopBar';
 import Button from '../../components/common/Button';
 import ButtonSmall from '../../components/common/ButtonSmall';
+import ButtonRound from '../../components/common/ButtonRound';
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
+
+import iconInfo from '../../assets/repair/repair-progress/icon-info.svg';
 
 /* =========================================================
  * 타입/상수
@@ -148,20 +151,18 @@ export default function RepairProgressTemplate() {
   return (
     <>
       <TopBar title="진행중인 수리" />
-      {/* 데모 스위치 – 실제 배포 시 삭제 가능 */}
-      <DemoSwitch />
 
-      <Screen>
-        {/* 헤더 영역 */}
-        <Header>
-          <Row $gap={8} style={{ alignItems: 'center' }}>
-            <Badge $type="progress">진행중</Badge>
-            <InfoIcon title="수리 진행 정보" />
-          </Row>
-          <TitleRow>
+      {/* 헤더 영역 */}
+      <WhiteSection>
+        <Row $justify="space-between" style={{ marginBottom: '15px' }}>
+          <ButtonRound text="진행중" />
+          <InfoIcon src={iconInfo} />
+        </Row>
+        <Column $gap={20}>
+          <Column $gap={6}>
             <Category>{request.categoryLabel}</Category>
             <RequestDate>{request.requestedAt}</RequestDate>
-          </TitleRow>
+          </Column>
 
           {/* 스텝 인디케이터 */}
           <StepBar>
@@ -184,164 +185,164 @@ export default function RepairProgressTemplate() {
             {step === STEP.MATCHED && '업체가 매칭되었어요!'}
             {step === STEP.DONE && '처리가 완료되었어요.'}
           </GuideBubble>
-        </Header>
+        </Column>
+      </WhiteSection>
 
-        {/* 요청서 아코디언 */}
-        <Accordion>
-          <AccordionHeader onClick={() => setOpenRequest(!openRequest)}>
-            <AccordionTitle>요청서</AccordionTitle>
-            <Chevron $open={openRequest} />
-          </AccordionHeader>
+      {/* 요청서 아코디언 */}
+      <Accordion>
+        <AccordionHeader onClick={() => setOpenRequest(!openRequest)}>
+          <AccordionTitle>요청서</AccordionTitle>
+          <Chevron $open={openRequest} />
+        </AccordionHeader>
 
-          {openRequest && (
-            <AccordionBody>
-              <KeyValue>
-                <dt>수리 분야</dt>
-                <dd>{request.categoryLabel}</dd>
-              </KeyValue>
-              <KeyValue>
-                <dt>수리 희망 날짜</dt>
-                <dd>{request.hopeAt}</dd>
-              </KeyValue>
-              <KeyValue>
-                <dt>비용 부담</dt>
-                <dd>{request.payerLabel}</dd>
-              </KeyValue>
-              <KeyValue>
-                <dt>주소</dt>
-                <dd>{request.address}</dd>
-              </KeyValue>
-              <KeyValue $column>
-                <dt>증상 사진</dt>
-                <dd>
-                  <Row $gap={8}>
-                    {request.images.map((src, i) => (
-                      <Thumb key={i} src={src} alt={`thumb-${i}`} />
-                    ))}
-                  </Row>
-                </dd>
-              </KeyValue>
-              <KeyValue $column>
-                <dt>증상 설명</dt>
-                <dd>
-                  <Note>{request.description}</Note>
-                </dd>
-              </KeyValue>
-            </AccordionBody>
-          )}
-        </Accordion>
-
-        {/* 단계별 섹션 */}
-        {step === STEP.FINDING && (
-          <EmptyQuotes>
-            <EmptyTitle>받은 견적</EmptyTitle>
-            <EmptyBox>아직 견적서가 도착하지 않았어요.</EmptyBox>
-          </EmptyQuotes>
-        )}
-
-        {step === STEP.CHOOSE && (
-          <>
-            {/* 받은 견적 아코디언 */}
-            <Accordion>
-              <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
-                <AccordionTitle>
-                  받은 견적
-                  <SmallHint>{quotes.length}개 업체에서 견적서를 보내왔어요.</SmallHint>
-                </AccordionTitle>
-                <Chevron $open={openQuotes} />
-              </AccordionHeader>
-
-              {openQuotes && (
-                <AccordionBody>
-                  <Column $gap={12}>
-                    {quotes.map(q => (
-                      <QuoteCard
-                        key={q.id}
-                        $selected={selectedQuoteId === q.id}
-                        onClick={() => (mode === COST_MODE.SELF ? setSelectedQuoteId(q.id) : null)}
-                      >
-                        <Row style={{ alignItems: 'center' }} $gap={10}>
-                          <Avatar src={q.avatar} alt="" />
-                          <CompanyName>
-                            {q.companyName} <ArrowRight />
-                          </CompanyName>
-                        </Row>
-                        <Phone>{q.phone}</Phone>
-                        <Content>{q.content}</Content>
-                        <Price>{comma(q.price)}원</Price>
-                      </QuoteCard>
-                    ))}
-                  </Column>
-                </AccordionBody>
-              )}
-            </Accordion>
-
-            <Footer>
-              <Button
-                disabled={mode === COST_MODE.LANDLORD || !selectedQuoteId}
-                onClick={handleChooseQuote}
-                text={mode === COST_MODE.LANDLORD ? '집주인이 선택합니다' : '견적서 선택'}
-              />
-            </Footer>
-          </>
-        )}
-
-        {step === STEP.MATCHED && selectedQuote && (
-          <>
-            <MatchedBox>업체가 매칭되었어요!</MatchedBox>
-
-            <Accordion $noTopMargin>
-              <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
-                <AccordionTitle>선택한 견적</AccordionTitle>
+        {openRequest && (
+          <AccordionBody>
+            <KeyValue>
+              <dt>수리 분야</dt>
+              <dd>{request.categoryLabel}</dd>
+            </KeyValue>
+            <KeyValue>
+              <dt>수리 희망 날짜</dt>
+              <dd>{request.hopeAt}</dd>
+            </KeyValue>
+            <KeyValue>
+              <dt>비용 부담</dt>
+              <dd>{request.payerLabel}</dd>
+            </KeyValue>
+            <KeyValue>
+              <dt>주소</dt>
+              <dd>{request.address}</dd>
+            </KeyValue>
+            <KeyValue $column>
+              <dt>증상 사진</dt>
+              <dd>
                 <Row $gap={8}>
-                  {mode === COST_MODE.SELF && (
-                    <ButtonSmall text="취소" onClick={handleCancelMatch} />
-                  )}
-                  <Chevron $open={openQuotes} />
+                  {request.images.map((src, i) => (
+                    <Thumb key={i} src={src} alt={`thumb-${i}`} />
+                  ))}
                 </Row>
-              </AccordionHeader>
-
-              {openQuotes && (
-                <AccordionBody>
-                  <KeyValue>
-                    <dt>업체명</dt>
-                    <dd>
-                      <Row $gap={8} style={{ alignItems: 'center' }}>
-                        <Avatar src={selectedQuote.avatar} alt="" />
-                        <CompanyName as="span">{selectedQuote.companyName}</CompanyName>
-                        <ArrowRight />
-                      </Row>
-                    </dd>
-                  </KeyValue>
-                  <KeyValue>
-                    <dt>금액</dt>
-                    <dd>{comma(selectedQuote.price)}원</dd>
-                  </KeyValue>
-                  <KeyValue>
-                    <dt>수리 예정 날짜</dt>
-                    <dd>{request.hopeAt}</dd>
-                  </KeyValue>
-                  <KeyValue>
-                    <dt>전화번호</dt>
-                    <dd>{selectedQuote.phone}</dd>
-                  </KeyValue>
-                  <KeyValue $column>
-                    <dt>내용</dt>
-                    <dd>
-                      <Note>{selectedQuote.content}</Note>
-                    </dd>
-                  </KeyValue>
-
-                  <Spacer y={8} />
-                  <Button text="1:1 문의하기" onClick={() => alert('채팅 진입')} />
-                </AccordionBody>
-              )}
-            </Accordion>
-          </>
+              </dd>
+            </KeyValue>
+            <KeyValue $column>
+              <dt>증상 설명</dt>
+              <dd>
+                <Note>{request.description}</Note>
+              </dd>
+            </KeyValue>
+          </AccordionBody>
         )}
+      </Accordion>
 
-        {/* STEP4(처리완료)는 이 페이지에서 다루지 않음 */}
-      </Screen>
+      {/* 단계별 섹션 */}
+      {step === STEP.FINDING && (
+        <EmptyQuotes>
+          <EmptyTitle>받은 견적</EmptyTitle>
+          <EmptyBox>아직 견적서가 도착하지 않았어요.</EmptyBox>
+        </EmptyQuotes>
+      )}
+
+      {step === STEP.CHOOSE && (
+        <>
+          {/* 받은 견적 아코디언 */}
+          <Accordion>
+            <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
+              <AccordionTitle>
+                받은 견적
+                <SmallHint>{quotes.length}개 업체에서 견적서를 보내왔어요.</SmallHint>
+              </AccordionTitle>
+              <Chevron $open={openQuotes} />
+            </AccordionHeader>
+
+            {openQuotes && (
+              <AccordionBody>
+                <Column $gap={12}>
+                  {quotes.map(q => (
+                    <QuoteCard
+                      key={q.id}
+                      $selected={selectedQuoteId === q.id}
+                      onClick={() => (mode === COST_MODE.SELF ? setSelectedQuoteId(q.id) : null)}
+                    >
+                      <Row style={{ alignItems: 'center' }} $gap={10}>
+                        <Avatar src={q.avatar} alt="" />
+                        <CompanyName>
+                          {q.companyName} <ArrowRight />
+                        </CompanyName>
+                      </Row>
+                      <Phone>{q.phone}</Phone>
+                      <Content>{q.content}</Content>
+                      <Price>{comma(q.price)}원</Price>
+                    </QuoteCard>
+                  ))}
+                </Column>
+              </AccordionBody>
+            )}
+          </Accordion>
+
+          <Footer>
+            <Button
+              disabled={mode === COST_MODE.LANDLORD || !selectedQuoteId}
+              onClick={handleChooseQuote}
+              text={mode === COST_MODE.LANDLORD ? '집주인이 선택합니다' : '견적서 선택'}
+            />
+          </Footer>
+        </>
+      )}
+
+      {step === STEP.MATCHED && selectedQuote && (
+        <>
+          <MatchedBox>업체가 매칭되었어요!</MatchedBox>
+
+          <Accordion $noTopMargin>
+            <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
+              <AccordionTitle>선택한 견적</AccordionTitle>
+              <Row $gap={8}>
+                {mode === COST_MODE.SELF && <ButtonSmall text="취소" onClick={handleCancelMatch} />}
+                <Chevron $open={openQuotes} />
+              </Row>
+            </AccordionHeader>
+
+            {openQuotes && (
+              <AccordionBody>
+                <KeyValue>
+                  <dt>업체명</dt>
+                  <dd>
+                    <Row $gap={8} style={{ alignItems: 'center' }}>
+                      <Avatar src={selectedQuote.avatar} alt="" />
+                      <CompanyName as="span">{selectedQuote.companyName}</CompanyName>
+                      <ArrowRight />
+                    </Row>
+                  </dd>
+                </KeyValue>
+                <KeyValue>
+                  <dt>금액</dt>
+                  <dd>{comma(selectedQuote.price)}원</dd>
+                </KeyValue>
+                <KeyValue>
+                  <dt>수리 예정 날짜</dt>
+                  <dd>{request.hopeAt}</dd>
+                </KeyValue>
+                <KeyValue>
+                  <dt>전화번호</dt>
+                  <dd>{selectedQuote.phone}</dd>
+                </KeyValue>
+                <KeyValue $column>
+                  <dt>내용</dt>
+                  <dd>
+                    <Note>{selectedQuote.content}</Note>
+                  </dd>
+                </KeyValue>
+
+                <Spacer y={8} />
+                <Button text="1:1 문의하기" onClick={() => alert('채팅 진입')} />
+              </AccordionBody>
+            )}
+          </Accordion>
+        </>
+      )}
+
+      {/* STEP4(처리완료)는 이 페이지에서 다루지 않음 */}
+      {/* 데모 스위치 – 실제 배포 시 삭제 가능 */}
+      <DemoSwitch />
     </>
   );
 }
@@ -360,12 +361,12 @@ function comma(n) {
 /* =========================================================
  * 스타일
  * ======================================================= */
-const Screen = styled.div`
-  padding: 0 16px 90px 16px;
-`;
 
-const Header = styled.div`
-  padding: 12px 0 8px 0;
+const WhiteSection = styled.div`
+  box-sizing: border-box;
+  padding: 20px 24px;
+  width: 100%;
+  background-color: white;
 `;
 
 const Badge = styled.span`
@@ -383,13 +384,10 @@ const Badge = styled.span`
     `}
 `;
 
-const InfoIcon = styled.i`
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-left: 4px;
-  background: radial-gradient(#fff 45%, ${color('grayscale.300')} 46%);
+const InfoIcon = styled.img`
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
 `;
 
 const TitleRow = styled.div`
@@ -399,46 +397,68 @@ const TitleRow = styled.div`
   margin-top: 6px;
 `;
 
-const Category = styled.h2`
-  ${typo('subtitle1')}
-`;
-
-const RequestDate = styled.span`
-  ${typo('caption2')}
+const Category = styled.div`
+  ${typo('h3')}
   color: ${color('grayscale.600')};
 `;
 
+const RequestDate = styled.div`
+  ${typo('caption1')}
+  color: ${color('grayscale.500')};
+`;
+
 const StepBar = styled.div`
-  margin-top: 10px;
   display: grid;
-  grid-template-columns: 1fr 12px 1fr 12px 1fr 12px 1fr;
+  grid-template-columns: 1fr 25px 1fr 25px 1fr 25px 1fr;
   align-items: center;
 `;
 
 const StepDot = styled.div`
-  ${typo('caption2')}
+  display: flex;
+  box-sizing: border-box;
+  width: 56px;
+  height: 56px;
+
+  ${typo('button3')}
   white-space: pre-line;
   text-align: center;
-  border: 1px dashed ${color('brand.primary')};
-  color: ${p => (p.$active ? color('brand.primary') : color('grayscale.500'))};
-  background: ${p => (p.$active ? color('brand.alpha.10') : '#fff')};
-  padding: 10px 6px;
-  border-radius: 999px;
+  justify-content: center;
+  align-items: center;
+
+  color: ${color('grayscale.800')};
+
+  background: ${color('grayscale.100')};
+  border: 1px ${({ $active }) => ($active ? 'solid' : 'dashed')} ${color('brand.primary')};
+  opacity: ${({ $active }) => ($active ? 1 : 0.4)};
+
+  padding: 10px;
+  border-radius: 50%;
 `;
 
 const StepDivider = styled.div`
   height: 1px;
-  background: ${color('grayscale.300')};
+
+  background: ${color('brand.primary')};
+  opacity: 0.4;
 `;
 
 const GuideBubble = styled.div`
-  ${typo('caption1')}
-  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  box-sizing: border-box;
+  ${typo('body2')}
+  height: 46px;
+  text-align: center;
+
   padding: 10px 12px;
-  border: 1px solid ${color('grayscale.200')};
+  border: 1px solid ${color('grayscale.300')};
   border-radius: 10px;
-  color: ${color('grayscale.700')};
+  color: ${color('grayscale.600')};
 `;
+
+// 섹션 2
 
 const Accordion = styled.section`
   margin-top: ${p => (p.$noTopMargin ? '0' : '14px')};
