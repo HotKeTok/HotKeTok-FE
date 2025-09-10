@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 // 공통 스타일 컴포넌트를 정의합니다.
 
@@ -50,10 +50,9 @@ export const BottomBar = styled.footer`
 /**
  * 템플릿의 최상위 부모 컨테이너입니다.
  */
-export const Page=  styled.section`
-`
+export const Page = styled.section``;
 
 export const ScrollableFullPage = styled.section`
   overflow: auto;
   height: 100dvh;
-`
+`;
