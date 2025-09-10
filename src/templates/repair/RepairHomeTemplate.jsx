@@ -16,7 +16,7 @@ export default function RepairHomeTemplate() {
       <Content>
         <PageHeader leftComponent={'뚝딱'} />
         <RowWrapper>
-          <StatusText>현재 진행중인 수리가 없어요</StatusText>
+          <StatusText>현재 진행중인 수리가 없어요.</StatusText>
           <MoveRepairHistory>{'지난 수리 내역 >'}</MoveRepairHistory>
         </RowWrapper>
         <div style={{ padding: '13px 20px' }}>
