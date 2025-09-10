@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import drillImg from '../../assets/repair/repair-main/Dirll.png';
-import greenCurve from '../../assets/repair/repair-main/greenCurve.svg';
-import { color, typo } from '../../styles/tokens';
-import { Row, Column, Spacer } from '../../styles/flex';
+import drillImg from '../../../assets/repair/repair-home/Dirll.png';
+import greenCurve from '../../../assets/repair/repair-home/greenCurve.svg';
+import { color, typo } from '../../../styles/tokens';
+import { Row, Column, Spacer } from '../../../styles/flex';
 
 export default function RepairBanner() {
   return (
