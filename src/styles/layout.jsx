@@ -6,7 +6,7 @@ import styled from 'styled-components';
 export const CONTAINER_WIDTH = '390px';
 
 // 하단 바를 숨기고 싶은 경로
-export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess'];
+export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/sign-in', '/sign-up', '/initprocess'];
 
 // 하단 바 높이
 export const BOTTOM_BAR_HEIGHT = '74px';

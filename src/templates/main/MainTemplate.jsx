@@ -4,7 +4,7 @@ import SelectHome from '../../components/main/index/SelectHome';
 import { Page } from '../../styles/layout';
 import { typo } from '../../styles/tokens';
 import { Column, Row } from '../../styles/flex';
-import RepairBanner from '../../components/repair/repair-home/RepairBanner';
+import RepairBanner from '../../components/repair/repair-home/RequestBanner';
 import ArrowRight from '../../assets/common/icon-arrow-right.svg?react';
 import { useNavigate } from 'react-router-dom';
 import NoticeBanner from '../../components/main/index/NoticeBanner';
