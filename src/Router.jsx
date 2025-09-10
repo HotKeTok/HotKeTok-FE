@@ -2,15 +2,19 @@
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
+import SignIn from './pages/onboard/SignIn';
+import SignUp from './templates/onboard/SignUpTemplate';
+import InitProcess from './pages/onboard/InitProcess';
+
 import Home from './pages/Home';
+
+import RepairHome from './pages/repair/RepairHome';
+import RequestRepair from './pages/repair/RequestRepair';
+
 import Communication from './pages/Communication';
-import Repair from './pages/repair/Repair';
+
 import MyPage from './pages/MyPage';
 import NavBar from './components/common/NavBar';
-import SignIn from './pages/onboarding/SignIn';
-import SignUp from './templates/onboarding/SignUpTemplate';
-import InitProcess from './pages/onboarding/InitProcess';
-import RequestRepair from './pages/repair/RequestRepair';
 
 // 하단 바를 숨기고 싶은 경로
 const HIDE_BOTTOM_BAR_PATHS = [
@@ -102,7 +106,7 @@ export default function AppRouter() {
           <Route path="/communication" element={<Communication />} />
 
           {/* 뚝딱 */}
-          <Route path="/repair" element={<Repair />} />
+          <Route path="/repair" element={<RepairHome />} />
           <Route path="/request-repair" element={<RequestRepair />} />
 
           {/* 마이페이지 */}

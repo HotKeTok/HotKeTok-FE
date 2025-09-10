@@ -1,5 +1,5 @@
 import React from 'react';
-import SignInTemplate from '../../templates/onboarding/SignInTemplate';
+import SignInTemplate from '../../templates/onboard/SignInTemplate';
 
 export default function SignIn() {
   return (
