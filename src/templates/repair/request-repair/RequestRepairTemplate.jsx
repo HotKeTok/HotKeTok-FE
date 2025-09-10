@@ -15,6 +15,7 @@ import landlordIcon from '../../../assets/repair/request-repair/icon-landlord.sv
 import cameraIcon from '../../../assets/repair/request-repair/icon-camera.svg';
 import iconUnchecked from '../../../assets/repair/request-repair/icon_unchecked.svg';
 import iconChecked from '../../../assets/repair/request-repair/icon_checked.svg';
+import iconSubmit from '../../../assets/repair/request-repair/icon_request-submit.png';
 
 /* =========================================================
  * 공통 상수/유틸
@@ -313,11 +314,11 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
             </DropdownList>
           )}
         </Column>
-
-        <div style={{ height: '40px' }} />
-
-        <Button text="완료하기" active={canComplete} onClick={onNext} />
       </Section>
+      <Spacer />
+      <div style={{ padding: '40px 24px' }}>
+        <Button text="완료하기" active={canComplete} onClick={onNext} />
+      </div>
     </StepWrap>
   );
 }
@@ -329,64 +330,83 @@ function StepReview({ context, onEdit, onSubmit, onBack }) {
   return (
     <StepWrap>
       <TopBar title="수리요청서 작성" onBack={onBack} />
+      <SummarySection>
+        <Row $justify="space-between" style={{ marginBottom: '30px' }}>
+          <Column>
+            <SectionTitle>수리요청서 작성을 완료했어요!</SectionTitle>
+            <Caption1_600>작성한 요청서를 바탕으로 견적서를 받아볼 수 있어요.</Caption1_600>
+          </Column>
+          <EditLink onClick={onEdit}>수정하기</EditLink>
+        </Row>
 
-      <TitleRow>
-        <SummaryTitle>수리요청서 작성을 완료했어요!</SummaryTitle>
-        <EditLink onClick={onEdit}>수정하기</EditLink>
-      </TitleRow>
+        <Column $gap={24}>
+          <Row $justify="space-between">
+            <ItemLabel>수리 분야</ItemLabel>
+            <ItemValue>
+              {context.typeKey
+                ? REPAIR_TYPES.find((t) => t.key === context.typeKey)?.label
+                : context.useAI
+                ? 'AI로 분석 예정'
+                : '미선택'}
+            </ItemValue>
+          </Row>
 
-      <SummaryCard>
-        <SummaryItem>
-          <ItemLabel>수리 분야</ItemLabel>
-          <ItemValue>
-            {context.typeKey
-              ? REPAIR_TYPES.find((t) => t.key === context.typeKey)?.label
-              : context.useAI
-              ? 'AI로 분석 예정'
-              : '미선택'}
-          </ItemValue>
-        </SummaryItem>
+          <Row $justify="space-between">
+            <ItemLabel>수리 희망 날짜</ItemLabel>
+            <ItemValue>
+              {context.dateKey && context.time
+                ? (() => {
+                    const d = new Date(context.dateKey);
+                    return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()} / ${
+                      context.time
+                    }`;
+                  })()
+                : '-'}
+            </ItemValue>
+          </Row>
 
-        <SummaryItem>
-          <ItemLabel>수리 희망 날짜</ItemLabel>
-          <ItemValue>
-            {context.dateKey && context.time
-              ? (() => {
-                  const d = new Date(context.dateKey);
-                  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()} / ${context.time}`;
-                })()
-              : '-'}
-          </ItemValue>
-        </SummaryItem>
+          <Row $justify="space-between">
+            <ItemLabel>비용 부담</ItemLabel>
+            <ItemValue>
+              {context.payer === 'me'
+                ? '본인 부담'
+                : context.payer === 'landlord'
+                ? '집주인 부담'
+                : '-'}
+            </ItemValue>
+          </Row>
 
-        <SummaryItem>
-          <ItemLabel>주소</ItemLabel>
-          <ItemValue>동작 핫케톡 스테이 304호</ItemValue>
-        </SummaryItem>
+          <Row $justify="space-between">
+            <ItemLabel>주소</ItemLabel>
+            <ItemValue>동작 핫케톡 스테이 304호</ItemValue>
+          </Row>
 
-        {!!context.images.length && (
-          <>
-            <ItemLabel style={{ marginTop: 12 }}>증상 사진</ItemLabel>
-            <ThumbGrid>
-              {context.images.map((url, idx) => (
-                <Thumb key={url + idx} style={{ backgroundImage: `url(${url})` }} />
-              ))}
-            </ThumbGrid>
-          </>
-        )}
-
-        <ItemLabel style={{ marginTop: 12 }}>증상 설명</ItemLabel>
-        <DescBox>
-          {context.desc
-            ? context.desc
-            : context.useAI
-            ? 'AI가 작성한 설명이 여기에 표시됩니다.'
-            : '작성된 설명이 없습니다.'}
-        </DescBox>
-      </SummaryCard>
-
-      <Spacer h={12} />
-      <Button text="제출하기" active onClick={onSubmit} />
+          {!!context.images.length && (
+            <Column $gap={6}>
+              <ItemLabel style={{ marginTop: 12 }}>증상 사진</ItemLabel>
+              <ThumbRow>
+                {context.images.map((url, idx) => (
+                  <Thumb key={url + idx} style={{ backgroundImage: `url(${url})` }} />
+                ))}
+              </ThumbRow>
+            </Column>
+          )}
+          <Column $gap={8}>
+            <ItemLabel>증상 설명</ItemLabel>
+            <DescBox>
+              {context.desc
+                ? context.desc
+                : context.useAI
+                ? 'AI가 작성한 설명이 여기에 표시됩니다.'
+                : '작성된 설명이 없습니다.'}
+            </DescBox>
+          </Column>
+        </Column>
+      </SummarySection>
+      <Spacer />
+      <div style={{ padding: '40px 24px' }}>
+        <Button text="제출하기" active onClick={onSubmit} />
+      </div>
     </StepWrap>
   );
 }
@@ -394,16 +414,24 @@ function StepReview({ context, onEdit, onSubmit, onBack }) {
 /* =========================================================
  * STEP 4: 완료
  * ======================================================= */
-function StepDone({ onHome, onBack }) {
+function StepDone({ onHome }) {
   return (
-    <SuccessWrap>
-      <TopBar title="" onBack={onBack} />
-      <Emoji>📝✅</Emoji>
-      <SuccessTitle>수리 요청서를 제출했어요!</SuccessTitle>
-      <SuccessSub>작성한 요청서를 바탕으로 견적서를 받으면 알림드릴게요.</SuccessSub>
-      <Spacer h={12} />
-      <Button text="홈으로 돌아가기" active onClick={onHome} />
-    </SuccessWrap>
+    <StepWrap>
+      <Spacer />
+      <Column $center={true} $gap={20}>
+        <SubmitIcon src={iconSubmit} />
+        <SuccessTitle>수리 요청서를 제출했어요!</SuccessTitle>
+        <SuccessSub>
+          작성한 요청서를 바탕으로
+          <br />
+          견적서를 받으면 알림을 보내드릴게요.
+        </SuccessSub>
+      </Column>
+      <Spacer />
+      <div style={{ padding: '40px 24px' }}>
+        <Button text="홈으로 돌아가기" active onClick={onHome} />
+      </div>
+    </StepWrap>
   );
 }
 
@@ -585,6 +613,7 @@ const ThumbGrid = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
 `;
+
 const Thumb = styled.div`
   position: relative;
   height: 80px;
@@ -593,6 +622,7 @@ const Thumb = styled.div`
   background-position: center;
   border-radius: 6x;
   overflow: hidden;
+  border-radius: 6px;
 `;
 
 const RemoveBtn = styled.button`
@@ -736,71 +766,52 @@ const TimeItem = styled.li`
     `}
 `;
 
-const TitleRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-`;
-const SummaryTitle = styled.h2`
-  ${typo('title2')};
-  color: ${color('grayscale.900')};
-`;
-const EditLink = styled.button`
-  ${typo('body2')};
-  color: ${color('brand.secondary') || '#2A7BF4'};
-  border: none;
-  background: transparent;
-  text-decoration: underline;
+// STEP 3 관련 스타일
+
+const EditLink = styled.div`
+  ${typo('button2')};
+  color: #3c66ff;
   cursor: pointer;
 `;
-const SummaryCard = styled.div`
-  border: 1px solid ${color('grayscale.200')};
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
+const SummarySection = styled.div`
+  padding: 30px 24px;
 `;
-const SummaryItem = styled.div`
-  display: grid;
-  grid-template-columns: 92px 1fr;
-  gap: 8px;
-  & + & {
-    margin-top: 8px;
-  }
-`;
+
 const ItemLabel = styled.div`
-  ${typo('caption1')};
-  color: ${color('grayscale.600')};
+  ${typo('button2')};
+  color: ${color('grayscale.800')};
 `;
 const ItemValue = styled.div`
   ${typo('body2')};
-  color: ${color('grayscale.900')};
+  color: ${color('grayscale.600')};
 `;
 const DescBox = styled.div`
   ${typo('body2')};
   color: ${color('grayscale.800')};
-  background: ${color('grayscale.050')};
+  background: ${color('grayscale.100')};
   border: 1px solid ${color('grayscale.200')};
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: 6px;
+  padding: 13px 15px;
 `;
 
-const SuccessWrap = styled.div`
-  width: 390px;
-  padding: 40px 16px 48px;
+const ThumbRow = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  justify-content: flex-end; /* ✅ 오른쪽 정렬 */
+  gap: 6px;
+  flex-wrap: wrap; /* 폭이 모자라면 다음 줄로 */
 `;
-const Emoji = styled.div`
-  font-size: 48px;
-  margin: 12px 0 8px;
+
+// STEP 4
+
+const SubmitIcon = styled.img`
+  width: 90px;
 `;
 const SuccessTitle = styled.div`
-  ${typo('title2')};
-  color: ${color('grayscale.900')};
+  ${typo('h3')};
+  color: ${color('grayscale.800')};
 `;
 const SuccessSub = styled.div`
   ${typo('body2')};
-  color: ${color('grayscale.600')};
+  color: ${color('grayscale.800')};
+  text-align: center;
 `;
