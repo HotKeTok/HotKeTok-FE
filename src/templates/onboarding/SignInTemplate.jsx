@@ -1,10 +1,10 @@
 import React from 'react';
-import Logo from '../assets/common/BrandLogo.png';
+import Logo from '../../assets/common/BrandLogo.png';
 import styled from 'styled-components';
-import { color, typo } from '../styles/tokens';
-import { Column } from '../styles/flex';
-import TextField from '../components/common/TextField';
-import Button from '../components/common/Button';
+import { color, typo } from '../../styles/tokens';
+import { Column } from '../../styles/flex';
+import TextField from '../../components/common/TextField';
+import Button from '../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
 
 export default function SignInTemplate() {

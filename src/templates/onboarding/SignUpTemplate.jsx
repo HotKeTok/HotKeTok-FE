@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import TopBar from '../components/common/TopBar';
+import TopBar from '../../components/common/TopBar';
 import styled from 'styled-components';
-import { color, typo } from '../styles/tokens';
-import TextField from '../components/common/TextField';
-import { Column, Row, Spacer } from '../styles/flex';
-import ButtonSmall from '../components/common/ButtonSmall';
-import Button from '../components/common/Button';
-import CheckPasswordIcon from '../assets/common/icon-check-password.svg';
-import HidePasswordIcon from '../assets/common/icon-hide-password.svg';
+import { color, typo } from '../../styles/tokens';
+import TextField from '../../components/common/TextField';
+import { Column, Row, Spacer } from '../../styles/flex';
+import ButtonSmall from '../../components/common/ButtonSmall';
+import Button from '../../components/common/Button';
+import CheckPasswordIcon from '../../assets/common/icon-check-password.svg';
+import HidePasswordIcon from '../../assets/common/icon-hide-password.svg';
 
 /** ---------------------------
  * 유틸: 휴대폰 번호 포맷터 (010-1234-5678)

@@ -7,9 +7,9 @@ import Communication from './pages/Communication';
 import Repair from './pages/repair/Repair';
 import MyPage from './pages/MyPage';
 import NavBar from './components/common/NavBar';
-import SignIn from './pages/SignIn';
-import SignUp from './templates/SignUpTemplate';
-import InitProcess from './pages/InitProcess';
+import SignIn from './pages/onboarding/SignIn';
+import SignUp from './templates/onboarding/SignUpTemplate';
+import InitProcess from './pages/onboarding/InitProcess';
 import RequestRepair from './pages/repair/RequestRepair';
 
 // 하단 바를 숨기고 싶은 경로

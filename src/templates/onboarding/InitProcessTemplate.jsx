@@ -3,16 +3,16 @@ import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
 
-import TopBar from '../components/common/TopBar';
-import { color, typo } from '../styles/tokens';
-import { Row, Column, Spacer } from '../styles/flex';
-import TextField from '../components/common/TextField';
-import Button from '../components/common/Button';
-import ButtonSmall from '../components/common/ButtonSmall';
-import ModeItem from '../components/common/ModeItem';
+import TopBar from '../../components/common/TopBar';
+import { color, typo } from '../../styles/tokens';
+import { Row, Column, Spacer } from '../../styles/flex';
+import TextField from '../../components/common/TextField';
+import Button from '../../components/common/Button';
+import ButtonSmall from '../../components/common/ButtonSmall';
+import ModeItem from '../../components/common/ModeItem';
 import { useNavigate } from 'react-router-dom';
 
-import iconCheck from '../assets/repair/request-repair/icon_big-check.png';
+import iconCheck from '../../assets/repair/request-repair/icon_big-check.png';
 
 /* =========================================================
  * 모의 주소 검색 (실서비스에서는 API로 교체)
