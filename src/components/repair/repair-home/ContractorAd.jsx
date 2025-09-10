@@ -80,24 +80,21 @@ function CompanyCard({ category, name, rating, reviewCount, phone, address, imag
  * 가로 스크롤 캐러셀
  * - props.companies 가 없으면 MOCK_COMPANIES 사용
  * ======================================= */
-export default function CompanyAd({ companies = MOCK_COMPANIES }) {
+export default function ContractorAd({ companies = MOCK_COMPANIES }) {
   return (
-    <CarouselWrapper>
+    <div>
       <HorizontalList role="list" aria-label="수리 업체 목록">
         {companies.map(c => (
           <CompanyCard key={c.id} {...c} />
         ))}
       </HorizontalList>
-    </CarouselWrapper>
+    </div>
   );
 }
 
 /* =========================================
  * Styled
  * ======================================= */
-const CarouselWrapper = styled.div`
-  padding: 0 24px;
-`;
 
 const HorizontalList = styled.div`
   display: grid;
@@ -127,6 +124,7 @@ const Card = styled.div`
   grid-template-rows: 1fr 160px;
   max-height: 276px;
   width: 220px;
+  cursor: pointer;
 `;
 
 const CardBody = styled.div`
