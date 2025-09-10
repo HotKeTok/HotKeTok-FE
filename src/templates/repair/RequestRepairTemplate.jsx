@@ -3,18 +3,18 @@ import styled, { css, keyframes } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
-import TopBar from '../../../components/common/TopBar';
-import ModeItem from '../../../components/common/ModeItem';
-import Button from '../../../components/common/Button';
-import { Row, Column, Spacer } from '../../../styles/flex';
-import { color, typo } from '../../../styles/tokens';
+import TopBar from '../../components/common/TopBar';
+import ModeItem from '../../components/common/ModeItem';
+import Button from '../../components/common/Button';
+import { Row, Column, Spacer } from '../../styles/flex';
+import { color, typo } from '../../styles/tokens';
 
-import meIcon from '../../../assets/repair/request-repair/icon-me.svg';
-import landlordIcon from '../../../assets/repair/request-repair/icon-landlord.svg';
-import cameraIcon from '../../../assets/repair/request-repair/icon-camera.svg';
-import iconUnchecked from '../../../assets/repair/request-repair/icon_unchecked.svg';
-import iconChecked from '../../../assets/repair/request-repair/icon_checked.svg';
-import iconSubmit from '../../../assets/repair/request-repair/icon_request-submit.png';
+import meIcon from '../../assets/repair/request-repair/icon-me.svg';
+import landlordIcon from '../../assets/repair/request-repair/icon-landlord.svg';
+import cameraIcon from '../../assets/repair/request-repair/icon-camera.svg';
+import iconUnchecked from '../../assets/repair/request-repair/icon_unchecked.svg';
+import iconChecked from '../../assets/repair/request-repair/icon_checked.svg';
+import iconSubmit from '../../assets/repair/request-repair/icon_request-submit.png';
 
 /* =========================================================
  * 공통 상수/유틸

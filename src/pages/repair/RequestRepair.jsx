@@ -1,5 +1,5 @@
 import React from 'react';
-import RequestRepairTemplate from '../../../templates/repair/request-repair/RequestRepairTemplate';
+import RequestRepairTemplate from '../../templates/repair/RequestRepairTemplate';
 
 export default function RequestRepair() {
   return (
