@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
+<<<<<<< HEAD
 import SignIn from './pages/onboard/SignIn';
 import SignUp from './templates/onboard/SignUpTemplate';
 import InitProcess from './pages/onboard/InitProcess';
@@ -61,6 +62,29 @@ const BottomBar = styled.div`
   border-top: 1px solid #eee;
   z-index: 100;
 `;
+=======
+// 로그인 관련
+import SignIn from './pages/SignIn';
+import SignUp from './templates/SignUpTemplate';
+import InitProcess from './pages/InitProcess';
+// main 관련
+import Main from './pages/main/index'
+import Bills from './pages/main/Bills'
+import Notice from './pages/main/Notice'
+import NoticeDetail from './pages/main/NoticeDetail'
+import Alarm from './pages/main/Alarm'
+// 뚝딱 관련
+import Repair from './pages/Repair'
+// 똑똑 관련
+import Communication from './pages/Communication'
+// 마이 관련
+import MyPage from './pages/MyPage'
+// 컴포넌트
+import NavBar from './components/common/NavBar'
+import IndexWelcome from './pages/main/IndexWelcome';
+
+import { AppShell, MainContainer, BottomBar, HIDE_BOTTOM_BAR_PATHS, BOTTOM_BAR_HEIGHT } from './styles/layout';
+>>>>>>> develop
 
 const Layout = () => {
   const { pathname } = useLocation();
@@ -77,9 +101,9 @@ const Layout = () => {
 
   return (
     <AppShell $bg={bgColor}>
-      <Main $hasBar={!hideBar}>
+      <MainContainer $hasBar={!hideBar}>
         <Outlet />
-      </Main>
+      </MainContainer>
       {!hideBar && (
         <BottomBar>
           <NavBar />
@@ -94,6 +118,7 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
+<<<<<<< HEAD
           {/* 메인페이지 */}
           <Route path="/" element={<Home />} />
 
@@ -103,6 +128,16 @@ export default function AppRouter() {
           <Route path="/init-process" element={<InitProcess />} />
 
           {/* 똑똑 */}
+=======
+          <Route path="/signIn" element={<SignIn />} />
+          <Route path="/signUp" element={<SignUp />} />
+          <Route path="/" element={<Main />} />
+          <Route path="/welcome" element={<IndexWelcome />} />
+          <Route path="/main/bills" element={<Bills />} />
+          <Route path="/main/alarm" element={<Alarm />} />
+          <Route path="/main/notice" element={<Notice />} />
+          <Route path="/main/notice/:id" element={<NoticeDetail />} />
+>>>>>>> develop
           <Route path="/communication" element={<Communication />} />
 
           {/* 뚝딱 */}

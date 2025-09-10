@@ -32,7 +32,7 @@ export const theme = {
             'line-height' :'26px',
         },
         subtitle1: {
-            'font-family' : 'Pretendard-Medium',
+            'font-family' : 'Pretendard-Bold',
             'font-size' : '16px',
             'line-height' :'22px',
         },

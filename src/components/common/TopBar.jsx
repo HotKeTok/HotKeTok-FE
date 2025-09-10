@@ -29,6 +29,7 @@ export default function TopBar({ title, onBack }) {
 const Container = styled.div`
   width: 100%;
   padding-top: 52px;
+  background-color: white;
 `;
 
 const BackButtonWrapper = styled.div`
