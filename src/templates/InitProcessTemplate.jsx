@@ -1,6 +1,6 @@
 // src/pages/InitProcess.jsx
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
 
 import TopBar from '../components/common/TopBar';
@@ -44,6 +44,16 @@ function mockSearchAddresses(keyword) {
       jibun: '역삼동 23-5',
     },
   ];
+}
+
+function ProgressBar({ value = 0 }) {
+  return (
+    <div>
+      <ProgressTrack>
+        <ProgressFill $value={value} />
+      </ProgressTrack>
+    </div>
+  );
 }
 
 /* =========================================================
@@ -508,10 +518,15 @@ const PlaceholderSquare = styled.div`
   background: ${color('grayscale.200')};
 `;
 
+// 애니메이션
+const fadeUp = keyframes`
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+`;
+
 const FadeInWrap = styled.div`
-  opacity: ${({ $show }) => ($show ? 1 : 0)};
-  transform: translateY(${({ $show }) => ($show ? '0px' : '6px')});
-  transition: opacity 240ms ease, transform 240ms ease;
+  animation: ${fadeUp} 700ms ease both; /* 나타나는 속도 */
+  animation-delay: 800ms; /* 아이콘/텍스트 뜬 후 '조금 있다가' */
 `;
 
 /* 진행바 */
@@ -527,13 +542,3 @@ const ProgressFill = styled.div`
   background: ${color('brand.primary')};
   transition: width 220ms ease;
 `;
-
-function ProgressBar({ value = 0 }) {
-  return (
-    <div>
-      <ProgressTrack>
-        <ProgressFill $value={value} />
-      </ProgressTrack>
-    </div>
-  );
-}

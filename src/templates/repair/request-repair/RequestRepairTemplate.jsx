@@ -1,6 +1,5 @@
-// src/pages/RequestRepair.jsx
 import React, { useMemo, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -429,7 +428,9 @@ function StepDone({ onHome }) {
       </Column>
       <Spacer />
       <div style={{ padding: '40px 24px' }}>
-        <Button text="홈으로 돌아가기" active onClick={onHome} />
+        <FadeInWrap>
+          <Button text="홈으로 돌아가기" active onClick={onHome} />
+        </FadeInWrap>
       </div>
     </StepWrap>
   );
@@ -803,15 +804,38 @@ const ThumbRow = styled.div`
 
 // STEP 4
 
+const popBounce = keyframes`
+  0%   { transform: scale(0.6) rotate(-6deg); opacity: 0; }
+  60%  { transform: scale(1.08) rotate(2deg);  opacity: 1; }
+  80%  { transform: scale(0.98) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0deg); }
+`;
+
+const fadeUp = keyframes`
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+`;
+
 const SubmitIcon = styled.img`
   width: 90px;
+  animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both; /* mount 시 1회 재생 */
+  will-change: transform, opacity;
 `;
 const SuccessTitle = styled.div`
   ${typo('h3')};
   color: ${color('grayscale.800')};
+  animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both; /* mount 시 1회 재생 */
+  will-change: transform, opacity;
+  animation: ${fadeUp} 360ms ease 80ms both;
 `;
 const SuccessSub = styled.div`
   ${typo('body2')};
   color: ${color('grayscale.800')};
   text-align: center;
+  animation: ${fadeUp} 360ms ease 120ms both;
+`;
+
+const FadeInWrap = styled.div`
+  animation: ${fadeUp} 700ms ease both; /* 나타나는 속도 */
+  animation-delay: 800ms; /* 아이콘/텍스트 뜬 후 '조금 있다가' */
 `;
