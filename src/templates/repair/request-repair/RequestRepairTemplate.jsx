@@ -140,7 +140,6 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
   // 수리 분야 선택 섹션을 재사용 가능하게 분리
   const TypePickerSection = ({ note }) => (
     <Column $gap={6}>
-      <Caption2_800>수리 분야</Caption2_800>
       {note ? <Caption1_600 style={{ marginBottom: 8 }}>{note}</Caption1_600> : null}
 
       <TypeGrid>
@@ -160,13 +159,56 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
       </TypeGrid>
     </Column>
   );
+  // 사진 업로드 구역
+  const ImgUploadSection = () => (
+    <Column $gap={6}>
+      <Caption2_800>증상 사진</Caption2_800>
+      <ThumbGrid>
+        {draft.images.map((url) => (
+          <Thumb key={url} style={{ backgroundImage: `url(${url})` }}>
+            <RemoveBtn
+              onClick={() => setDraft((p) => ({ ...p, images: p.images.filter((u) => u !== url) }))}
+            >
+              ×
+            </RemoveBtn>
+          </Thumb>
+        ))}
+        {draft.images.length < 8 && (
+          <UploadBox>
+            <label htmlFor="repair-photos" className="uploader">
+              <CameraIcon src={cameraIcon} alt="카메라 아이콘" />
+              <UploadText>사진 {draft.images.length}/8</UploadText>
+            </label>
+            <input
+              id="repair-photos"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                const arr = Array.from(e.target.files);
+                const remain = Math.max(0, 8 - draft.images.length);
+                const next = arr.slice(0, remain).map((f) => URL.createObjectURL(f));
+                if (arr.length > remain) alert('사진은 최대 8장까지 첨부할 수 있어요.');
+                setDraft((p) => ({ ...p, images: [...p.images, ...next] }));
+              }}
+            />
+          </UploadBox>
+        )}
+      </ThumbGrid>
+    </Column>
+  );
+
   return (
     <StepWrap>
       <TopBar title="수리요청서 작성" onBack={onBack} />
 
       <HeaderToggle>
-        <Row $gap={12} style={{ alignItems: 'center' }}>
-          <SectionTitle>AI로 작성하기</SectionTitle>
+        <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <Column>
+            <SectionTitle>AI로 작성하기</SectionTitle>
+            <Caption1_800>사진 한 장으로 간편하게 요청서를 완성해보세요.</Caption1_800>
+          </Column>
+
           <ToggleSwitch
             $on={draft.useAI}
             onClick={() => setDraft((p) => ({ ...p, useAI: !p.useAI }))}
@@ -174,61 +216,45 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
             <span />
           </ToggleSwitch>
         </Row>
-        <Caption1_800>사진을 업로드하면 AI가 수리분야와 증상 설명을 도와드려요.</Caption1_800>
       </HeaderToggle>
 
-      {/* ❗️AI OFF일 때는 수리분야를 사진 섹션 '위'에서 노출 */}
-      {!draft.useAI && <TypePickerSection />}
-
-      {/* 사진 업로드 */}
       <Section>
-        <Column $gap={2}>
-          <SectionTitle>증상 사진을 업로드 해주세요.</SectionTitle>
-          <Caption1_600 style={{ marginBottom: '12px' }}>
-            AI가 증상을 분석하고 요청서를 완성해드릴게요.
-          </Caption1_600>
-        </Column>
-        <Gap20Wrapper>
-          <Column $gap={6}>
-            <Caption2_800>증상 사진</Caption2_800>
-            <ThumbGrid>
-              {draft.images.map((url) => (
-                <Thumb key={url} style={{ backgroundImage: `url(${url})` }}>
-                  <RemoveBtn
-                    onClick={() =>
-                      setDraft((p) => ({ ...p, images: p.images.filter((u) => u !== url) }))
-                    }
-                  >
-                    ×
-                  </RemoveBtn>
-                </Thumb>
-              ))}
-              {draft.images.length < 8 && (
-                <UploadBox>
-                  <label htmlFor="repair-photos" className="uploader">
-                    <CameraIcon src={cameraIcon} alt="카메라 아이콘" />
-                    <UploadText>사진 {draft.images.length}/8</UploadText>
-                  </label>
-                  <input
-                    id="repair-photos"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => {
-                      const arr = Array.from(e.target.files);
-                      const remain = Math.max(0, 8 - draft.images.length);
-                      const next = arr.slice(0, remain).map((f) => URL.createObjectURL(f));
-                      if (arr.length > remain) alert('사진은 최대 8장까지 첨부할 수 있어요.');
-                      setDraft((p) => ({ ...p, images: [...p.images, ...next] }));
-                    }}
-                  />
-                </UploadBox>
-              )}
-            </ThumbGrid>
-          </Column>
-
+        {/* ❗️AI OFF일 때는 수리분야를 사진 섹션 '위'에서 노출 */}
+        {!draft.useAI && (
+          <div>
+            <SectionTitle style={{ marginBottom: '20px' }}>
+              어떤 분야의 견적을 받고 싶으신가요?
+            </SectionTitle>
+            <TypePickerSection />
+            <SectionTitle style={{ marginTop: '40px' }}>
+              증상 및 불편한 점을 알려주세요.
+            </SectionTitle>
+            <Caption1_600 style={{ marginBottom: '12px' }}>
+              상세하게 적으면 더 정확한 견적을 받아볼 수 있어요!
+            </Caption1_600>
+            <ImgUploadSection />
+            <div style={{ height: '12px' }} />
+          </div>
+        )}
+        <Column $gap={20}>
           {/* ✅ AI ON일 때는 수리분야를 사진 섹션 '아래'에서 노출 (선택 가능, 선택 시 요약에 반영) */}
-          {draft.useAI && <TypePickerSection />}
+          {draft.useAI && (
+            <div>
+              <Column $gap={2}>
+                <SectionTitle>증상 사진을 업로드 해주세요.</SectionTitle>
+                <Caption1_600 style={{ marginBottom: '12px' }}>
+                  AI가 증상을 분석하고 요청서를 완성해드릴게요.
+                </Caption1_600>
+              </Column>
+              <Column $gap={20}>
+                <ImgUploadSection />
+                <Column $gap={6}>
+                  <Caption2_800>수리 분야</Caption2_800>
+                  <TypePickerSection />
+                </Column>
+              </Column>
+            </div>
+          )}
 
           {/* 설명 */}
           <Column $gap={6}>
@@ -240,7 +266,7 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
             />
             <CharCount $over={draft.desc.length >= 300}>{draft.desc.length} / 300</CharCount>
           </Column>
-        </Gap20Wrapper>
+        </Column>
 
         <div style={{ height: '40px' }} />
 
@@ -447,7 +473,7 @@ const StepWrap = styled.div`
   min-height: 100vh;
 `;
 const Section = styled.section`
-  padding: 16px 24px;
+  padding: 24px 24px;
 `;
 const SectionTitle = styled.h3`
   ${typo('subtitle1')};
@@ -476,23 +502,31 @@ const SubBullets = styled.ul`
 
 // STEP 2
 
-const Gap20Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
-
 const HeaderToggle = styled.div`
-  background: ${color('grayscale.200')};
-  padding: 12px;
+  background: linear-gradient(90deg, #92ffcc 0%, #5cff9a 50.06%, #3dc279 100%);
+  padding: 13px 24px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 `;
 
-const Helper = styled.div`
-  ${typo('subtitle2')};
-  color: ${color('grayscale.900')};
+const ToggleSwitch = styled.div`
+  width: 52px;
+  height: 28px;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  background: ${(p) => (p.$on ? color('grayscale.700') : color('grayscale.300'))};
+  span {
+    position: absolute;
+    top: 3px;
+    left: ${(p) => (p.$on ? '26px' : '3px')};
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left 0.2s ease;
+  }
 `;
 
 const Caption1_600 = styled.div`
@@ -510,29 +544,10 @@ const Caption2_800 = styled.div`
   color: ${color('grayscale.800')};
 `;
 
-const ToggleSwitch = styled.div`
-  width: 52px;
-  height: 28px;
-  border-radius: 999px;
-  position: relative;
-  cursor: pointer;
-  background: ${(p) => (p.$on ? color('brand.primary') : color('grayscale.300'))};
-  span {
-    position: absolute;
-    top: 3px;
-    left: ${(p) => (p.$on ? '26px' : '3px')};
-    width: 22px;
-    height: 22px;
-    background: #fff;
-    border-radius: 50%;
-    transition: left 0.2s ease;
-  }
-`;
-
 const TypeGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  row-gap: 12px;
+  row-gap: 8px;
   column-gap: 16px;
 `;
 
