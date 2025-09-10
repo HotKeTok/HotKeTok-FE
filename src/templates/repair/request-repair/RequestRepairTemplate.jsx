@@ -821,6 +821,7 @@ const SubmitIcon = styled.img`
   animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both; /* mount 시 1회 재생 */
   will-change: transform, opacity;
 `;
+
 const SuccessTitle = styled.div`
   ${typo('h3')};
   color: ${color('grayscale.800')};

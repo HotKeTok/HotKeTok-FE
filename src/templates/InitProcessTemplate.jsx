@@ -12,6 +12,8 @@ import ButtonSmall from '../components/common/ButtonSmall';
 import ModeItem from '../components/common/ModeItem';
 import { useNavigate } from 'react-router-dom';
 
+import iconCheck from '../assets/repair/request-repair/icon_big-check.png';
+
 /* =========================================================
  * 모의 주소 검색 (실서비스에서는 API로 교체)
  * ======================================================= */
@@ -291,9 +293,9 @@ function StepReview({ baseAddress, dong, ho, detail }) {
   return (
     <PageWrap>
       <ContentWrapCentered>
-        <PlaceholderSquare />
-        <InfoKey>인증이 요청되었어요!</InfoKey>
-        <Desc>인증이 완료되면 알림을 보내드릴게요!</Desc>
+        <SubmitIcon src={iconCheck} />
+        <SuccessTitle>인증이 요청되었어요!</SuccessTitle>
+        <SuccessSub>인증이 완료되면 알림을 보내드릴게요!</SuccessSub>
       </ContentWrapCentered>
 
       <div style={{ padding: '30px 24px' }}>
@@ -407,16 +409,6 @@ const Label = styled.div`
   color: ${color('grayscale.500')};
 `;
 
-const BottomBarWrap = styled.div`
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 16px 20px 16px;
-  background: ${color('grayscale.0')};
-  border-top: 1px solid ${color('grayscale.200')};
-`;
-
 const CardTitle = styled.div`
   ${typo('h3')};
   color: ${color('grayscale.900')};
@@ -522,6 +514,33 @@ const PlaceholderSquare = styled.div`
 const fadeUp = keyframes`
   from { transform: translateY(8px); opacity: 0; }
   to   { transform: translateY(0);   opacity: 1; }
+`;
+
+const popBounce = keyframes`
+  0%   { transform: scale(0.6) rotate(-6deg); opacity: 0; }
+  60%  { transform: scale(1.08) rotate(2deg);  opacity: 1; }
+  80%  { transform: scale(0.98) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0deg); }
+`;
+
+const SubmitIcon = styled.img`
+  width: 90px;
+  animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both; /* mount 시 1회 재생 */
+  will-change: transform, opacity;
+`;
+
+const SuccessTitle = styled.div`
+  ${typo('h3')};
+  color: ${color('grayscale.800')};
+  animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both; /* mount 시 1회 재생 */
+  will-change: transform, opacity;
+  animation: ${fadeUp} 360ms ease 80ms both;
+`;
+const SuccessSub = styled.div`
+  ${typo('body2')};
+  color: ${color('grayscale.800')};
+  text-align: center;
+  animation: ${fadeUp} 360ms ease 120ms both;
 `;
 
 const FadeInWrap = styled.div`
