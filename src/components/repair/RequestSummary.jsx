@@ -20,10 +20,6 @@ import { color, typo } from '../../styles/tokens';
  *   }
  * - address: string (요약에 표시할 주소)
  * - repairTypes: Array<{ key: string, label: string }>
- * - headingTitle?: string (상단 타이틀)
- * - headingSub?: string (상단 서브텍스트)
- * - showEdit?: boolean (우측 상단 '수정하기' 노출 여부)
- * - onEdit?: () => void
  */
 export default function RequestSummary({ context, address, repairTypes = [] }) {
   const typeLabel = useMemo(() => {
@@ -55,7 +51,7 @@ export default function RequestSummary({ context, address, repairTypes = [] }) {
   const desc = context?.desc || '';
 
   return (
-    <SummarySection>
+    <>
       <Column $gap={24}>
         <Row $justify="space-between">
           <ItemLabel>수리 분야</ItemLabel>
@@ -99,34 +95,11 @@ export default function RequestSummary({ context, address, repairTypes = [] }) {
           </DescBox>
         </Column>
       </Column>
-    </SummarySection>
+    </>
   );
 }
 
 /* ===================== 스타일 ===================== */
-const SummarySection = styled.div``;
-
-const SectionTitle = styled.h3`
-  ${typo('subtitle1')};
-  color: ${color('grayscale.800')};
-  margin: 0;
-`;
-
-const Caption1_600 = styled.div`
-  ${typo('caption1')};
-  color: ${color('grayscale.600')};
-`;
-
-const EditLink = styled.div`
-  ${typo('button2')};
-  color: #3c66ff;
-  cursor: pointer;
-  user-select: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
 
 const ItemLabel = styled.div`
   ${typo('button2')};

@@ -5,6 +5,8 @@ import TopBar from '../../components/common/TopBar';
 import Button from '../../components/common/Button';
 import ButtonSmall from '../../components/common/ButtonSmall';
 import ButtonRound from '../../components/common/ButtonRound';
+import RequestSummary from '../../components/repair/RequestSummary';
+
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 
@@ -197,38 +199,23 @@ export default function RepairProgressTemplate() {
 
         {openRequest && (
           <AccordionBody>
-            <KeyValue>
-              <dt>수리 분야</dt>
-              <dd>{request.categoryLabel}</dd>
-            </KeyValue>
-            <KeyValue>
-              <dt>수리 희망 날짜</dt>
-              <dd>{request.hopeAt}</dd>
-            </KeyValue>
-            <KeyValue>
-              <dt>비용 부담</dt>
-              <dd>{request.payerLabel}</dd>
-            </KeyValue>
-            <KeyValue>
-              <dt>주소</dt>
-              <dd>{request.address}</dd>
-            </KeyValue>
-            <KeyValue $column>
-              <dt>증상 사진</dt>
-              <dd>
-                <Row $gap={8}>
-                  {request.images.map((src, i) => (
-                    <Thumb key={i} src={src} alt={`thumb-${i}`} />
-                  ))}
-                </Row>
-              </dd>
-            </KeyValue>
-            <KeyValue $column>
-              <dt>증상 설명</dt>
-              <dd>
-                <Note>{request.description}</Note>
-              </dd>
-            </KeyValue>
+            <RequestSummary
+              context={{
+                // 수리 분야: 키/라벨 매핑
+                typeKey: 'etc',
+                // 날짜/시간: "YYYY.MM.DD / 오전 12:30" → dateKey/time 로 분리
+                dateKey: request.hopeAt.split('/')[0].trim().replace(/\./g, '-'), // "2024-11-20"
+                time: request.hopeAt.split('/')[1]?.trim() || '', // "오전 12:30"
+                // 비용 부담: 모드 → me/landlord
+                payer: mode === COST_MODE.SELF ? 'me' : 'landlord',
+                images: request.images,
+                desc: request.description,
+                useAI: false,
+              }}
+              address={request.address}
+              // 라벨 테이블 (typeKey ↔ label)
+              repairTypes={[{ key: 'etc', label: request.categoryLabel }]}
+            />
           </AccordionBody>
         )}
       </Accordion>
@@ -236,8 +223,10 @@ export default function RepairProgressTemplate() {
       {/* 단계별 섹션 */}
       {step === STEP.FINDING && (
         <EmptyQuotes>
-          <EmptyTitle>받은 견적</EmptyTitle>
-          <EmptyBox>아직 견적서가 도착하지 않았어요.</EmptyBox>
+          <EmptyBox>
+            <AccordionTitle>받은 견적</AccordionTitle>
+            <Caption1_600>아직 견적서가 도착하지 않았어요.</Caption1_600>
+          </EmptyBox>
         </EmptyQuotes>
       )}
 
@@ -490,8 +479,8 @@ const SmallHint = styled.span`
 `;
 
 const Chevron = styled.i`
-  width: 18px;
-  height: 18px;
+  width: 6px;
+  height: 6px;
   display: inline-block;
   border-right: 2px solid ${color('grayscale.500')};
   border-bottom: 2px solid ${color('grayscale.500')};
@@ -500,7 +489,7 @@ const Chevron = styled.i`
 `;
 
 const AccordionBody = styled.div`
-  padding: 14px;
+  padding: 16px 24px;
   background: #fff;
 `;
 
@@ -534,28 +523,22 @@ const Thumb = styled.img`
 const Note = styled.div`
   ${typo('body2')}
   padding: 10px 12px;
-  background: ${color('grayscale.50')};
   border: 1px solid ${color('grayscale.200')};
   border-radius: 8px;
   color: ${color('grayscale.700')};
 `;
 
 const EmptyQuotes = styled.div`
-  margin-top: 14px;
+  margin-top: 10px;
 `;
 
-const EmptyTitle = styled.h3`
-  ${typo('body2')}
-  margin: 0 0 8px 2px;
+const Caption1_600 = styled.div`
+  ${typo('caption1')}
+  color: ${color('grayscale.600')};
 `;
 
 const EmptyBox = styled.div`
-  ${typo('caption1')}
-  border: 1px dashed ${color('grayscale.300')};
-  color: ${color('grayscale.600')};
-  padding: 24px 12px;
-  border-radius: 10px;
-  text-align: center;
+  padding: 16px 24px;
   background: #fff;
 `;
 
