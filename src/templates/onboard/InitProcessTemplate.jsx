@@ -129,7 +129,7 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
             <TextField
               placeholder="예) 판교역로 235, 도산대로 33"
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={e => setKeyword(e.target.value)}
             />
             <ButtonSmall text="검색" width="30%" active={!!keyword.trim()} onClick={handleSearch} />
           </Row>
@@ -154,7 +154,7 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
 
         {!showExamples && results.length > 0 && (
           <ListWrap style={{ marginTop: 16 }}>
-            {results.map((a) => (
+            {results.map(a => (
               <AddressCard key={a.id} onClick={() => onPick(a)}>
                 <Column $gap={10}>
                   <Addr>
@@ -208,7 +208,7 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
           <TextField
             placeholder="예) 101동 101호"
             value={detail}
-            onChange={(e) => setDetail(e.target.value)}
+            onChange={e => setDetail(e.target.value)}
           />
           <Label style={{ color: '#3C66FF' }}>* 상세주소를 반드시 확인해 주세요.</Label>
         </Column>
@@ -315,7 +315,7 @@ export default function InitProcess() {
     id: 'init-process',
     initial: { step: 'Role', context: {} },
     steps: {}, // (문서 권장) 명시적 스텝 테이블 없이 Render 매핑 사용
-    routes: (step) => `/init/${step}`, // URL 싱크 (예: /init/Role, /init/AddressKeyword, ...)
+    routes: step => `/init/${step}`, // URL 싱크 (예: /init/Role, /init/AddressKeyword, ...)
   });
 
   return (
@@ -323,7 +323,7 @@ export default function InitProcess() {
       /* STEP 1: 모드 선택 */
       Role={({ history }) => (
         <StepRole
-          onNext={(role) => {
+          onNext={role => {
             history.push('AddressKeyword', { role });
           }}
         />
@@ -333,7 +333,7 @@ export default function InitProcess() {
         <StepAddressKeyword
           defaultKeyword={context.addressKeyword}
           onBack={history.back}
-          onPick={(baseAddress) => {
+          onPick={baseAddress => {
             history.push('UnitInput', { ...context, baseAddress });
           }}
         />

@@ -19,7 +19,7 @@ function formatPhone(raw) {
   if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
 }
-const getPhoneDigits = (formatted) => formatted.replace(/\D/g, '');
+const getPhoneDigits = formatted => formatted.replace(/\D/g, '');
 
 /** ---------------------------
  * 비밀번호 규칙
@@ -68,7 +68,7 @@ export default function SignUpTemplate() {
   );
 
   // ✅ 인증번호 숫자만 입력
-  const onChangeVerifyCode = (e) => {
+  const onChangeVerifyCode = e => {
     const digits = e.target.value.replace(/\D/g, '').slice(0, 6); // 보통 6자리 제한 예시
     setVerifyCode(digits);
   };
@@ -82,18 +82,18 @@ export default function SignUpTemplate() {
   }, [isPhoneComplete]);
 
   // 핸들러
-  const onChangePhone = (e) => {
+  const onChangePhone = e => {
     const next = formatPhone(e.target.value);
     setPhone(next);
   };
 
-  const onChangePassword = (e) => {
+  const onChangePassword = e => {
     const next = e.target.value;
     const filtered = next.replace(new RegExp(`[^A-Za-z0-9${allowedSpecialsClass}]`, 'g'), '');
     setPassword(filtered);
   };
 
-  const onChangePasswordRe = (e) => {
+  const onChangePasswordRe = e => {
     const next = e.target.value;
     const filtered = next.replace(new RegExp(`[^A-Za-z0-9${allowedSpecialsClass}]`, 'g'), '');
     setPasswordRe(filtered);
@@ -108,7 +108,7 @@ export default function SignUpTemplate() {
             <TextField
               placeholder={'이름 입력'}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
             />
           </Column>
 
@@ -160,7 +160,7 @@ export default function SignUpTemplate() {
             <TextField
               placeholder={'아이디 입력'}
               value={userId}
-              onChange={(e) => setUserId(e.target.value)}
+              onChange={e => setUserId(e.target.value)}
             />
             <Infotext>6~20자 이내로 입력해 주세요.</Infotext>
           </Column>
@@ -176,7 +176,7 @@ export default function SignUpTemplate() {
               maxLength={16}
               // 우측 아이콘 + 클릭으로 토글
               rightIcon={showPw ? HidePasswordIcon : CheckPasswordIcon}
-              onRightIconClick={() => setShowPw((v) => !v)}
+              onRightIconClick={() => setShowPw(v => !v)}
               rightIconAriaLabel={showPw ? '비밀번호 숨기기' : '비밀번호 보기'}
             />
             {/* ✅ helper 텍스트 */}
@@ -198,7 +198,7 @@ export default function SignUpTemplate() {
               }
               maxLength={16}
               rightIcon={showPwRe ? HidePasswordIcon : CheckPasswordIcon}
-              onRightIconClick={() => setShowPwRe((v) => !v)}
+              onRightIconClick={() => setShowPwRe(v => !v)}
               rightIconAriaLabel={showPwRe ? '비밀번호 숨기기' : '비밀번호 보기'}
             />
             {passwordRe.length > 0 &&
@@ -256,7 +256,7 @@ const Infotext = styled.div`
 
 const HelperText = styled.div`
   ${typo('caption2')};
-  color: ${(p) =>
+  color: ${p =>
     p.$status === 'error'
       ? '#ff3f3f'
       : p.$status === 'success'

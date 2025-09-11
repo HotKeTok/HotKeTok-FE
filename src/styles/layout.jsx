@@ -10,7 +10,8 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/splash',
   '/sign-in',
   '/sign-up',
-  '/initprocess',
+  '/init-process',
+  '/request-repair',
   '/repair-progress',
 ];
 

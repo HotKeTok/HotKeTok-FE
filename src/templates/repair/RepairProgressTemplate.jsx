@@ -464,11 +464,8 @@ const GuideBubble = styled.div`
 `;
 
 // 섹션 2
-
-const Accordion = styled.section`
-  margin-top: ${p => (p.$noTopMargin ? '0' : '14px')};
-  border-radius: 10px;
-  border: 1px solid ${color('grayscale.200')};
+const Accordion = styled.div`
+  margin-top: ${p => (p.$noTopMargin ? '0' : '10px')};
   background: #fff;
   overflow: hidden;
 `;
@@ -477,16 +474,13 @@ const AccordionHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 14px;
+  padding: 16px 24px;
   cursor: pointer;
-  background: ${color('grayscale.50')};
 `;
 
-const AccordionTitle = styled.h3`
-  ${typo('body2')}
-  display: flex;
-  align-items: center;
-  gap: 8px;
+const AccordionTitle = styled.div`
+  ${typo('h3')}
+  color: ${color('grayscale.800')};
 `;
 
 const SmallHint = styled.span`

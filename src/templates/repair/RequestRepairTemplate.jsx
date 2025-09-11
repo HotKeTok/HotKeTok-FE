@@ -77,7 +77,7 @@ function StepPayer({ draft, setDraft, onNext, onBack }) {
       <Column $gap={10} style={{ padding: '0px 20px' }}>
         <ModeItem
           selected={draft.payer === 'me'}
-          onClick={() => setDraft((p) => ({ ...p, payer: 'me' }))}
+          onClick={() => setDraft(p => ({ ...p, payer: 'me' }))}
           height="100%"
           padding="18px 24px"
         >
@@ -97,7 +97,7 @@ function StepPayer({ draft, setDraft, onNext, onBack }) {
 
         <ModeItem
           selected={draft.payer === 'landlord'}
-          onClick={() => setDraft((p) => ({ ...p, payer: 'landlord' }))}
+          onClick={() => setDraft(p => ({ ...p, payer: 'landlord' }))}
           height="100%"
           padding="18px 24px"
         >
@@ -143,12 +143,12 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
       {note ? <Caption1_600 style={{ marginBottom: 8 }}>{note}</Caption1_600> : null}
 
       <TypeGrid>
-        {REPAIR_TYPES.map((t) => {
+        {REPAIR_TYPES.map(t => {
           const selected = draft.typeKey === t.key;
           return (
             <TypeItem
               key={t.key}
-              onClick={() => setDraft((p) => ({ ...p, typeKey: t.key }))}
+              onClick={() => setDraft(p => ({ ...p, typeKey: t.key }))}
               $selected={selected}
             >
               <TypeIcon src={selected ? iconChecked : iconUnchecked} alt="" />
@@ -164,10 +164,10 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
     <Column $gap={6}>
       <Caption2_800>증상 사진</Caption2_800>
       <ThumbGrid>
-        {draft.images.map((url) => (
+        {draft.images.map(url => (
           <Thumb key={url} style={{ backgroundImage: `url(${url})` }}>
             <RemoveBtn
-              onClick={() => setDraft((p) => ({ ...p, images: p.images.filter((u) => u !== url) }))}
+              onClick={() => setDraft(p => ({ ...p, images: p.images.filter(u => u !== url) }))}
             >
               ×
             </RemoveBtn>
@@ -184,12 +184,12 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
               type="file"
               accept="image/*"
               multiple
-              onChange={(e) => {
+              onChange={e => {
                 const arr = Array.from(e.target.files);
                 const remain = Math.max(0, 8 - draft.images.length);
-                const next = arr.slice(0, remain).map((f) => URL.createObjectURL(f));
+                const next = arr.slice(0, remain).map(f => URL.createObjectURL(f));
                 if (arr.length > remain) alert('사진은 최대 8장까지 첨부할 수 있어요.');
-                setDraft((p) => ({ ...p, images: [...p.images, ...next] }));
+                setDraft(p => ({ ...p, images: [...p.images, ...next] }));
               }}
             />
           </UploadBox>
@@ -211,7 +211,7 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
 
           <ToggleSwitch
             $on={draft.useAI}
-            onClick={() => setDraft((p) => ({ ...p, useAI: !p.useAI }))}
+            onClick={() => setDraft(p => ({ ...p, useAI: !p.useAI }))}
           >
             <span />
           </ToggleSwitch>
@@ -262,7 +262,7 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
             <TextArea
               placeholder="증상에 대한 설명을 상세하게 적어주세요."
               value={draft.desc}
-              onChange={(e) => setDraft((p) => ({ ...p, desc: e.target.value.slice(0, 300) }))}
+              onChange={e => setDraft(p => ({ ...p, desc: e.target.value.slice(0, 300) }))}
             />
             <CharCount $over={draft.desc.length >= 300}>{draft.desc.length} / 300</CharCount>
           </Column>
@@ -277,11 +277,11 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
         </Column>
         <Caption2_800 style={{ margin: '10px 0px' }}>수리 희망 날짜</Caption2_800>
         <DateRow>
-          {days.map((d) => (
+          {days.map(d => (
             <DateDot
               key={d.key}
               $active={draft.dateKey === d.key}
-              onClick={() => setDraft((p) => ({ ...p, dateKey: d.key }))}
+              onClick={() => setDraft(p => ({ ...p, dateKey: d.key }))}
               aria-pressed={draft.dateKey === d.key}
             >
               {d.justDate}
@@ -291,19 +291,19 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
 
         <Column $gap={6}>
           <Caption2_800 style={{ marginTop: '10px' }}>수리 희망 시간</Caption2_800>
-          <Dropdown $open={open} onClick={() => setOpen((v) => !v)}>
+          <Dropdown $open={open} onClick={() => setOpen(v => !v)}>
             <span>{draft.time || '시간 선택'}</span>
             <i>▾</i>
           </Dropdown>
 
           {open && (
             <DropdownList>
-              {TIME_OPTIONS.map((t) => (
+              {TIME_OPTIONS.map(t => (
                 <TimeItem
                   key={t}
                   $selected={draft.time === t}
                   onClick={() => {
-                    setDraft((p) => ({ ...p, time: t }));
+                    setDraft(p => ({ ...p, time: t }));
                     setOpen(false);
                   }}
                 >
@@ -343,7 +343,7 @@ function StepReview({ context, onEdit, onSubmit, onBack }) {
             <ItemLabel>수리 분야</ItemLabel>
             <ItemValue>
               {context.typeKey
-                ? REPAIR_TYPES.find((t) => t.key === context.typeKey)?.label
+                ? REPAIR_TYPES.find(t => t.key === context.typeKey)?.label
                 : context.useAI
                 ? 'AI로 분석 예정'
                 : '미선택'}
@@ -455,7 +455,7 @@ export default function RequestRepairTemplate() {
   const Funnel = useFunnel({
     id: 'request-repair',
     initial: { step: 'Payer', context: {} },
-    routes: (s) => `/request-repair/${s}`,
+    routes: s => `/request-repair/${s}`,
   });
 
   return (
@@ -497,7 +497,6 @@ export default function RequestRepairTemplate() {
 // STEP 1
 const StepWrap = styled.div`
   display: flex;
-  width: 390px;
   flex-direction: column;
   min-height: 100vh;
 `;
@@ -545,11 +544,11 @@ const ToggleSwitch = styled.div`
   border-radius: 20px;
   position: relative;
   cursor: pointer;
-  background: ${(p) => (p.$on ? color('grayscale.700') : color('grayscale.300'))};
+  background: ${p => (p.$on ? color('grayscale.700') : color('grayscale.300'))};
   span {
     position: absolute;
     top: 3px;
-    left: ${(p) => (p.$on ? '26px' : '3px')};
+    left: ${p => (p.$on ? '26px' : '3px')};
     width: 22px;
     height: 22px;
     background: #fff;
@@ -710,7 +709,7 @@ const DateDot = styled.button`
   height: 44px;
   border-radius: 50%;
   border: 0px;
-  ${(p) =>
+  ${p =>
     p.$active &&
     css`
       color: white;
@@ -759,7 +758,7 @@ const TimeItem = styled.li`
   &:hover {
     background: ${color('grayscale.050')};
   }
-  ${(p) =>
+  ${p =>
     p.$selected &&
     css`
       background: ${color('grayscale.100')};

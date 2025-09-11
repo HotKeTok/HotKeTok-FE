@@ -2,7 +2,7 @@
 import styled, { css } from 'styled-components';
 
 /** 공통 spacing 변환기 */
-const toSize = (v) => (typeof v === 'number' ? `${v}px` : v);
+const toSize = v => (typeof v === 'number' ? `${v}px` : v);
 
 /** Flex 스타일 변환 */
 const mapFlex = (cfg = {}) => css`
