@@ -409,7 +409,11 @@ const RequestDate = styled.div`
 
 const StepBar = styled.div`
   display: grid;
-  grid-template-columns: 1fr 25px 1fr 25px 1fr 25px 1fr;
+  grid-template-columns:
+    max-content minmax(16px, 1fr)
+    max-content minmax(16px, 1fr)
+    max-content minmax(16px, 1fr)
+    max-content; /* 마지막 원 */
   align-items: center;
 `;
 
@@ -437,7 +441,8 @@ const StepDot = styled.div`
 
 const StepDivider = styled.div`
   height: 1px;
-
+  /* 원과 선 사이 살짝 띄우기 */
+  margin: 0 8px;
   background: ${color('brand.primary')};
   opacity: 0.4;
 `;
