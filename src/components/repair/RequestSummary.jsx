@@ -25,15 +25,7 @@ import { color, typo } from '../../styles/tokens';
  * - showEdit?: boolean (우측 상단 '수정하기' 노출 여부)
  * - onEdit?: () => void
  */
-export default function RequestSummary({
-  context,
-  address,
-  repairTypes = [],
-  headingTitle = '수리요청서 작성을 완료했어요!',
-  headingSub = '작성한 요청서를 바탕으로 견적서를 받아볼 수 있어요.',
-  showEdit = true,
-  onEdit,
-}) {
+export default function RequestSummary({ context, address, repairTypes = [] }) {
   const typeLabel = useMemo(() => {
     if (context?.typeKey) {
       const found = repairTypes.find(t => t.key === context.typeKey);
@@ -64,25 +56,6 @@ export default function RequestSummary({
 
   return (
     <SummarySection>
-      <Row $justify="space-between" style={{ marginBottom: '30px' }}>
-        <Column>
-          <SectionTitle>{headingTitle}</SectionTitle>
-          <Caption1_600>{headingSub}</Caption1_600>
-        </Column>
-
-        {showEdit && (
-          <EditLink
-            role="button"
-            tabIndex={0}
-            onClick={onEdit}
-            onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onEdit && onEdit()}
-            aria-label="수정하기"
-          >
-            수정하기
-          </EditLink>
-        )}
-      </Row>
-
       <Column $gap={24}>
         <Row $justify="space-between">
           <ItemLabel>수리 분야</ItemLabel>
@@ -131,9 +104,7 @@ export default function RequestSummary({
 }
 
 /* ===================== 스타일 ===================== */
-const SummarySection = styled.div`
-  padding: 30px 24px;
-`;
+const SummarySection = styled.div``;
 
 const SectionTitle = styled.h3`
   ${typo('subtitle1')};

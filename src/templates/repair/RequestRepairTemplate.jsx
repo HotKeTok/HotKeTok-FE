@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from '../../components/common/TopBar';
 import ModeItem from '../../components/common/ModeItem';
 import Button from '../../components/common/Button';
+import RequestSummary from '../../components/repair/RequestSummary';
+
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 
@@ -338,69 +340,11 @@ function StepReview({ context, onEdit, onSubmit, onBack }) {
           <EditLink onClick={onEdit}>수정하기</EditLink>
         </Row>
 
-        <Column $gap={24}>
-          <Row $justify="space-between">
-            <ItemLabel>수리 분야</ItemLabel>
-            <ItemValue>
-              {context.typeKey
-                ? REPAIR_TYPES.find(t => t.key === context.typeKey)?.label
-                : context.useAI
-                ? 'AI로 분석 예정'
-                : '미선택'}
-            </ItemValue>
-          </Row>
-
-          <Row $justify="space-between">
-            <ItemLabel>수리 희망 날짜</ItemLabel>
-            <ItemValue>
-              {context.dateKey && context.time
-                ? (() => {
-                    const d = new Date(context.dateKey);
-                    return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()} / ${
-                      context.time
-                    }`;
-                  })()
-                : '-'}
-            </ItemValue>
-          </Row>
-
-          <Row $justify="space-between">
-            <ItemLabel>비용 부담</ItemLabel>
-            <ItemValue>
-              {context.payer === 'me'
-                ? '본인 부담'
-                : context.payer === 'landlord'
-                ? '집주인 부담'
-                : '-'}
-            </ItemValue>
-          </Row>
-
-          <Row $justify="space-between">
-            <ItemLabel>주소</ItemLabel>
-            <ItemValue>동작 핫케톡 스테이 304호</ItemValue>
-          </Row>
-
-          {!!context.images.length && (
-            <Column $gap={6}>
-              <ItemLabel style={{ marginTop: 12 }}>증상 사진</ItemLabel>
-              <ThumbRow>
-                {context.images.map((url, idx) => (
-                  <Thumb key={url + idx} style={{ backgroundImage: `url(${url})` }} />
-                ))}
-              </ThumbRow>
-            </Column>
-          )}
-          <Column $gap={8}>
-            <ItemLabel>증상 설명</ItemLabel>
-            <DescBox>
-              {context.desc
-                ? context.desc
-                : context.useAI
-                ? 'AI가 작성한 설명이 여기에 표시됩니다.'
-                : '작성된 설명이 없습니다.'}
-            </DescBox>
-          </Column>
-        </Column>
+        <RequestSummary
+          context={context}
+          address="동작 핫케톡 스테이 304호"
+          repairTypes={REPAIR_TYPES}
+        />
       </SummarySection>
       <Spacer />
       <div style={{ padding: '40px 24px' }}>
