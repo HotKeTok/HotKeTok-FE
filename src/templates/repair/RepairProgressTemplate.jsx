@@ -5,12 +5,14 @@ import TopBar from '../../components/common/TopBar';
 import Button from '../../components/common/Button';
 import ButtonSmall from '../../components/common/ButtonSmall';
 import ButtonRound from '../../components/common/ButtonRound';
+import ModeItem from '../../components/common/ModeItem';
 import RequestSummary from '../../components/repair/RequestSummary';
 
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 
 import iconInfo from '../../assets/repair/repair-progress/icon-info.svg';
+import iconChevron from '../../assets/repair/icon-chevron.svg';
 
 /* =========================================================
  * 타입/상수
@@ -121,6 +123,9 @@ export default function RepairProgressTemplate() {
     // 매칭 취소 → 다시 견적 선택 단계로
     setStep(STEP.CHOOSE);
   };
+
+  // 선택됐고(!!selectedQuoteId), LANDLORD 모드가 아니면 진행 가능
+  const canProceed = mode !== COST_MODE.LANDLORD && !!selectedQuoteId;
 
   // 데모 전환용 UI (실제 배포 시 제거 가능)
   const DemoSwitch = () => (
@@ -235,45 +240,55 @@ export default function RepairProgressTemplate() {
           {/* 받은 견적 아코디언 */}
           <Accordion>
             <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
-              <AccordionTitle>
-                받은 견적
-                <SmallHint>{quotes.length}개 업체에서 견적서를 보내왔어요.</SmallHint>
-              </AccordionTitle>
+              <Column $gap={2}>
+                <AccordionTitle>
+                  받은 견적
+                  <Caption1_600>
+                    {quotes.length}개 업체에서 견적서를 보내왔어요.
+                    <br />
+                    수리를 진행할 업체를 선택해 주세요.
+                  </Caption1_600>
+                </AccordionTitle>
+              </Column>
               <Chevron $open={openQuotes} />
             </AccordionHeader>
 
             {openQuotes && (
-              <AccordionBody>
-                <Column $gap={12}>
+              <AccordionBody2>
+                <Column $gap={10}>
                   {quotes.map(q => (
-                    <QuoteCard
+                    <ModeItem
                       key={q.id}
-                      $selected={selectedQuoteId === q.id}
+                      selected={selectedQuoteId === q.id} // ✅ $selected → selected
                       onClick={() => (mode === COST_MODE.SELF ? setSelectedQuoteId(q.id) : null)}
+                      height="auto" // ✅ 카드 높이 자동
+                      padding="18px 24px" // ✅ 기존 카드 padding 매칭
                     >
-                      <Row style={{ alignItems: 'center' }} $gap={10}>
-                        <Avatar src={q.avatar} alt="" />
-                        <CompanyName>
-                          {q.companyName} <ArrowRight />
-                        </CompanyName>
-                      </Row>
-                      <Phone>{q.phone}</Phone>
-                      <Content>{q.content}</Content>
-                      <Price>{comma(q.price)}원</Price>
-                    </QuoteCard>
+                      <CardContent>
+                        {/* ✅ Price 기준 래퍼 */}
+                        <Row style={{ alignItems: 'center' }} $gap={10}>
+                          <Avatar src={q.avatar} alt="" />
+                          <CompanyName>
+                            {q.companyName} <ArrowRight src={iconChevron} />
+                          </CompanyName>
+                        </Row>
+                        <Phone>{q.phone}</Phone>
+                        <Content>{q.content}</Content>
+                        <Price>{comma(q.price)}원</Price> {/* 기존 스타일 재사용 */}
+                      </CardContent>
+                    </ModeItem>
                   ))}
                 </Column>
-              </AccordionBody>
+                <Footer>
+                  <Button
+                    active={canProceed}
+                    onClick={handleChooseQuote}
+                    text={mode === COST_MODE.LANDLORD ? '집주인이 선택합니다' : '견적서 선택'}
+                  />
+                </Footer>
+              </AccordionBody2>
             )}
           </Accordion>
-
-          <Footer>
-            <Button
-              disabled={mode === COST_MODE.LANDLORD || !selectedQuoteId}
-              onClick={handleChooseQuote}
-              text={mode === COST_MODE.LANDLORD ? '집주인이 선택합니다' : '견적서 선택'}
-            />
-          </Footer>
         </>
       )}
 
@@ -478,7 +493,7 @@ const SmallHint = styled.span`
   margin-left: 6px;
 `;
 
-const Chevron = styled.i`
+const Chevron = styled.div`
   width: 6px;
   height: 6px;
   display: inline-block;
@@ -491,6 +506,15 @@ const Chevron = styled.i`
 const AccordionBody = styled.div`
   padding: 16px 24px;
   background: #fff;
+`;
+
+const AccordionBody2 = styled.div`
+  padding: 0px 24px 16px 24px;
+  background: #fff;
+`;
+
+const CardContent = styled.div`
+  width: 100%;
 `;
 
 const KeyValue = styled.dl`
@@ -573,45 +597,34 @@ const Avatar = styled.img`
 `;
 
 const CompanyName = styled.div`
-  ${typo('body2')}
+  ${typo('subtitle1')}
+  color: ${color('grayscale.600')};
 `;
 
-const ArrowRight = styled.i`
-  width: 6px;
-  height: 6px;
-  margin-left: 6px;
-  border-right: 2px solid ${color('grayscale.500')};
-  border-bottom: 2px solid ${color('grayscale.500')};
-  transform: rotate(-45deg);
-  display: inline-block;
+const ArrowRight = styled.img`
+  margin-left: 4px;
 `;
 
 const Phone = styled.div`
-  ${typo('caption2')}
+  ${typo('caption1')}
   color: ${color('grayscale.600')};
-  margin-top: 6px;
+  margin-top: 4px;
 `;
 
-const Content = styled.p`
+const Content = styled.div`
   ${typo('caption1')}
-  color: ${color('grayscale.700')};
-  margin: 8px 0 36px 0;
+  color: ${color('grayscale.800')};
+  margin: 2px 0 10px 0;
 `;
 
 const Price = styled.div`
-  ${typo('subtitle2')}
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
+  ${typo('subtitle1')}
+  color: ${color('grayscale.800')};
+  text-align: end;
 `;
 
 const Footer = styled.div`
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 0 16px 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 24%);
+  margin-top: 30px;
 `;
 
 const MatchedBox = styled.div`
