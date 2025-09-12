@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import styled, { css } from 'styled-components';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import styled, { css, keyframes } from 'styled-components';
 
 import TopBar from '../../components/common/TopBar';
 import Button from '../../components/common/Button';
@@ -13,6 +13,7 @@ import { color, typo } from '../../styles/tokens';
 
 import iconInfo from '../../assets/repair/repair-progress/icon-info.svg';
 import iconChevron from '../../assets/repair/icon-chevron.svg';
+import iconClose from '../../assets/common/icon-close.svg';
 
 /* =========================================================
  * 타입/상수
@@ -37,9 +38,44 @@ const SAMPLE_THUMB =
   );
 
 /* =========================================================
+ * Collapsible: 높이 측정 기반 부드러운 아코디언
+ *  - height, opacity, transform을 함께 전환해 자연스러움 확보
+ * ======================================================= */
+function Collapsible({ isOpen, children, className }) {
+  const ref = useRef(null);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    // 매 프레임 실제 높이 측정
+    const el = ref.current;
+    const next = isOpen ? el.scrollHeight : 0;
+    setHeight(next);
+  }, [isOpen, children]);
+
+  // 컨텐츠 사이즈 변경(이미지 로딩 등)에도 다시 맞춰주기
+  useEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver(() => {
+      if (isOpen) setHeight(ref.current.scrollHeight);
+    });
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, [isOpen]);
+
+  return (
+    <CollapsibleOuter
+      className={className}
+      style={{ height, opacity: isOpen ? 1 : 0, transform: `translateY(${isOpen ? 0 : -4}px)` }}
+      aria-hidden={!isOpen}
+    >
+      <div ref={ref}>{children}</div>
+    </CollapsibleOuter>
+  );
+}
+
+/* =========================================================
  * 페이지 컴포넌트
- *  - props 없이도 동작하도록 mockData 포함
- *  - 실제 연동 시 props 또는 API 데이터로 교체
  * ======================================================= */
 export default function RepairProgressTemplate() {
   // ----- 모드/스텝: 실제론 서버 상태에 맞춰 세팅 -----
@@ -108,9 +144,28 @@ export default function RepairProgressTemplate() {
     [quotes, selectedQuoteId]
   );
 
-  // ----- 아코디언 토글 -----
+  // ----- 아코디언 토글 (기본 오픈 상태는 step에 따라 제어) -----
   const [openRequest, setOpenRequest] = useState(true);
   const [openQuotes, setOpenQuotes] = useState(true);
+
+  // ✅ 요구사항 #2: STEP 변경 시 기본 열림 상태 맞추기
+  useEffect(() => {
+    if (step === STEP.CHOOSE) {
+      setOpenRequest(false); // 요청서 닫힘
+      setOpenQuotes(true); // 받은 견적 열림
+    } else if (step === STEP.MATCHED) {
+      setOpenRequest(false); // 요청서 닫힘
+      setOpenQuotes(true); // 선택한 견적 영역(아래)만 노출되지만 상태는 열림 유지
+    } else if (step === STEP.FINDING) {
+      // 초깃값은 요청서만 열려 있어도 UX가 자연스러움
+      setOpenRequest(true);
+      setOpenQuotes(false);
+    }
+  }, [step]);
+
+  // ----- 모달 제어 -----
+  const [showCancelModal, setShowCancelModal] = useState(false); // 매칭 취소 확인
+  const [showInfoModal, setShowInfoModal] = useState(false); // 단계 안내
 
   // ----- 액션 -----
   const handleChooseQuote = () => {
@@ -120,8 +175,13 @@ export default function RepairProgressTemplate() {
   };
 
   const handleCancelMatch = () => {
-    // 매칭 취소 → 다시 견적 선택 단계로
-    setStep(STEP.CHOOSE);
+    // 요구사항 #3: 바로 되돌리지 말고 확인 모달
+    setShowCancelModal(true);
+  };
+
+  const confirmCancelMatch = () => {
+    setShowCancelModal(false);
+    setStep(STEP.CHOOSE); // 이전 단계 복귀
   };
 
   // 선택됐고(!!selectedQuoteId), LANDLORD 모드가 아니면 진행 가능
@@ -163,7 +223,7 @@ export default function RepairProgressTemplate() {
       <WhiteSection>
         <Row $justify="space-between" style={{ marginBottom: '15px' }}>
           <ButtonRound text="진행중" />
-          <InfoIcon src={iconInfo} />
+          <InfoIcon src={iconInfo} onClick={() => setShowInfoModal(true)} /> {/* ✅ 요구사항 #4 */}
         </Row>
         <Column $gap={20}>
           <Column $gap={6}>
@@ -202,27 +262,23 @@ export default function RepairProgressTemplate() {
           <Chevron $open={openRequest} />
         </AccordionHeader>
 
-        {openRequest && (
+        <Collapsible isOpen={openRequest}>
           <AccordionBody>
             <RequestSummary
               context={{
-                // 수리 분야: 키/라벨 매핑
                 typeKey: 'etc',
-                // 날짜/시간: "YYYY.MM.DD / 오전 12:30" → dateKey/time 로 분리
-                dateKey: request.hopeAt.split('/')[0].trim().replace(/\./g, '-'), // "2024-11-20"
-                time: request.hopeAt.split('/')[1]?.trim() || '', // "오전 12:30"
-                // 비용 부담: 모드 → me/landlord
+                dateKey: request.hopeAt.split('/')[0].trim().replace(/\./g, '-'),
+                time: request.hopeAt.split('/')[1]?.trim() || '',
                 payer: mode === COST_MODE.SELF ? 'me' : 'landlord',
                 images: request.images,
                 desc: request.description,
                 useAI: false,
               }}
               address={request.address}
-              // 라벨 테이블 (typeKey ↔ label)
               repairTypes={[{ key: 'etc', label: request.categoryLabel }]}
             />
           </AccordionBody>
-        )}
+        </Collapsible>
       </Accordion>
 
       {/* 단계별 섹션 */}
@@ -253,19 +309,18 @@ export default function RepairProgressTemplate() {
               <Chevron $open={openQuotes} />
             </AccordionHeader>
 
-            {openQuotes && (
+            <Collapsible isOpen={openQuotes}>
               <AccordionBody2>
                 <Column $gap={10}>
                   {quotes.map(q => (
                     <ModeItem
                       key={q.id}
-                      selected={selectedQuoteId === q.id} // ✅ $selected → selected
+                      selected={selectedQuoteId === q.id}
                       onClick={() => (mode === COST_MODE.SELF ? setSelectedQuoteId(q.id) : null)}
-                      height="auto" // ✅ 카드 높이 자동
-                      padding="18px 24px" // ✅ 기존 카드 padding 매칭
+                      height="auto"
+                      padding="18px 24px"
                     >
                       <CardContent>
-                        {/* ✅ Price 기준 래퍼 */}
                         <Row style={{ alignItems: 'center' }} $gap={10}>
                           <Avatar src={q.avatar} alt="" />
                           <CompanyName>
@@ -274,7 +329,7 @@ export default function RepairProgressTemplate() {
                         </Row>
                         <Phone>{q.phone}</Phone>
                         <Content>{q.content}</Content>
-                        <Price>{comma(q.price)}원</Price> {/* 기존 스타일 재사용 */}
+                        <Price>{comma(q.price)}원</Price>
                       </CardContent>
                     </ModeItem>
                   ))}
@@ -287,65 +342,116 @@ export default function RepairProgressTemplate() {
                   />
                 </Footer>
               </AccordionBody2>
-            )}
+            </Collapsible>
           </Accordion>
         </>
       )}
 
       {step === STEP.MATCHED && selectedQuote && (
         <>
-          <MatchedBox>업체가 매칭되었어요!</MatchedBox>
-
+          <div style={{ height: '10px' }} />
           <Accordion $noTopMargin>
-            <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
+            <AccordionHeader>
               <AccordionTitle>선택한 견적</AccordionTitle>
-              <Row $gap={8}>
-                {mode === COST_MODE.SELF && <ButtonSmall text="취소" onClick={handleCancelMatch} />}
-                <Chevron $open={openQuotes} />
-              </Row>
+              {mode === COST_MODE.SELF && (
+                <ButtonSmall width={60} text="취소" onClick={handleCancelMatch} />
+              )}
             </AccordionHeader>
 
-            {openQuotes && (
+            <Collapsible isOpen={openQuotes}>
               <AccordionBody>
-                <KeyValue>
-                  <dt>업체명</dt>
-                  <dd>
-                    <Row $gap={8} style={{ alignItems: 'center' }}>
+                <Row $justify={'space-between'} style={{ marginBottom: '14px' }}>
+                  <ItemLabel>업체명</ItemLabel>
+                  <ItemValue>
+                    <Row $gap={8} style={{ alignItems: 'center', cursor: 'pointer' }}>
                       <Avatar src={selectedQuote.avatar} alt="" />
                       <CompanyName as="span">{selectedQuote.companyName}</CompanyName>
-                      <ArrowRight />
+                      <ArrowRight src={iconChevron} />
                     </Row>
-                  </dd>
-                </KeyValue>
-                <KeyValue>
-                  <dt>금액</dt>
-                  <dd>{comma(selectedQuote.price)}원</dd>
-                </KeyValue>
-                <KeyValue>
-                  <dt>수리 예정 날짜</dt>
-                  <dd>{request.hopeAt}</dd>
-                </KeyValue>
-                <KeyValue>
-                  <dt>전화번호</dt>
-                  <dd>{selectedQuote.phone}</dd>
-                </KeyValue>
-                <KeyValue $column>
-                  <dt>내용</dt>
-                  <dd>
+                  </ItemValue>
+                </Row>
+                <Column $gap={24}>
+                  <Row $justify={'space-between'}>
+                    <ItemLabel>금액</ItemLabel>
+                    <ItemValue>{comma(selectedQuote.price)}원</ItemValue>
+                  </Row>
+                  <Row $justify={'space-between'}>
+                    <ItemLabel>수리 예정 날짜</ItemLabel>
+                    <ItemValue>{request.hopeAt}</ItemValue>
+                  </Row>
+                  <Row $justify={'space-between'}>
+                    <ItemLabel>전화번호</ItemLabel>
+                    <ItemValue>{selectedQuote.phone}</ItemValue>
+                  </Row>
+                  <Column $gap={8}>
+                    <ItemLabel>내용</ItemLabel>
                     <Note>{selectedQuote.content}</Note>
-                  </dd>
-                </KeyValue>
+                  </Column>
+                </Column>
 
-                <Spacer y={8} />
+                <div style={{ height: '30px' }} />
                 <Button text="1:1 문의하기" onClick={() => alert('채팅 진입')} />
               </AccordionBody>
-            )}
+            </Collapsible>
           </Accordion>
         </>
       )}
 
+      {/* 모달들 */}
+      {showCancelModal && (
+        <Dim onClick={() => setShowCancelModal(false)}>
+          <Modal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+            <ModalTitle>GS 건설</ModalTitle>
+            <ModalDesc>업체 선택을 취소하시겠어요?</ModalDesc>
+            <Row $gap={10}>
+              <ModalButton $variant="ghost" onClick={() => setShowCancelModal(false)}>
+                아니요
+              </ModalButton>
+              <ModalButton onClick={confirmCancelMatch}>취소하기</ModalButton>
+            </Row>
+          </Modal>
+        </Dim>
+      )}
+
+      {showInfoModal && (
+        <Dim onClick={() => setShowInfoModal(false)}>
+          <GuideModal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+            <Row $justify={'space-between'}>
+              <GuideTitle>STEP 01</GuideTitle>
+              <GuideClose src={iconClose} onClick={() => setShowInfoModal(false)} />
+            </Row>
+            <GuideBlock>
+              <GuideStep>업체 찾는 중</GuideStep>
+              <GuideText>
+                제출하신 요청서를 바탕으로 업체에서 견적서를 작성중이에요!{'\n'} 잠시 기다려주시면
+                합리적인 견적서를 찾아드릴게요.
+              </GuideText>
+            </GuideBlock>
+            <GuideTitle>STEP 02</GuideTitle>
+            <GuideBlock>
+              <GuideStep>견적서 선택</GuideStep>
+              <GuideText>
+                주변 시공업체에서 요청서를 확인하고 견적서를 보내왔어요. {'\n'}도착한 견적서 중 가장
+                합리적인 견적서를 선택하는 단계예요.
+              </GuideText>
+            </GuideBlock>
+            <GuideTitle>STEP 03</GuideTitle>
+            <GuideBlock>
+              <GuideStep>업체 매칭</GuideStep>
+              <GuideText>업체 매칭이 완료됐어요! 곧 수리 기사님이 방문하실 예정이에요.</GuideText>
+            </GuideBlock>
+            <GuideTitle>STEP 04</GuideTitle>
+            <GuideBlock>
+              <GuideStep>처리 완료</GuideStep>
+              <GuideText>
+                수리가 완료됐어요! 만족스러우셨나요? {'\n'}앞으로도 핫케톡에서 만나요!
+              </GuideText>
+            </GuideBlock>
+          </GuideModal>
+        </Dim>
+      )}
+
       {/* STEP4(처리완료)는 이 페이지에서 다루지 않음 */}
-      {/* 데모 스위치 – 실제 배포 시 삭제 가능 */}
       <DemoSwitch />
     </>
   );
@@ -373,32 +479,10 @@ const WhiteSection = styled.div`
   background-color: white;
 `;
 
-const Badge = styled.span`
-  ${typo('caption2')}
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: ${color('brand.alpha.10')};
-  color: ${color('brand.primary')};
-  ${p =>
-    p.$type === 'progress' &&
-    css`
-      background: ${color('brand.alpha.10')};
-    `}
-`;
-
 const InfoIcon = styled.img`
   width: 22px;
   height: 22px;
   cursor: pointer;
-`;
-
-const TitleRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-top: 6px;
 `;
 
 const Category = styled.div`
@@ -417,7 +501,7 @@ const StepBar = styled.div`
     max-content minmax(16px, 1fr)
     max-content minmax(16px, 1fr)
     max-content minmax(16px, 1fr)
-    max-content; /* 마지막 원 */
+    max-content;
   align-items: center;
 `;
 
@@ -445,7 +529,6 @@ const StepDot = styled.div`
 
 const StepDivider = styled.div`
   height: 1px;
-  /* 원과 선 사이 살짝 띄우기 */
   margin: 0 8px;
   background: ${color('brand.primary')};
   opacity: 0.4;
@@ -487,12 +570,6 @@ const AccordionTitle = styled.div`
   color: ${color('grayscale.800')};
 `;
 
-const SmallHint = styled.span`
-  ${typo('caption2')}
-  color: ${color('grayscale.600')};
-  margin-left: 6px;
-`;
-
 const Chevron = styled.div`
   width: 6px;
   height: 6px;
@@ -513,43 +590,34 @@ const AccordionBody2 = styled.div`
   background: #fff;
 `;
 
+const CollapsibleOuter = styled.div`
+  overflow: hidden;
+  transition: height 240ms ease, opacity 200ms ease, transform 200ms ease;
+`;
+
 const CardContent = styled.div`
   width: 100%;
 `;
 
-const KeyValue = styled.dl`
-  display: grid;
-  grid-template-columns: ${p => (p.$column ? '90px 1fr' : '110px 1fr')};
-  gap: 8px 14px;
-  align-items: flex-start;
-  & + & {
-    margin-top: 10px;
-  }
-  dt {
-    ${typo('caption1')}
-    color: ${color('grayscale.600')};
-    white-space: nowrap;
-  }
-  dd {
-    ${typo('body2')}
-    margin: 0;
-  }
+const ItemLabel = styled.div`
+  ${typo('button2')};
+  color: ${color('grayscale.800')};
 `;
 
-const Thumb = styled.img`
-  width: 88px;
-  height: 66px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid ${color('grayscale.200')};
+const ItemValue = styled.div`
+  ${typo('body2')};
+  color: ${color('grayscale.600')};
+  text-align: right;
 `;
 
 const Note = styled.div`
-  ${typo('body2')}
-  padding: 10px 12px;
+  ${typo('body2')};
+  color: ${color('grayscale.800')};
+  background: ${color('grayscale.100')};
   border: 1px solid ${color('grayscale.200')};
-  border-radius: 8px;
-  color: ${color('grayscale.700')};
+  border-radius: 6px;
+  padding: 13px 15px;
+  white-space: pre-wrap;
 `;
 
 const EmptyQuotes = styled.div`
@@ -564,29 +632,6 @@ const Caption1_600 = styled.div`
 const EmptyBox = styled.div`
   padding: 16px 24px;
   background: #fff;
-`;
-
-const QuoteCard = styled.button`
-  display: block;
-  width: 100%;
-  text-align: left;
-  border-radius: 12px;
-  padding: 14px;
-  background: #fff;
-  border: 1px solid ${color('grayscale.200')};
-  position: relative;
-  cursor: pointer;
-
-  ${p =>
-    p.$selected &&
-    css`
-      border: 1px solid ${color('brand.primary')};
-      box-shadow: 0 0 0 3px ${color('brand.alpha.10')};
-    `}
-
-  & + & {
-    margin-top: 10px;
-  }
 `;
 
 const Avatar = styled.img`
@@ -627,12 +672,118 @@ const Footer = styled.div`
   margin-top: 30px;
 `;
 
-const MatchedBox = styled.div`
-  ${typo('caption1')}
-  margin-top: 14px;
-  padding: 14px 12px;
-  border-radius: 10px;
-  border: 1px solid ${color('grayscale.200')};
-  text-align: center;
+/* =========================
+ * 모달 스타일
+ * ========================= */
+const fadeIn = keyframes`
+  from { opacity: 0 } to { opacity: 1 }
+`;
+const pop = keyframes`
+  from { transform: translateY(8px); opacity: .8 }
+  to   { transform: translateY(0);  opacity: 1 }
+`;
+
+const Dim = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  /* ✅ 앱 최대 사이즈(예: 390px)로 제한 */
+  max-width: 390px;
+  margin: 0 auto;
+
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ${fadeIn} 120ms ease;
+  z-index: 1000;
+`;
+
+const ModalBase = css`
+  position: relative;
+  width: 80%;
+  border-radius: 15px;
   background: #fff;
+  padding: 20px 24px 20px 18px;
+  animation: ${pop} 160ms ease;
+`;
+
+const Modal = styled.div`
+  ${ModalBase}
+  text-align: center;
+`;
+
+const ModalTitle = styled.div`
+  ${typo('subtitle1')}
+  color: ${color('grayscale.800')};
+  margin-top: 30px;
+`;
+
+const ModalDesc = styled.div`
+  ${typo('body1')}
+  color: ${color('grayscale.800')};
+  margin-bottom: 30px;
+`;
+
+const ModalButton = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  height: 44px;
+  border-radius: 10px;
+  ${typo('button2')}
+  cursor: pointer;
+
+  ${({ $variant }) =>
+    $variant === 'ghost'
+      ? css`
+          color: ${color('grayscale.600')};
+          background: #fff;
+          border: 1px solid ${color('grayscale.300')};
+        `
+      : css`
+          color: white;
+          background: ${color('brand.primary')};
+          border: none;
+        `}
+`;
+
+/* 안내 모달 */
+const GuideModal = styled.div`
+  ${ModalBase}
+`;
+
+const GuideTitle = styled.div`
+  ${typo('button3')}
+  color: ${color('brand.primary')};
+  opacity: 0.5;
+`;
+
+const GuideStep = styled.div`
+  ${typo('subtitle1')}
+  color: ${color('grayscale.800')};
+`;
+
+const GuideText = styled.div`
+  ${typo('caption1')}
+  color: ${color('grayscale.600')};
+  white-space: pre-line;
+`;
+
+const GuideBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0px 24px 0px;
+  background: #fff;
+  border-radius: 12px;
+`;
+
+const GuideClose = styled.img`
+  width: 16px;
+  cursor: pointer;
 `;
