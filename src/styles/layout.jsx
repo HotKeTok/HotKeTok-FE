@@ -13,6 +13,7 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/init-process',
   '/request-repair',
   '/repair-progress',
+  '/repair-history',
 ];
 
 // 하단 바 높이

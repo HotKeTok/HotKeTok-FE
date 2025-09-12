@@ -30,6 +30,7 @@ import {
   HIDE_BOTTOM_BAR_PATHS,
   BOTTOM_BAR_HEIGHT,
 } from './styles/layout';
+import RepairHistory from './pages/repair/RepairHistory';
 
 const Layout = () => {
   const { pathname } = useLocation();
@@ -40,7 +41,8 @@ const Layout = () => {
     pathname === '/sign-in' ||
     pathname === '/sign-up' ||
     pathname === '/init-process' ||
-    pathname === '/request-repair'
+    pathname === '/request-repair' ||
+    pathname === '/repair-history'
       ? '#ffffff'
       : '#f9f9f9';
 
@@ -80,6 +82,7 @@ export default function AppRouter() {
           <Route path="/repair" element={<RepairHome />} />
           <Route path="/request-repair" element={<RequestRepair />} />
           <Route path="/repair-progress" element={<RepairProgress />} />
+          <Route path="/repair-history" element={<RepairHistory />} />
 
           {/* 똑똑 관련*/}
           <Route path="/communication" element={<Communication />} />
