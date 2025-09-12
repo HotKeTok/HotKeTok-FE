@@ -27,7 +27,7 @@ const STEP = {
   FINDING: 1, // 업체 찾는 중
   CHOOSE: 2, // 견적서 선택
   MATCHED: 3, // 업체 매칭
-  DONE: 4, // 처리 완료 (이 페이지에선 노출 X)
+  DONE: 4, // 처리 완료
 };
 
 // 예시 썸네일
@@ -39,7 +39,6 @@ const SAMPLE_THUMB =
 
 /* =========================================================
  * Collapsible: 높이 측정 기반 부드러운 아코디언
- *  - height, opacity, transform을 함께 전환해 자연스러움 확보
  * ======================================================= */
 function Collapsible({ isOpen, children, className }) {
   const ref = useRef(null);
@@ -47,13 +46,10 @@ function Collapsible({ isOpen, children, className }) {
 
   useEffect(() => {
     if (!ref.current) return;
-    // 매 프레임 실제 높이 측정
-    const el = ref.current;
-    const next = isOpen ? el.scrollHeight : 0;
+    const next = isOpen ? ref.current.scrollHeight : 0;
     setHeight(next);
   }, [isOpen, children]);
 
-  // 컨텐츠 사이즈 변경(이미지 로딩 등)에도 다시 맞춰주기
   useEffect(() => {
     if (!ref.current) return;
     const ro = new ResizeObserver(() => {
@@ -81,6 +77,7 @@ export default function RepairProgressTemplate() {
   // ----- 모드/스텝: 실제론 서버 상태에 맞춰 세팅 -----
   const [mode, setMode] = useState(COST_MODE.SELF); // SELF / LANDLORD
   const [step, setStep] = useState(STEP.FINDING); // 1,2,3,4
+  const isDone = step === STEP.DONE;
 
   // ----- 요청서 데이터 (예시) -----
   const request = useMemo(
@@ -143,22 +140,23 @@ export default function RepairProgressTemplate() {
     () => quotes.find(q => q.id === selectedQuoteId) || null,
     [quotes, selectedQuoteId]
   );
-
   // ----- 아코디언 토글 (기본 오픈 상태는 step에 따라 제어) -----
   const [openRequest, setOpenRequest] = useState(true);
   const [openQuotes, setOpenQuotes] = useState(true);
 
-  // ✅ 요구사항 #2: STEP 변경 시 기본 열림 상태 맞추기
   useEffect(() => {
     if (step === STEP.CHOOSE) {
-      setOpenRequest(false); // 요청서 닫힘
-      setOpenQuotes(true); // 받은 견적 열림
+      setOpenRequest(false);
+      setOpenQuotes(true);
     } else if (step === STEP.MATCHED) {
-      setOpenRequest(false); // 요청서 닫힘
-      setOpenQuotes(true); // 선택한 견적 영역(아래)만 노출되지만 상태는 열림 유지
+      setOpenRequest(false);
+      setOpenQuotes(true);
     } else if (step === STEP.FINDING) {
-      // 초깃값은 요청서만 열려 있어도 UX가 자연스러움
       setOpenRequest(true);
+      setOpenQuotes(false);
+    } else if (step === STEP.DONE) {
+      // ✅ 완료 모드: 요청서/받은견적 모두 접힘(요약만)
+      setOpenRequest(false);
       setOpenQuotes(false);
     }
   }, [step]);
@@ -169,22 +167,24 @@ export default function RepairProgressTemplate() {
 
   // ----- 액션 -----
   const handleChooseQuote = () => {
-    if (mode === COST_MODE.LANDLORD) return; // 집주인 부담은 선택 불가
+    if (mode === COST_MODE.LANDLORD) return;
     if (!selectedQuoteId) return;
     setStep(STEP.MATCHED);
   };
 
   const handleCancelMatch = () => {
-    // 요구사항 #3: 바로 되돌리지 말고 확인 모달
     setShowCancelModal(true);
   };
 
   const confirmCancelMatch = () => {
     setShowCancelModal(false);
-    setStep(STEP.CHOOSE); // 이전 단계 복귀
+    setStep(STEP.CHOOSE);
   };
 
-  // 선택됐고(!!selectedQuoteId), LANDLORD 모드가 아니면 진행 가능
+  const goWriteReview = () => {
+    alert('후기 작성 진입'); // TODO: 라우팅 연결
+  };
+
   const canProceed = mode !== COST_MODE.LANDLORD && !!selectedQuoteId;
 
   // 데모 전환용 UI (실제 배포 시 제거 가능)
@@ -212,18 +212,19 @@ export default function RepairProgressTemplate() {
       <ButtonSmall active={true} text="STEP1" onClick={() => setStep(STEP.FINDING)} />
       <ButtonSmall active={true} text="STEP2" onClick={() => setStep(STEP.CHOOSE)} />
       <ButtonSmall active={true} text="STEP3" onClick={() => setStep(STEP.MATCHED)} />
+      <ButtonSmall active={true} text="STEP4" onClick={() => setStep(STEP.DONE)} />
     </Row>
   );
 
   return (
     <>
-      <TopBar title="진행중인 수리" />
+      <TopBar title={isDone ? '완료된 수리' : '진행중인 수리'} />
 
       {/* 헤더 영역 */}
       <WhiteSection>
         <Row $justify="space-between" style={{ marginBottom: '15px' }}>
-          <ButtonRound text="진행중" />
-          <InfoIcon src={iconInfo} onClick={() => setShowInfoModal(true)} /> {/* ✅ 요구사항 #4 */}
+          <ButtonRound text={isDone ? '처리 완료' : '진행중'} />
+          <InfoIcon src={iconInfo} onClick={() => setShowInfoModal(true)} />
         </Row>
         <Column $gap={20}>
           <Column $gap={6}>
@@ -242,16 +243,17 @@ export default function RepairProgressTemplate() {
             <StepDot $active={step === STEP.DONE}>처리{'\n'}완료</StepDot>
           </StepBar>
 
-          {/* 진행 상태 문구 */}
-          <GuideBubble>
-            {step === STEP.FINDING && '수리업체에서 요청서를 확인하고 있어요.'}
-            {step === STEP.CHOOSE &&
-              (mode === COST_MODE.SELF
-                ? '마음에 드는 견적서를 선택해주세요!'
-                : '집주인이 견적서를 선택하는 중이에요.')}
-            {step === STEP.MATCHED && '업체가 매칭되었어요!'}
-            {step === STEP.DONE && '처리가 완료되었어요.'}
-          </GuideBubble>
+          {/* 진행 상태 문구(완료는 숨김) */}
+          {!isDone && (
+            <GuideBubble>
+              {step === STEP.FINDING && '수리업체에서 요청서를 확인하고 있어요.'}
+              {step === STEP.CHOOSE &&
+                (mode === COST_MODE.SELF
+                  ? '마음에 드는 견적서를 선택해주세요!'
+                  : '집주인이 견적서를 선택하는 중이에요.')}
+              {step === STEP.MATCHED && '업체가 매칭되었어요!'}
+            </GuideBubble>
+          )}
         </Column>
       </WhiteSection>
 
@@ -292,108 +294,148 @@ export default function RepairProgressTemplate() {
       )}
 
       {step === STEP.CHOOSE && (
-        <>
-          {/* 받은 견적 아코디언 */}
-          <Accordion>
-            <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
-              <Column $gap={2}>
-                <AccordionTitle>
-                  받은 견적
-                  <Caption1_600>
-                    {quotes.length}개 업체에서 견적서를 보내왔어요.
-                    <br />
-                    수리를 진행할 업체를 선택해 주세요.
-                  </Caption1_600>
-                </AccordionTitle>
-              </Column>
-              <Chevron $open={openQuotes} />
-            </AccordionHeader>
+        <Accordion>
+          <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
+            <Column $gap={2}>
+              <AccordionTitle>
+                받은 견적
+                <Caption1_600>
+                  {quotes.length}개 업체에서 견적서를 보내왔어요.
+                  <br />
+                  수리를 진행할 업체를 선택해 주세요.
+                </Caption1_600>
+              </AccordionTitle>
+            </Column>
+            <Chevron $open={openQuotes} />
+          </AccordionHeader>
 
-            <Collapsible isOpen={openQuotes}>
-              <AccordionBody2>
-                <Column $gap={10}>
-                  {quotes.map(q => (
-                    <ModeItem
-                      key={q.id}
-                      selected={selectedQuoteId === q.id}
-                      onClick={() => (mode === COST_MODE.SELF ? setSelectedQuoteId(q.id) : null)}
-                      height="auto"
-                      padding="18px 24px"
-                    >
-                      <CardContent>
-                        <Row style={{ alignItems: 'center' }} $gap={10}>
-                          <Avatar src={q.avatar} alt="" />
-                          <CompanyName>
-                            {q.companyName} <ArrowRight src={iconChevron} />
-                          </CompanyName>
-                        </Row>
-                        <Phone>{q.phone}</Phone>
-                        <Content>{q.content}</Content>
-                        <Price>{comma(q.price)}원</Price>
-                      </CardContent>
-                    </ModeItem>
-                  ))}
-                </Column>
-                <Footer>
-                  <Button
-                    active={canProceed}
-                    onClick={handleChooseQuote}
-                    text={mode === COST_MODE.LANDLORD ? '집주인이 선택합니다' : '견적서 선택'}
-                  />
-                </Footer>
-              </AccordionBody2>
-            </Collapsible>
-          </Accordion>
-        </>
+          <Collapsible isOpen={openQuotes}>
+            <AccordionBody2>
+              <Column $gap={10}>
+                {quotes.map(q => (
+                  <ModeItem
+                    key={q.id}
+                    selected={selectedQuoteId === q.id}
+                    onClick={() => (mode === COST_MODE.SELF ? setSelectedQuoteId(q.id) : null)}
+                    height="auto"
+                    padding="18px 24px"
+                  >
+                    <CardContent>
+                      <Row style={{ alignItems: 'center' }} $gap={10}>
+                        <Avatar src={q.avatar} alt="" />
+                        <CompanyName>
+                          {q.companyName} <ArrowRight src={iconChevron} />
+                        </CompanyName>
+                      </Row>
+                      <Phone>{q.phone}</Phone>
+                      <Content>{q.content}</Content>
+                      <Price>{comma(q.price)}원</Price>
+                    </CardContent>
+                  </ModeItem>
+                ))}
+              </Column>
+              <Footer>
+                <Button
+                  active={canProceed}
+                  onClick={handleChooseQuote}
+                  text={mode === COST_MODE.LANDLORD ? '집주인이 선택합니다' : '견적서 선택'}
+                />
+              </Footer>
+            </AccordionBody2>
+          </Collapsible>
+        </Accordion>
       )}
 
       {step === STEP.MATCHED && selectedQuote && (
-        <>
-          <div style={{ height: '10px' }} />
-          <Accordion $noTopMargin>
-            <AccordionHeader>
-              <AccordionTitle>선택한 견적</AccordionTitle>
-              {mode === COST_MODE.SELF && (
-                <ButtonSmall width={60} text="취소" onClick={handleCancelMatch} />
-              )}
-            </AccordionHeader>
+        <Accordion>
+          <AccordionHeader>
+            <AccordionTitle>선택한 견적</AccordionTitle>
+            {mode === COST_MODE.SELF && (
+              <ButtonSmall width={60} text="취소" onClick={handleCancelMatch} />
+            )}
+          </AccordionHeader>
 
-            <Collapsible isOpen={openQuotes}>
-              <AccordionBody>
-                <Row $justify={'space-between'} style={{ marginBottom: '14px' }}>
-                  <ItemLabel>업체명</ItemLabel>
-                  <ItemValue>
-                    <Row $gap={8} style={{ alignItems: 'center', cursor: 'pointer' }}>
-                      <Avatar src={selectedQuote.avatar} alt="" />
-                      <CompanyName as="span">{selectedQuote.companyName}</CompanyName>
-                      <ArrowRight src={iconChevron} />
-                    </Row>
-                  </ItemValue>
+          <Collapsible isOpen={openQuotes}>
+            <AccordionBody>
+              <Row $justify={'space-between'} style={{ marginBottom: '14px' }}>
+                <ItemLabel>업체명</ItemLabel>
+                <ItemValue>
+                  <Row $gap={8} style={{ alignItems: 'center', cursor: 'pointer' }}>
+                    <Avatar src={selectedQuote.avatar} alt="" />
+                    <CompanyName as="span">{selectedQuote.companyName}</CompanyName>
+                    <ArrowRight src={iconChevron} />
+                  </Row>
+                </ItemValue>
+              </Row>
+              <Column $gap={24}>
+                <Row $justify={'space-between'}>
+                  <ItemLabel>금액</ItemLabel>
+                  <ItemValue>{comma(selectedQuote.price)}원</ItemValue>
                 </Row>
-                <Column $gap={24}>
-                  <Row $justify={'space-between'}>
-                    <ItemLabel>금액</ItemLabel>
-                    <ItemValue>{comma(selectedQuote.price)}원</ItemValue>
-                  </Row>
-                  <Row $justify={'space-between'}>
-                    <ItemLabel>수리 예정 날짜</ItemLabel>
-                    <ItemValue>{request.hopeAt}</ItemValue>
-                  </Row>
-                  <Row $justify={'space-between'}>
-                    <ItemLabel>전화번호</ItemLabel>
-                    <ItemValue>{selectedQuote.phone}</ItemValue>
-                  </Row>
-                  <Column $gap={8}>
-                    <ItemLabel>내용</ItemLabel>
-                    <Note>{selectedQuote.content}</Note>
-                  </Column>
+                <Row $justify={'space-between'}>
+                  <ItemLabel>수리 예정 날짜</ItemLabel>
+                  <ItemValue>{request.hopeAt}</ItemValue>
+                </Row>
+                <Row $justify={'space-between'}>
+                  <ItemLabel>전화번호</ItemLabel>
+                  <ItemValue>{selectedQuote.phone}</ItemValue>
+                </Row>
+                <Column $gap={8}>
+                  <ItemLabel>내용</ItemLabel>
+                  <Note>{selectedQuote.content}</Note>
                 </Column>
+              </Column>
 
-                <div style={{ height: '30px' }} />
-                <Button text="1:1 문의하기" onClick={() => alert('채팅 진입')} />
-              </AccordionBody>
-            </Collapsible>
-          </Accordion>
+              <div style={{ height: '30px' }} />
+              <Button text="1:1 문의하기" onClick={() => alert('채팅 진입')} />
+            </AccordionBody>
+          </Collapsible>
+        </Accordion>
+      )}
+
+      {/* ✅ STEP4: 처리 완료 화면 */}
+      {step === STEP.DONE && selectedQuote && (
+        <>
+          <DividerLine />
+          <SectionHeader>
+            <AccordionTitle>수리 정보</AccordionTitle>
+          </SectionHeader>
+
+          <InfoCard>
+            <Row $justify={'space-between'} style={{ marginBottom: '14px' }}>
+              <ItemLabel>업체명</ItemLabel>
+              <ItemValue>
+                <Row $gap={8} style={{ alignItems: 'center' }}>
+                  <Avatar src={selectedQuote.avatar} alt="" />
+                  <CompanyName as="span">{selectedQuote.companyName}</CompanyName>
+                  <ArrowRight src={iconChevron} />
+                </Row>
+              </ItemValue>
+            </Row>
+
+            <Column $gap={24}>
+              <Row $justify={'space-between'}>
+                <ItemLabel>금액</ItemLabel>
+                <ItemValue>{comma(selectedQuote.price)}원</ItemValue>
+              </Row>
+              <Row $justify={'space-between'}>
+                <ItemLabel>수리 예정 날짜</ItemLabel>
+                <ItemValue>{request.hopeAt}</ItemValue>
+              </Row>
+              <Row $justify={'space-between'}>
+                <ItemLabel>전화번호</ItemLabel>
+                <ItemValue>{selectedQuote.phone}</ItemValue>
+              </Row>
+              <Column $gap={8}>
+                <ItemLabel>내용</ItemLabel>
+                <Note>{selectedQuote.content}</Note>
+              </Column>
+            </Column>
+          </InfoCard>
+
+          <FooterSticky>
+            <Button text="후기 작성하기" active={true} onClick={goWriteReview} />
+          </FooterSticky>
         </>
       )}
 
@@ -441,7 +483,7 @@ export default function RepairProgressTemplate() {
               <GuideText>업체 매칭이 완료됐어요! 곧 수리 기사님이 방문하실 예정이에요.</GuideText>
             </GuideBlock>
             <GuideTitle>STEP 04</GuideTitle>
-            <GuideBlock>
+            <GuideBlock style={{ margin: '4px 0px 0px 0px' }}>
               <GuideStep>처리 완료</GuideStep>
               <GuideText>
                 수리가 완료됐어요! 만족스러우셨나요? {'\n'}앞으로도 핫케톡에서 만나요!
@@ -451,7 +493,6 @@ export default function RepairProgressTemplate() {
         </Dim>
       )}
 
-      {/* STEP4(처리완료)는 이 페이지에서 다루지 않음 */}
       <DemoSwitch />
     </>
   );
@@ -538,19 +579,42 @@ const GuideBubble = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
   box-sizing: border-box;
   ${typo('body2')}
   height: 46px;
   text-align: center;
-
   padding: 10px 12px;
   border: 1px solid ${color('grayscale.300')};
   border-radius: 10px;
   color: ${color('grayscale.600')};
 `;
 
-// 섹션 2
+/* 구분선 + 섹션 헤더 (완료 화면에서 사용) */
+const DividerLine = styled.div`
+  height: 8px;
+  background: ${color('grayscale.100')};
+  width: 100%;
+  margin-top: 6px;
+`;
+
+const SectionHeader = styled.div`
+  padding: 16px 24px 8px 24px;
+  background: #fff;
+`;
+
+const InfoCard = styled.div`
+  padding: 16px 24px 24px 24px;
+  background: #fff;
+`;
+
+const FooterSticky = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: #fff;
+  padding: 12px 24px 18px;
+`;
+
+// 섹션 2 (공용 아코디언)
 const Accordion = styled.div`
   margin-top: ${p => (p.$noTopMargin ? '0' : '10px')};
   background: #fff;
@@ -689,9 +753,7 @@ const Dim = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-
-  /* ✅ 앱 최대 사이즈(예: 390px)로 제한 */
-  max-width: 390px;
+  max-width: 390px; /* 앱 최대 폭 한정 */
   margin: 0 auto;
 
   background: rgba(0, 0, 0, 0.4);
