@@ -198,3 +198,23 @@ export function getProgressInitialProps(id) {
     initialQuotes: r.quotes,
   };
 }
+
+// 홈화면 렌더링 위해 추가
+const STEP_LABEL = {
+  1: '업체 찾는 중',
+  2: '견적서 선택',
+  3: '업체 매칭',
+  4: '처리 완료',
+};
+
+export function getActiveRepairs() {
+  // STEP1~3만
+  return REPAIR_REQUESTS.filter(r => r.step !== 4).map(r => ({
+    id: r.id,
+    step: r.step,
+    categoryLabel: r.request.categoryLabel, // 업종
+    schedule: r.request.hopeAt, // 수리 예정 날짜
+    payerLabel: r.request.payerLabel, // 본인 부담 / 집주인 부담
+    statusLabel: STEP_LABEL[r.step], // 업체 찾는 중 / 견적서 선택 / 업체 매칭
+  }));
+}

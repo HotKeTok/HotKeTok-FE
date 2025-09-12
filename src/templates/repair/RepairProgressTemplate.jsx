@@ -15,8 +15,6 @@ import iconInfo from '../../assets/repair/repair-progress/icon-info.svg';
 import iconChevron from '../../assets/repair/icon-chevron.svg';
 import iconClose from '../../assets/common/icon-close.svg';
 
-import { buildMockRequest, MOCK_QUOTES } from '../../mocks';
-
 /* =========================================================
  * 타입/상수
  * ======================================================= */
@@ -87,11 +85,11 @@ export default function RepairProgressTemplate({
   const [step, setStep] = useState(initialStep ?? STEP.FINDING); // 1,2,3,4
   const isDone = step === STEP.DONE;
 
-  // ----- 요청서 목데이터 (mock/repair/request.js) -----
-  const request = useMemo(() => initialRequest ?? buildMockRequest(mode), [initialRequest, mode]);
+  // 요청서 데이터(필수 주입값)
+  const request = useMemo(() => initialRequest, [initialRequest]);
 
-  // ----- 견적 리스트 목데이터 (mock/repair/quotes.js) -----
-  const [quotes] = useState(initialQuotes ?? MOCK_QUOTES);
+  // 견적 리스트(주입값 없으면 빈 배열)
+  const [quotes] = useState(initialQuotes ?? []);
 
   // ----- 선택한 견적 -----
   const [selectedQuoteId, setSelectedQuoteId] = useState(initialSelectedQuoteId ?? null);
@@ -365,7 +363,7 @@ export default function RepairProgressTemplate({
       {showCancelModal && (
         <Dim onClick={() => setShowCancelModal(false)}>
           <Modal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
-            <ModalTitle>GS 건설</ModalTitle>
+            <ModalTitle>{selectedQuote?.companyName ?? '업체'}</ModalTitle>
             <ModalDesc>업체 선택을 취소하시겠어요?</ModalDesc>
             <Row $gap={10}>
               <ModalButton $variant="ghost" onClick={() => setShowCancelModal(false)}>
