@@ -1,5 +1,5 @@
-import RepairTemplate from '../../templates/repair/RepairHomeTemplate';
+import RepairHomeTemplate from '../../templates/repair/RepairHomeTemplate';
 
 export default function RepairHome() {
-  return <RepairTemplate />;
+  return <RepairHomeTemplate />;
 }
