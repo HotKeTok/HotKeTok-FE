@@ -7,6 +7,7 @@ import ButtonSmall from '../../components/common/ButtonSmall';
 import ButtonRound from '../../components/common/ButtonRound';
 import ModeItem from '../../components/common/ModeItem';
 import RequestSummary from '../../components/repair/RequestSummary';
+import RepairDetailRows from '../../components/repair/repair-progress/RepairDetailRows';
 
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
@@ -357,37 +358,18 @@ export default function RepairProgressTemplate() {
 
           <Collapsible isOpen={openQuotes}>
             <AccordionBody>
-              <Row $justify={'space-between'} style={{ marginBottom: '14px' }}>
-                <ItemLabel>업체명</ItemLabel>
-                <ItemValue>
-                  <Row $gap={8} style={{ alignItems: 'center', cursor: 'pointer' }}>
-                    <Avatar src={selectedQuote.avatar} alt="" />
-                    <CompanyName as="span">{selectedQuote.companyName}</CompanyName>
-                    <ArrowRight src={iconChevron} />
-                  </Row>
-                </ItemValue>
-              </Row>
-              <Column $gap={24}>
-                <Row $justify={'space-between'}>
-                  <ItemLabel>금액</ItemLabel>
-                  <ItemValue>{comma(selectedQuote.price)}원</ItemValue>
-                </Row>
-                <Row $justify={'space-between'}>
-                  <ItemLabel>수리 예정 날짜</ItemLabel>
-                  <ItemValue>{request.hopeAt}</ItemValue>
-                </Row>
-                <Row $justify={'space-between'}>
-                  <ItemLabel>전화번호</ItemLabel>
-                  <ItemValue>{selectedQuote.phone}</ItemValue>
-                </Row>
-                <Column $gap={8}>
-                  <ItemLabel>내용</ItemLabel>
-                  <Note>{selectedQuote.content}</Note>
-                </Column>
-              </Column>
-
-              <div style={{ height: '30px' }} />
-              <Button text="1:1 문의하기" onClick={() => alert('채팅 진입')} />
+              <RepairDetailRows
+                companyName={selectedQuote.companyName}
+                phone={selectedQuote.phone}
+                price={selectedQuote.price}
+                schedule={request.hopeAt}
+                content={selectedQuote.content}
+                avatar={selectedQuote.avatar}
+                arrowIcon={iconChevron}
+                onCompanyClick={() => {
+                  /* 업체 상세 이동 등 */
+                }}
+              />
             </AccordionBody>
           </Collapsible>
         </Accordion>
@@ -402,35 +384,18 @@ export default function RepairProgressTemplate() {
           </SectionHeader>
 
           <InfoCard>
-            <Row $justify={'space-between'} style={{ marginBottom: '14px' }}>
-              <ItemLabel>업체명</ItemLabel>
-              <ItemValue>
-                <Row $gap={8} style={{ alignItems: 'center' }}>
-                  <Avatar src={selectedQuote.avatar} alt="" />
-                  <CompanyName as="span">{selectedQuote.companyName}</CompanyName>
-                  <ArrowRight src={iconChevron} />
-                </Row>
-              </ItemValue>
-            </Row>
-
-            <Column $gap={24}>
-              <Row $justify={'space-between'}>
-                <ItemLabel>금액</ItemLabel>
-                <ItemValue>{comma(selectedQuote.price)}원</ItemValue>
-              </Row>
-              <Row $justify={'space-between'}>
-                <ItemLabel>수리 예정 날짜</ItemLabel>
-                <ItemValue>{request.hopeAt}</ItemValue>
-              </Row>
-              <Row $justify={'space-between'}>
-                <ItemLabel>전화번호</ItemLabel>
-                <ItemValue>{selectedQuote.phone}</ItemValue>
-              </Row>
-              <Column $gap={8}>
-                <ItemLabel>내용</ItemLabel>
-                <Note>{selectedQuote.content}</Note>
-              </Column>
-            </Column>
+            <RepairDetailRows
+              companyName={selectedQuote.companyName}
+              phone={selectedQuote.phone}
+              price={selectedQuote.price}
+              schedule={request.hopeAt}
+              content={selectedQuote.content}
+              avatar={selectedQuote.avatar}
+              arrowIcon={iconChevron}
+              onCompanyClick={() => {
+                /* 업체 상세 이동 등 */
+              }}
+            />
           </InfoCard>
 
           <FooterSticky>
@@ -498,9 +463,9 @@ export default function RepairProgressTemplate() {
   );
 }
 
-/* =========================================================
- * 유틸
- * ======================================================= */
+/* =========================
+ * 유틸(금액 콤마 찍어주기)
+ * ========================= */
 function comma(n) {
   try {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -661,27 +626,6 @@ const CollapsibleOuter = styled.div`
 
 const CardContent = styled.div`
   width: 100%;
-`;
-
-const ItemLabel = styled.div`
-  ${typo('button2')};
-  color: ${color('grayscale.800')};
-`;
-
-const ItemValue = styled.div`
-  ${typo('body2')};
-  color: ${color('grayscale.600')};
-  text-align: right;
-`;
-
-const Note = styled.div`
-  ${typo('body2')};
-  color: ${color('grayscale.800')};
-  background: ${color('grayscale.100')};
-  border: 1px solid ${color('grayscale.200')};
-  border-radius: 6px;
-  padding: 13px 15px;
-  white-space: pre-wrap;
 `;
 
 const EmptyQuotes = styled.div`
