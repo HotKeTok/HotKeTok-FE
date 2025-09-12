@@ -75,20 +75,26 @@ function Collapsible({ isOpen, children, className }) {
 /* =========================================================
  * 페이지 컴포넌트
  * ======================================================= */
-export default function RepairProgressTemplate() {
+export default function RepairProgressTemplate({
+  initialStep,
+  initialMode,
+  initialSelectedQuoteId,
+  initialRequest,
+  initialQuotes,
+} = {}) {
   // ----- 모드/스텝: 실제론 서버 상태에 맞춰 세팅 -----
-  const [mode, setMode] = useState(COST_MODE.SELF); // SELF / LANDLORD
-  const [step, setStep] = useState(STEP.FINDING); // 1,2,3,4
+  const [mode, setMode] = useState(initialMode ?? COST_MODE.SELF); // SELF / LANDLORD
+  const [step, setStep] = useState(initialStep ?? STEP.FINDING); // 1,2,3,4
   const isDone = step === STEP.DONE;
 
   // ----- 요청서 목데이터 (mock/repair/request.js) -----
-  const request = useMemo(() => buildMockRequest(mode), [mode]);
+  const request = useMemo(() => initialRequest ?? buildMockRequest(mode), [initialRequest, mode]);
 
   // ----- 견적 리스트 목데이터 (mock/repair/quotes.js) -----
-  const [quotes] = useState(MOCK_QUOTES);
+  const [quotes] = useState(initialQuotes ?? MOCK_QUOTES);
 
   // ----- 선택한 견적 -----
-  const [selectedQuoteId, setSelectedQuoteId] = useState(null);
+  const [selectedQuoteId, setSelectedQuoteId] = useState(initialSelectedQuoteId ?? null);
   const selectedQuote = useMemo(
     () => quotes.find(q => q.id === selectedQuoteId) || null,
     [quotes, selectedQuoteId]

@@ -1,4 +1,4 @@
-// 공통 샘플 이미지 (data-uri)
+// 공통 샘플 이미지
 export const SAMPLE_THUMB =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
