@@ -15,6 +15,8 @@ import Alarm from './pages/main/Alarm';
 import RepairHome from './pages/repair/RepairHome';
 import RequestRepair from './pages/repair/RequestRepair';
 import RepairProgress from './pages/repair/RepairProgress';
+import ContractorProfile from './pages/repair/ContractorProfile';
+
 // 똑똑 관련
 import Communication from './pages/Communication';
 // 마이 관련
@@ -83,6 +85,7 @@ export default function AppRouter() {
           <Route path="/request-repair" element={<RequestRepair />} />
           <Route path="/repair-progress" element={<RepairProgress />} />
           <Route path="/repair-history" element={<RepairHistory />} />
+          <Route path="/contractor-profile" element={<ContractorProfile />} />
 
           {/* 똑똑 관련*/}
           <Route path="/communication" element={<Communication />} />

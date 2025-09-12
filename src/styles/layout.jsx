@@ -14,6 +14,7 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/request-repair',
   '/repair-progress',
   '/repair-history',
+  '/contractor-profile',
 ];
 
 // 하단 바 높이
@@ -36,7 +37,6 @@ export const AppShell = styled.div`
 
 export const MainContainer = styled.main`
   flex: 1 1 auto;
-  overflow: auto;
   width: 100%;
 `;
 
