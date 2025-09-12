@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
+import { Row, Column, Spacer } from '../../styles/flex';
+import { color, typo } from '../../styles/tokens';
 
 import TopBar from '../../components/common/TopBar';
 import Button from '../../components/common/Button';
@@ -9,12 +11,11 @@ import ModeItem from '../../components/common/ModeItem';
 import RequestSummary from '../../components/repair/RequestSummary';
 import RepairDetailRows from '../../components/repair/repair-progress/RepairDetailRows';
 
-import { Row, Column, Spacer } from '../../styles/flex';
-import { color, typo } from '../../styles/tokens';
-
 import iconInfo from '../../assets/repair/repair-progress/icon-info.svg';
 import iconChevron from '../../assets/repair/icon-chevron.svg';
 import iconClose from '../../assets/common/icon-close.svg';
+
+import { buildMockRequest, MOCK_QUOTES } from '../../mocks';
 
 /* =========================================================
  * 타입/상수
@@ -80,60 +81,11 @@ export default function RepairProgressTemplate() {
   const [step, setStep] = useState(STEP.FINDING); // 1,2,3,4
   const isDone = step === STEP.DONE;
 
-  // ----- 요청서 데이터 (예시) -----
-  const request = useMemo(
-    () => ({
-      categoryLabel: '기타',
-      requestedAt: '2024.10.13',
-      hopeAt: '2024.11.20 / 오전 12:30',
-      payerLabel: mode === COST_MODE.SELF ? '본인 부담' : '집주인 부담',
-      address: '동작 핫케톡 스테이 304호',
-      images: [SAMPLE_THUMB, SAMPLE_THUMB],
-      description:
-        '바퀴벌레가 너무 많아졌습니다. 약 2주정도 된 것 같아요. 집에서 음식을 자주 해먹는 것도 아니고 매번 꼼꼼하게 청소하는데 원인을 모르겠습니다.',
-    }),
-    [mode]
-  );
+  // ----- 요청서 목데이터 (mock/repair/request.js) -----
+  const request = useMemo(() => buildMockRequest(mode), [mode]);
 
-  // ----- 견적 리스트 (예시) -----
-  const [quotes] = useState([
-    {
-      id: 'q1',
-      companyName: '메종인테리어',
-      phone: '02-0000-0000',
-      price: 230000,
-      content: '업계 최고 수준 보장합니다. 합리적인 가격에 모시겠습니다.',
-      avatar:
-        'data:image/svg+xml;utf8,' +
-        encodeURIComponent(
-          `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="14" fill="#EEE"/></svg>`
-        ),
-    },
-    {
-      id: 'q2',
-      companyName: 'GS건설',
-      phone: '02-0000-0000',
-      price: 220000,
-      content: '업계 최고 수준 보장합니다. 합리적인 가격에 모시겠습니다.',
-      avatar:
-        'data:image/svg+xml;utf8,' +
-        encodeURIComponent(
-          `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="14" fill="#EEE"/></svg>`
-        ),
-    },
-    {
-      id: 'q3',
-      companyName: '세이브프롬',
-      phone: '02-0000-0000',
-      price: 245000,
-      content: '업계 최고 수준 보장합니다. 합리적인 가격에 모시겠습니다.',
-      avatar:
-        'data:image/svg+xml;utf8,' +
-        encodeURIComponent(
-          `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="14" fill="#EEE"/></svg>`
-        ),
-    },
-  ]);
+  // ----- 견적 리스트 목데이터 (mock/repair/quotes.js) -----
+  const [quotes] = useState(MOCK_QUOTES);
 
   // ----- 선택한 견적 -----
   const [selectedQuoteId, setSelectedQuoteId] = useState(null);
@@ -156,7 +108,6 @@ export default function RepairProgressTemplate() {
       setOpenRequest(true);
       setOpenQuotes(false);
     } else if (step === STEP.DONE) {
-      // ✅ 완료 모드: 요청서/받은견적 모두 접힘(요약만)
       setOpenRequest(false);
       setOpenQuotes(false);
     }
