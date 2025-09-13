@@ -15,6 +15,7 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/repair-progress',
   '/repair-history',
   '/contractor-profile',
+  '/write-review',
 ];
 
 // 하단 바 높이

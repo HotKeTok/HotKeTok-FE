@@ -16,6 +16,7 @@ import RepairHome from './pages/repair/RepairHome';
 import RequestRepair from './pages/repair/RequestRepair';
 import RepairProgress from './pages/repair/RepairProgress';
 import ContractorProfile from './pages/repair/ContractorProfile';
+import WriteReview from './pages/repair/WriteReview';
 
 // 똑똑 관련
 import Communication from './pages/Communication';
@@ -44,7 +45,8 @@ const Layout = () => {
     pathname === '/sign-up' ||
     pathname === '/init-process' ||
     pathname === '/request-repair' ||
-    pathname === '/repair-history'
+    pathname === '/repair-history' ||
+    pathname === '/write-review'
       ? '#ffffff'
       : '#f9f9f9';
 
@@ -86,6 +88,7 @@ export default function AppRouter() {
           <Route path="/repair-progress" element={<RepairProgress />} />
           <Route path="/repair-history" element={<RepairHistory />} />
           <Route path="/contractor-profile" element={<ContractorProfile />} />
+          <Route path="/write-review" element={<WriteReview />} />
 
           {/* 똑똑 관련*/}
           <Route path="/communication" element={<Communication />} />
