@@ -26,6 +26,10 @@ import NavBar from './components/common/NavBar';
 import IndexWelcome from './pages/main/IndexWelcome';
 import RepairHistory from './pages/repair/RepairHistory';
 
+import { HIDE_BOTTOM_BAR_PATHS } from './styles/layout';
+import { HIDE_HEADER_PATHS } from './styles/layout';
+import { AppShell, MainContainer, BottomBar} from './styles/layout';
+
 const Layout = () => {
   const { pathname } = useLocation();
   const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname);
