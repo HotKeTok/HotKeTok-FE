@@ -2,9 +2,6 @@ import { createGlobalStyle } from 'styled-components';
 import { CONTAINER_WIDTH } from './layout';
 
 const GlobalStyle = createGlobalStyle`
-  /* Pretendard 웹폰트 (가능하면 index.html의 <link>로 교체 권장) */
-  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-
   :root {
     --background: #ffffff;
     --foreground: #000000;
@@ -29,7 +26,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     padding: 0;
     margin: 0;
-    font-family: 'Pretendard', 'Apple SD Gothic Neo', Arial, sans-serif;
+    font-family: 'Pretendard Variable', 'Apple SD Gothic Neo', Arial, sans-serif;
     background: var(--background);
     color: var(--foreground);
   }
