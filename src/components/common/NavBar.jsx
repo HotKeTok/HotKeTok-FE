@@ -1,4 +1,3 @@
-// src/components/common/NavBar.jsx
 import styled, { css } from 'styled-components'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -11,11 +10,13 @@ import {typo, color} from '../../styles/tokens'
 import { useState } from 'react'
 
 import BottomSheet from './BottomSheet'
-import { CONTAINER_WIDTH } from '../../styles/layout'
 import AuthModal from '../main/index/AuthModal'
+
+import { BOTTOM_BAR_HEIGHT } from '../../styles/layout'
 
 const Nav = styled.nav`
   width: 100%;
+  height: ${BOTTOM_BAR_HEIGHT};
   display: flex;
   align-items: center;
   justify-content: space-around;

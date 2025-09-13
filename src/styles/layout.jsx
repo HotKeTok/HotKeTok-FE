@@ -1,37 +1,35 @@
 import styled from 'styled-components';
 
-// 공통 스타일 컴포넌트를 정의합니다.
+/** 공통 상수 */
+export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/main/notice', '/main/notice', '/request-repair','/repair-progress', '/repair-history','/contractor-profile','/write-review',];
+export const HIDE_HEADER_PATHS = [];
 
-// 웹 앱 고정 너비
 export const CONTAINER_WIDTH = '390px';
-
-// 하단 바를 숨기고 싶은 경로
-export const HIDE_BOTTOM_BAR_PATHS = [
-  '/splash',
-  '/sign-in',
-  '/sign-up',
-  '/init-process',
-  '/request-repair',
-  '/repair-progress',
-  '/repair-history',
-  '/contractor-profile',
-  '/write-review',
-];
-
-// 하단 바 높이
 export const BOTTOM_BAR_HEIGHT = '74px';
+export const TOP_BAR_HEIGHT = '100px'; // 필요시 사용
+
 
 export const AppShell = styled.div`
+  --inset-b: env(safe-area-inset-bottom, 0px);
   --bar-h: ${BOTTOM_BAR_HEIGHT};
-  --inset-b: env(safe-area-inset-bottom);
   --bar-safe-h: calc(var(--bar-h) + var(--inset-b));
 
-  --container-w: 390px;
+  --container-w: ${CONTAINER_WIDTH};
+
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
-  background: ${({ $bg }) => $bg}; // ✅ 동적 배경
-  border: 1px solid black; // 배경 하얀색인경우 경계가 안 보여서 border 임시로 추가(배포전 삭제예정))
+
+  /* 가운데 정렬 + 고정 폭 */
+  width: 100%;
+  max-width: var(--container-w);
+  margin: 0 auto;
+
+  background: ${({ $bg }) => $bg || '#fff'};
+
+  /* 개발 중 경계 확인용 (배포 전 제거 예정) */
+  border: 1px solid black;
 
   overflow: hidden;
 `;
@@ -39,29 +37,102 @@ export const AppShell = styled.div`
 export const MainContainer = styled.main`
   flex: 1 1 auto;
   width: 100%;
-`;
+  overflow: auto;
 
-export const BottomBar = styled.footer`
-  flex: 0 0 auto;
-  height: var(--bar-safe-h);
-  display: flex;
-  align-items: center;
-  border-top: 1px solid #eee;
-  padding-bottom: env(safe-area-inset-bottom);
+  overscroll-behavior: contain;
 
-  width: min(100%, var(--container-w));
-
-  background: #fff;
-  border-top: 1px solid #eee;
-  z-index: 100;
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0,0,0,0.15);
+  }
 `;
 
 /**
- * 템플릿의 최상위 부모 컨테이너입니다.
+ * 하단 네비게이션 바 컨테이너
  */
-export const Page = styled.section``;
+export const BottomBar = styled.footer`
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
 
-export const ScrollableFullPage = styled.section`
+  /* 고정 폭 컨테이너와 동일하게 */
+  width: var(--container-w);
+  height: var(--bar-h);
+
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+
+  background: #fff;
+  border-top: 1px solid #eee;
+
+  /* 컨텐츠 위에 떠 있게 */
+  z-index: 1000;
+`;
+
+// 1-1. 페이지에서 import하여 사용하는 최상단 컴포넌트
+export const Page = styled.section`
+  width: 100%;
+  padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 전체 페이지에서 바텀바를 가리지 않기 위함
+`
+
+// 1-2. 페이지에서 사용하는 최상단 컴포넌트, 바텀바 없음
+export const PageNoBottomBar = styled.section`
+  width: 100%;
+  padding-bottom: 0; // 바텀바 없는 페이지용
+`
+
+// 2-1. 바텀바 있는 페이지에서 스크롤 필요한 경우 사용
+// 주의: Page로 감싸고, 헤더와 같은 레벨에 import하여 사용.
+export const ScrollableContent = styled.section`
+  flex: 1 1 auto;
+  height: calc(100vh - ${TOP_BAR_HEIGHT}); // 헤더 높이 고려한 높이
+  padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 바텀바 고려 하단 패딩
+
   overflow: auto;
-  height: 100dvh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+`;
+
+// 2-2. 바텀바 없는 페이지에서 스크롤 가능한 컨테이너로 사용
+// 주의: Page로 감싸고, 헤더와 같은 레벨에 import하여 사용.
+export const ScrollableNoBottomBarContent = styled.section`
+  flex: 1 1 auto;
+  height: calc(100vh - ${TOP_BAR_HEIGHT}); // 헤더 높이 고려한 높이
+  padding-bottom: 0;
+
+  overflow: auto;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+`;
+
+// 3-1. 바텀바가 없는 페이지에서 하단의 fixed된 버튼 컨테이너가 필요한 경우 사용
+// 헤더, 페이지 컨테이너와 동일한 레벨에 import하여 사용.
+// 주의: fixed이므로, 스크롤 컨텐츠 위에 떠 있게 됨.
+export const BottomButtonContainer = styled.div`
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+
+    /* 고정 폭 컨테이너와 동일하게 */
+    width: var(--container-w);
+    height: var(--bar-h);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 30px 25px;
+
+    /* 컨텐츠 위에 떠 있게 */
+    z-index: 1000;
 `;

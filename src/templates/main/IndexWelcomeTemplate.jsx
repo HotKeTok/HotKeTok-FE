@@ -5,7 +5,7 @@ import AddressBox from "../../components/main/index/AddressBox"
 import { Column } from "../../styles/flex"
 import WelcomeHouse from "../../assets/main/icn-welcome-house.svg?react"
 import { typo , color} from "../../styles/tokens"
-import { Page } from "../../styles/layout"
+import { ScrollableContent } from "../../styles/layout"
 
 export default function IndexWelcomeTemplate() {
     const MAIN_FEATURES = [
@@ -36,7 +36,7 @@ export default function IndexWelcomeTemplate() {
     ]
 
     return (
-        <Container $scroll={false}>
+        <Container>
             <PageHeader leftComponent={<SelectHome homeTitle="우리집" />} />
             <AddressBox address="서울특별시 강남구 영동대로 112길 46" />
             <Center>
@@ -54,8 +54,7 @@ export default function IndexWelcomeTemplate() {
     )
 }
 
-const Container = styled(Page)`
-    width: auto;
+const Container = styled(ScrollableContent)`
     padding: 12px 16px;
     background: linear-gradient(180deg, #D8F4EA 0%, #FFF 100%);
 `
