@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
 import { Row, Column } from '../../../styles/flex';
-import StarIcon from '../../../assets/repair/icon-star.svg';
+import iconGreenStar from '../../../assets/repair/icon-star-green.svg';
 import PhoneIcon from '../../../assets/repair/icon-phone.svg';
 import AddressIcon from '../../../assets/repair/icon-address.svg';
 
@@ -49,7 +49,7 @@ function CompanyCard({ category, name, rating, reviewCount, phone, address, imag
             <Name>{name}</Name>
             <Row $gap={8} $align="center">
               <Row $gap={4}>
-                <IconWrapper src={StarIcon} />
+                <IconWrapper src={iconGreenStar} />
                 <RatingText>{rating.toFixed(1)}</RatingText>
               </Row>
               <SmallText>후기 {reviewCount}</SmallText>

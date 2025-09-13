@@ -7,15 +7,17 @@ import Button from '../../components/common/Button';
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 
-import StarIcon from '../../assets/repair/icon-star.svg';
+import iconGreenStar from '../../assets/repair/icon-star-green.svg';
 import iconClock from '../../assets/repair/icon-clock.svg';
 import iconPhone from '../../assets/repair/icon-phone.svg';
 import iconBookmark from '../../assets/repair/icon-bookmark.svg';
 import iconAddress from '../../assets/repair/icon-address.svg';
+import iconChevron from '../../assets/common/icon-arrow-down.svg';
+import iconYelloStar from '../../assets/repair/contractor-profile/icon-star-yellow.svg';
+import iconGrayStar from '../../assets/repair/contractor-profile/icon-star-gray.svg';
 
 // ✅ mock 데이터 import
 import { MOCK_CONTRACTORS } from '../../mocks/repair/contractors';
-import AddressBox from '../../components/main/index/AddressBox';
 
 /* =========================================================
  * 메인 컴포넌트
@@ -55,7 +57,7 @@ export default function ContractorProfileTemplate({ contractorId }) {
             </Row>
             <Row $gap={14} $align="center">
               <Row $gap={4}>
-                <IconWrapper src={StarIcon} />
+                <IconWrapper src={iconGreenStar} />
                 <RatingText>{contractor.ratingAvg?.toFixed(1) ?? '0.0'}</RatingText>
               </Row>
               <SmallText>후기 {contractor.reviewCount ?? 0}</SmallText>
@@ -74,7 +76,7 @@ export default function ContractorProfileTemplate({ contractorId }) {
           </div>
         </Column>
       </Header>
-
+      <div style={{ background: '#F5F6F6', height: '10px' }} />
       <Tabs>
         <TabButton $active={tab === 'home'} onClick={() => setTab('home')}>
           홈
@@ -141,12 +143,12 @@ function HomeTab({ contractor }) {
  * ======================================================= */
 function NewsTab({ news, contractor }) {
   return (
-    <TabBody style={{ paddingTop: '0px' }}>
+    <TabBody style={{ paddingTop: '5px' }}>
       {news.map(n => (
         <NewsCard key={n.id}>
           <Row $justify="space-between" $align="center" style={{ marginBottom: '12px' }}>
             <Row $gap={5} $align="center">
-              <div>업체 사진</div>
+              <Avatar>메</Avatar>
               <NewsContractorName>{contractor.name}</NewsContractorName>
             </Row>
             <NewsDate>{n.date}</NewsDate>
@@ -174,10 +176,13 @@ function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSort }) {
 
   return (
     <TabBody>
-      <Row style={{ justifyContent: 'space-between', alignItems: 'center', padding: '0 16px' }}>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <ReviewCount>후기 {reviewCount}</ReviewCount>
         <Dropdown>
-          <DropdownButton onClick={() => setOpen(v => !v)}>{label}</DropdownButton>
+          <DropdownButton onClick={() => setOpen(v => !v)}>
+            {label}
+            <ChevronIcon src={iconChevron} $open={open} />
+          </DropdownButton>
           {open && (
             <DropdownMenu>
               <DropdownItem onClick={() => (onChangeSort('latest'), setOpen(false))}>
@@ -194,8 +199,6 @@ function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSort }) {
         </Dropdown>
       </Row>
 
-      <Spacer h={8} />
-
       {reviews.map(r => (
         <ReviewCard key={r.id}>
           <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
@@ -205,8 +208,13 @@ function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSort }) {
                 <ReviewerName>{r.user}</ReviewerName>
                 <Row $gap={4} style={{ alignItems: 'center' }}>
                   <Stars>
-                    {'★'.repeat(r.rating)}
-                    {'☆'.repeat(5 - r.rating)}
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <StarIconImg
+                        key={i}
+                        src={i < r.rating ? iconYelloStar : iconGrayStar}
+                        alt={i < r.rating ? 'yellow star' : 'gray star'}
+                      />
+                    ))}
                   </Stars>
                   {!!r.tags?.length && <Badge>{r.tags.join('/')}</Badge>}
                 </Row>
@@ -242,6 +250,9 @@ function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSort }) {
 const Screen = styled.div`
   min-height: 100vh;
   width: 390px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
 `;
 
 const Header = styled.div`
@@ -310,13 +321,13 @@ const InquiryButton = styled.div`
   align-items: center;
   border-radius: 10px;
   border: 1px solid ${color('grayscale.300')};
+  cursor: pointer;
 `;
 
 const Tabs = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   background: #fff;
-  margin-top: 10px;
   border-bottom: 1px solid ${color('grayscale.300')};
 `;
 
@@ -344,7 +355,7 @@ const TabButton = styled.button`
 `;
 
 const TabBody = styled.div`
-  padding: 20px 20px;
+  padding: 20px;
   background: #fff;
 `;
 
@@ -416,34 +427,44 @@ const Dropdown = styled.div`
 `;
 
 const DropdownButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   ${typo('button2')};
   height: 32px;
-  padding: 0 12px;
   color: ${color('grayscale.600')};
   border: none;
   background: transparent;
 `;
 
 const DropdownMenu = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   right: 0;
-  top: 36px;
-  background: ${color('grayscale.0')};
-  border: 1px solid ${color('grayscale.300')};
   border-radius: 10px;
-  overflow: hidden;
-  min-width: 140px;
+  min-width: 120px;
   z-index: 10;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 5px;
+  background: ${color('grayscale.100')};
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.15);
+  gap: 4px;
 `;
 
 const DropdownItem = styled.div`
   ${typo('body1')};
+  display: flex;
+  width: 90px;
+  height: 30px;
   padding: 6px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   border-radius: 10px;
-  text-align: center;
-  color: ${p => (p.$active ? color('grayscale.800') : color('grayscale.800'))};
-  background: ${p => (p.$active ? color('grayscale.100') : 'transparent')};
+  color: black;
+  background: ${p => (p.$active ? color('grayscale.200') : 'transparent')};
   cursor: pointer;
 
   &:hover {
@@ -451,8 +472,16 @@ const DropdownItem = styled.div`
   }
 `;
 
-const ReviewCard = styled(Card)`
-  padding: 14px;
+const ChevronIcon = styled.img`
+  width: 8px;
+  margin-left: 5px;
+  transition: transform 0.2s ease;
+  transform: rotate(${p => (p.$open ? '180deg' : '0deg')});
+`;
+
+const ReviewCard = styled.div`
+  padding: 14px 0px;
+  border-bottom: 1px solid #efefef;
 `;
 
 const Avatar = styled.div`
@@ -468,8 +497,7 @@ const Avatar = styled.div`
 `;
 
 const ReviewerName = styled.div`
-  ${typo('body.200')};
-  font-weight: 700;
+  ${typo('button3')};
 `;
 
 const Stars = styled.div`
@@ -477,24 +505,32 @@ const Stars = styled.div`
   color: #f7b500;
 `;
 
+const StarIconImg = styled.img`
+  width: 12px;
+  height: 12px;
+`;
+
 const Badge = styled.span`
-  ${typo('caption.100')};
+  ${typo('caption2')};
   color: ${color('brand.primary')};
-  background: ${color('brand.primary')}22;
-  border: 1px solid ${color('brand.primary')}55;
-  padding: 2px 6px;
-  border-radius: 999px;
+  display: flex;
+  height: 22px;
+  padding: 2px 8px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 30px;
+  border: 0.5px solid ${color('brand.primary')};
 `;
 
 const ReviewDate = styled.div`
-  ${typo('caption.100')};
+  ${typo('caption2')};
   color: ${color('grayscale.500')};
 `;
 
 const ReviewText = styled.p`
-  ${typo('body.200')};
-  color: ${color('grayscale.800')};
-  margin: 10px 0 6px;
+  ${typo('body2')};
+  color: black;
+  margin: 8px 0 12px;
   white-space: pre-wrap;
 `;
 
@@ -525,41 +561,4 @@ const Photo = styled.div`
 
 const WriteButton = styled(Button)`
   width: 100%;
-`;
-
-const MetaRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 16px 0;
-  color: ${color('grayscale.700')};
-`;
-
-const RatingWrap = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-const MetaDivider = styled.span`
-  width: 1px;
-  height: 14px;
-  background: ${color('grayscale.300')};
-  display: inline-block;
-`;
-
-const ReviewLink = styled.button`
-  ${typo('body.200')};
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: ${color('grayscale.700')};
-  background: transparent;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-
-  b {
-    font-weight: 700;
-  }
 `;
