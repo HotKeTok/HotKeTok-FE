@@ -1,13 +1,49 @@
+// src/templates/my/MyPageTemplate.jsx
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Column, Row, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 
 import AvatarImg from '../../assets/my/img-profile.png';
+import iconPencil from '../../assets/my/icon-pencil.svg';
+import iconPencilGreen from '../../assets/my/icon-pencil-green.svg';
 import iconChevron from '../../assets/repair/icon-chevron.svg';
 
 import VerificationBadge from '../../components/my/VerificationBadge';
 
+// ✅ 공통 바텀시트
+import BottomSheet from '../../components/common/BottomSheet';
+import Button from '../../components/common/Button';
+
 export default function MyPageTemplate() {
+  // 화면 표시용(상단 카드)
+  const [name, setName] = useState('하케톡');
+  const [phone, setPhone] = useState('010-1234-1234');
+  const [avatar, setAvatar] = useState(AvatarImg);
+
+  // 시트 오픈 상태
+  const [open, setOpen] = useState(false);
+
+  // 시트 내부 편집값 (저장 전까지 분리해서 보관)
+  const [editName, setEditName] = useState(name);
+  const [editPhone, setEditPhone] = useState(phone);
+  const [editAvatar, setEditAvatar] = useState(avatar);
+
+  const openSheet = () => {
+    setEditName(name);
+    setEditPhone(phone);
+    setEditAvatar(avatar);
+    setOpen(true);
+  };
+  const closeSheet = () => setOpen(false);
+
+  const handleSave = () => {
+    setName(editName);
+    setPhone(editPhone);
+    setAvatar(editAvatar);
+    setOpen(false);
+  };
+
   return (
     <div>
       <Header>
@@ -17,23 +53,23 @@ export default function MyPageTemplate() {
       </Header>
 
       <MiddleSection>
-        <Avatar src={AvatarImg} />
+        <Avatar src={avatar} />
         <Column $gap={20}>
           <Column $gap={24}>
             <Row $justify="space-between">
               <Label>이름</Label>
-              <Content>하케톡</Content>
+              <Content>{name}</Content>
             </Row>
             <Row $justify="space-between">
               <Label>휴대폰 번호</Label>
-              <Content>010-1234-1234</Content>
+              <Content>{phone}</Content>
             </Row>
             <Row $justify="space-between">
               <Label>아이디</Label>
               <Content>soongsil123</Content>
             </Row>
           </Column>
-          <EditButton>프로필 편집</EditButton>
+          <EditButton onClick={openSheet}>프로필 편집</EditButton>
         </Column>
       </MiddleSection>
 
@@ -56,9 +92,80 @@ export default function MyPageTemplate() {
           </Row>
         </Column>
       </EndSection>
+
+      {/* ===== 프로필 편집 바텀시트 ===== */}
+      <BottomSheet isOpen={open} onClose={closeSheet} height="100dvh">
+        <SheetBody>
+          <SheetHandle />
+          <SheetTitle>프로필 편집</SheetTitle>
+
+          {/* 프로필 이미지 + 편집버튼 */}
+          <AvatarWrap>
+            <AvatarBig src={editAvatar} alt="프로필" />
+            <EditBubble as="label">
+              <HiddenFile
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const url = URL.createObjectURL(file);
+                    setEditAvatar(url);
+                  }
+                }}
+              />
+              <PencilIconGreen src={iconPencilGreen} />
+            </EditBubble>
+          </AvatarWrap>
+
+          {/* 입력 폼 */}
+          <Form>
+            <Field>
+              <FieldLabel>이름</FieldLabel>
+              <InputBox>
+                <Input
+                  value={editName}
+                  onChange={e => setEditName(e.target.value)}
+                  placeholder="이름 입력"
+                />
+                <InlineIcon>
+                  <PencilIcon src={iconPencil} />
+                </InlineIcon>
+              </InputBox>
+            </Field>
+
+            <Field>
+              <FieldLabel>휴대폰 번호</FieldLabel>
+              <InputBox>
+                <Input
+                  value={editPhone}
+                  onChange={e => setEditPhone(e.target.value)}
+                  placeholder="휴대폰 번호"
+                />
+                <InlineIcon>
+                  <PencilIcon src={iconPencil} />
+                </InlineIcon>
+              </InputBox>
+            </Field>
+
+            <Row $justify="space-between">
+              <FieldLabel>아이디</FieldLabel>
+              <IdValue>soongsil123</IdValue>
+            </Row>
+          </Form>
+
+          <Spacer />
+
+          <FooterSticky>
+            <Button text="저장" onClick={handleSave} />
+          </FooterSticky>
+        </SheetBody>
+      </BottomSheet>
     </div>
   );
 }
+
+/* ===== 스타일 ===== */
 
 const Header = styled.div`
   width: 100%;
@@ -91,7 +198,7 @@ const Avatar = styled.img`
   height: 100px;
   flex-shrink: 0;
   border-radius: 100px;
-  border: 2.5px solid var(--Color-Primary, #01d281);
+  border: 2.5px solid ${color('brand.primary')};
   align-self: center;
 `;
 
@@ -115,7 +222,6 @@ const EditButton = styled.div`
   border-radius: 10px;
   border: 1px solid ${color('grayscale.300')};
   background: #fff;
-
   cursor: pointer;
 `;
 
@@ -135,4 +241,142 @@ const MoveText = styled.div`
 const CurrentAddress = styled.div`
   ${typo('subtitle1')};
   color: ${color('grayscale.800')};
+`;
+
+/* ===== 바텀시트 내부 ===== */
+const SheetBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 12px 25px 16px 25px;
+`;
+
+const SheetHandle = styled.div`
+  width: 60px;
+  height: 5px;
+  background: ${color('grayscale.300')};
+  border-radius: 999px;
+  align-self: center;
+  margin: 5px 0 10px;
+  cursor: pointer;
+`;
+
+const SheetTitle = styled.div`
+  ${typo('subtitle1')};
+  color: ${color('grayscale.600')};
+  text-align: center;
+  margin: 6px 0 18px;
+`;
+
+const AvatarWrap = styled.div`
+  position: relative;
+  align-self: center;
+  z-index: 1;
+`;
+
+const AvatarBig = styled.img`
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid ${color('brand.primary')};
+  align-self: center;
+  z-index: 0;
+`;
+
+const EditBubble = styled.div`
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  right: 0px;
+  bottom: -10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: ${color('brand.primary')};
+  place-items: center;
+  cursor: pointer;
+  border: 2px solid #fff;
+`;
+
+const HiddenFile = styled.input`
+  display: none;
+`;
+
+const PencilIcon = styled.img`
+  width: 12px;
+`;
+
+const PencilIconGreen = styled.img`
+  width: 18px;
+`;
+
+const Form = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 22px;
+`;
+
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const FieldLabel = styled.div`
+  ${typo('body2')};
+  color: ${color('grayscale.700')};
+`;
+
+const InputBox = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+const Input = styled.input`
+  flex: 1;
+  border: none;
+  outline: none;
+  background: ${color('grayscale.100')};
+  ${typo('body2')};
+  color: ${color('grayscale.800')};
+  border-radius: 6px;
+  border: 1px solid ${color('grayscale.200')};
+  display: flex;
+  padding: 13px 15px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const InlineIcon = styled.span`
+  position: absolute;
+  right: 12px;
+  display: inline-flex;
+  color: ${color('grayscale.500')};
+`;
+
+const IdValue = styled.div`
+  ${typo('body2')};
+  color: ${color('grayscale.800')};
+  text-align: right;
+`;
+
+const FooterSticky = styled.div`
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding-bottom: 30px;
+`;
+
+const SaveButton = styled.button`
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 14px;
+  background: ${color('brand.primary')};
+  color: #fff;
+  ${typo('button1')};
+  cursor: pointer;
 `;

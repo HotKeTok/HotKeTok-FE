@@ -54,7 +54,7 @@ const Badge = styled.div`
   height: ${p => (typeof p.$height === 'number' ? `${p.$height}px` : p.$height)};
 
   /* ✅ typo props 반영 */
-  ${p => typo(p.$typoKey || 'button3')};
+  ${p => typo(p.$typoKey || 'button3')}
 
   /* 상태별 스타일 */
   ${p =>
