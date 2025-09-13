@@ -1,16 +1,18 @@
 // src/pages/InitProcess.jsx
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
 
-import TopBar from '../components/common/TopBar';
-import { color, typo } from '../styles/tokens';
-import { Row, Column, Spacer } from '../styles/flex';
-import TextField from '../components/common/TextField';
-import Button from '../components/common/Button';
-import ButtonSmall from '../components/common/ButtonSmall';
-import ModeItem from '../components/common/ModeItem';
+import TopBar from '../../components/common/TopBar';
+import { color, typo } from '../../styles/tokens';
+import { Row, Column, Spacer } from '../../styles/flex';
+import TextField from '../../components/common/TextField';
+import Button from '../../components/common/Button';
+import ButtonSmall from '../../components/common/ButtonSmall';
+import ModeItem from '../../components/common/ModeItem';
 import { useNavigate } from 'react-router-dom';
+
+import iconCheck from '../../assets/repair/request-repair/icon_big-check.png';
 
 /* =========================================================
  * 모의 주소 검색 (실서비스에서는 API로 교체)
@@ -46,14 +48,23 @@ function mockSearchAddresses(keyword) {
   ];
 }
 
+function ProgressBar({ value = 0 }) {
+  return (
+    <div>
+      <ProgressTrack>
+        <ProgressFill $value={value} />
+      </ProgressTrack>
+    </div>
+  );
+}
+
 /* =========================================================
- * 스텝 컴포넌트들
+ * STEP 컴포넌트들 (UI 그대로 유지)
  * ======================================================= */
 
 // STEP 1: 모드 선택
 function StepRole({ onNext }) {
-  // 선택된 모드 상태 ('tenant' | 'landlord' | null)
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null); // 'tenant' | 'landlord' | null
 
   return (
     <PageWrap>
@@ -84,11 +95,9 @@ function StepRole({ onNext }) {
       <div style={{ padding: '30px 24px' }}>
         <Button
           text="선택하기"
-          active={!!selectedRole} // 하나라도 선택되면 active=true
+          active={!!selectedRole}
           onClick={() => {
-            if (selectedRole) {
-              onNext(selectedRole); // 버튼 누를 때만 다음 단계로 이동
-            }
+            if (selectedRole) onNext(selectedRole);
           }}
         />
       </div>
@@ -96,11 +105,9 @@ function StepRole({ onNext }) {
   );
 }
 
-// STEP 2: 주소 키워드 입력
-function StepAddressKeyword({ defaultKeyword, onPick }) {
+// STEP 2: 주소 키워드 입력 + 검색/선택
+function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
   const [keyword, setKeyword] = useState(defaultKeyword ?? '');
-
-  // 추가 상태
   const [results, setResults] = useState([]);
   const [showExamples, setShowExamples] = useState(true);
 
@@ -112,7 +119,7 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
 
   return (
     <PageWrap>
-      <TopBar title="회원 등록" onBack={() => window.history.back()} />
+      <TopBar title="회원 등록" onBack={onBack} />
       <ProgressBar value={66} />
       <StepTitle>{'내 거주지의 \n주소를 등록해주세요'} </StepTitle>
       <div style={{ padding: '0px 27px' }}>
@@ -122,13 +129,12 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
             <TextField
               placeholder="예) 판교역로 235, 도산대로 33"
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={e => setKeyword(e.target.value)}
             />
             <ButtonSmall text="검색" width="30%" active={!!keyword.trim()} onClick={handleSearch} />
           </Row>
         </Column>
 
-        {/* 🔹 검색 전: 예시 문구 노출 */}
         {showExamples && (
           <Column $gap={10} style={{ marginTop: '30px' }}>
             <Row $gap={10}>
@@ -146,10 +152,9 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
           </Column>
         )}
 
-        {/* 🔹 검색 후: 결과 리스트 노출 (입력 아래) */}
         {!showExamples && results.length > 0 && (
           <ListWrap style={{ marginTop: 16 }}>
-            {results.map((a) => (
+            {results.map(a => (
               <AddressCard key={a.id} onClick={() => onPick(a)}>
                 <Column $gap={10}>
                   <Addr>
@@ -166,7 +171,6 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
           </ListWrap>
         )}
 
-        {/* 검색 후 결과 없을 때 메시지 */}
         {!showExamples && results.length === 0 && (
           <div style={{ marginTop: 16, color: '#767676', fontSize: 14 }}>
             검색 결과가 없습니다. 키워드를 다시 입력해주세요.
@@ -204,7 +208,7 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
           <TextField
             placeholder="예) 101동 101호"
             value={detail}
-            onChange={(e) => setDetail(e.target.value)}
+            onChange={e => setDetail(e.target.value)}
           />
           <Label style={{ color: '#3C66FF' }}>* 상세주소를 반드시 확인해 주세요.</Label>
         </Column>
@@ -216,7 +220,6 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
           active={canSubmit}
           onClick={() => {
             if (!canSubmit) return;
-            // 필요 시 dong/ho도 넘길 수 있음. 현재는 detail만 사용.
             onNext?.({ detail: detail.trim() });
           }}
         />
@@ -225,7 +228,7 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
   );
 }
 
-// STEP 4: 최종 확인 (요청 버튼)
+// STEP 4: 최종 확인/요청 → 완료
 function StepReview({ baseAddress, dong, ho, detail }) {
   const [requested, setRequested] = useState(false);
   const [showDoneBtn, setShowDoneBtn] = useState(false);
@@ -233,11 +236,10 @@ function StepReview({ baseAddress, dong, ho, detail }) {
 
   useEffect(() => {
     if (!requested) return;
-    const t = setTimeout(() => setShowDoneBtn(true), 800); // 0.8초 후 버튼 등장
+    const t = setTimeout(() => setShowDoneBtn(true), 800);
     return () => clearTimeout(t);
   }, [requested]);
 
-  // 요청 전: 확인 화면 + [요청하기]
   if (!requested) {
     return (
       <PageWrap>
@@ -288,13 +290,12 @@ function StepReview({ baseAddress, dong, ho, detail }) {
     );
   }
 
-  // 요청 후: 중앙 가이드 + [완료하기] (지연 노출)
   return (
     <PageWrap>
       <ContentWrapCentered>
-        <PlaceholderSquare />
-        <InfoKey>인증이 요청되었어요!</InfoKey>
-        <Desc>인증이 완료되면 알림을 보내드릴게요!</Desc>
+        <SubmitIcon src={iconCheck} />
+        <SuccessTitle>인증이 요청되었어요!</SuccessTitle>
+        <SuccessSub>인증이 완료되면 알림을 보내드릴게요!</SuccessSub>
       </ContentWrapCentered>
 
       <div style={{ padding: '30px 24px' }}>
@@ -306,83 +307,76 @@ function StepReview({ baseAddress, dong, ho, detail }) {
   );
 }
 
-// 메인 함수
-export default function InitProcessTemplate() {
-  const funnel = useFunnel({
+/* =========================================================
+ * 메인: 공식 문서 패턴으로 변경 (Funnel.Render)
+ * ======================================================= */
+export default function InitProcess() {
+  const Funnel = useFunnel({
     id: 'init-process',
     initial: { step: 'Role', context: {} },
+    steps: {}, // (문서 권장) 명시적 스텝 테이블 없이 Render 매핑 사용
+    routes: step => `/init/${step}`, // URL 싱크 (예: /init/Role, /init/AddressKeyword, ...)
   });
 
-  switch (funnel.step) {
-    case 'Role':
-      return <StepRole onNext={(role) => funnel.history.push('AddressKeyword', { role })} />;
-
-    case 'AddressKeyword':
-      return (
-        <StepAddressKeyword
-          defaultKeyword={funnel.context.addressKeyword}
-          onPick={(baseAddress) =>
-            funnel.history.push('UnitInput', {
-              role: funnel.context.role,
-              baseAddress,
-            })
-          }
-        />
-      );
-    case 'AddressPick':
-      return (
-        <StepAddressPick
-          keyword={funnel.context.addressKeyword}
-          onPick={(baseAddress) =>
-            funnel.history.push('UnitInput', {
-              role: funnel.context.role,
-              baseAddress,
-            })
-          }
-        />
-      );
-
-    case 'UnitInput':
-      return (
-        <StepUnitInput
-          baseAddress={funnel.context.baseAddress}
-          defaultUnit={{
-            dong: funnel.context.dong,
-            ho: funnel.context.ho,
-            detail: funnel.context.detail,
+  return (
+    <Funnel.Render
+      /* STEP 1: 모드 선택 */
+      Role={({ history }) => (
+        <StepRole
+          onNext={role => {
+            history.push('AddressKeyword', { role });
           }}
-          onNext={({ dong, ho, detail }) =>
-            funnel.history.push('Review', {
-              role: funnel.context.role,
-              baseAddress: funnel.context.baseAddress,
+        />
+      )}
+      /* STEP 2: 주소 키워드 입력/검색/선택 */
+      AddressKeyword={({ history, context }) => (
+        <StepAddressKeyword
+          defaultKeyword={context.addressKeyword}
+          onBack={history.back}
+          onPick={baseAddress => {
+            history.push('UnitInput', { ...context, baseAddress });
+          }}
+        />
+      )}
+      /* STEP 3: 상세 주소 입력 */
+      UnitInput={({ history, context }) => (
+        <StepUnitInput
+          baseAddress={context.baseAddress}
+          defaultUnit={{
+            dong: context.dong,
+            ho: context.ho,
+            detail: context.detail,
+          }}
+          onNext={({ dong, ho, detail }) => {
+            history.push('Review', {
+              ...context,
               dong,
               ho,
               detail,
-            })
-          }
+            });
+          }}
         />
-      );
-
-    case 'Review':
-      return (
+      )}
+      /* STEP 4: 최종 확인/요청 & 완료 */
+      Review={({ context }) => (
         <StepReview
-          baseAddress={funnel.context.baseAddress}
-          dong={funnel.context.dong}
-          ho={funnel.context.ho}
-          detail={funnel.context.detail}
+          baseAddress={context.baseAddress}
+          dong={context.dong}
+          ho={context.ho}
+          detail={context.detail}
         />
-      );
-
-    default:
-      return null;
-  }
+      )}
+    />
+  );
 }
 
-// 스타일
+/* =========================================================
+ * 스타일 (기존 그대로)
+ * ======================================================= */
 const PageWrap = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: 100vh;
 `;
 
 const ContentWrap = styled.div`
@@ -413,16 +407,6 @@ const Desc = styled.div`
 const Label = styled.div`
   ${typo('caption2')};
   color: ${color('grayscale.500')};
-`;
-
-const BottomBarWrap = styled.div`
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 16px 20px 16px;
-  background: ${color('grayscale.0')};
-  border-top: 1px solid ${color('grayscale.200')};
 `;
 
 const CardTitle = styled.div`
@@ -526,10 +510,42 @@ const PlaceholderSquare = styled.div`
   background: ${color('grayscale.200')};
 `;
 
+// 애니메이션
+const fadeUp = keyframes`
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+`;
+
+const popBounce = keyframes`
+  0%   { transform: scale(0.6) rotate(-6deg); opacity: 0; }
+  60%  { transform: scale(1.08) rotate(2deg);  opacity: 1; }
+  80%  { transform: scale(0.98) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0deg); }
+`;
+
+const SubmitIcon = styled.img`
+  width: 90px;
+  animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both; /* mount 시 1회 재생 */
+  will-change: transform, opacity;
+`;
+
+const SuccessTitle = styled.div`
+  ${typo('h3')};
+  color: ${color('grayscale.800')};
+  animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both; /* mount 시 1회 재생 */
+  will-change: transform, opacity;
+  animation: ${fadeUp} 360ms ease 80ms both;
+`;
+const SuccessSub = styled.div`
+  ${typo('body2')};
+  color: ${color('grayscale.800')};
+  text-align: center;
+  animation: ${fadeUp} 360ms ease 120ms both;
+`;
+
 const FadeInWrap = styled.div`
-  opacity: ${({ $show }) => ($show ? 1 : 0)};
-  transform: translateY(${({ $show }) => ($show ? '0px' : '6px')});
-  transition: opacity 240ms ease, transform 240ms ease;
+  animation: ${fadeUp} 700ms ease both; /* 나타나는 속도 */
+  animation-delay: 800ms; /* 아이콘/텍스트 뜬 후 '조금 있다가' */
 `;
 
 /* 진행바 */
@@ -545,13 +561,3 @@ const ProgressFill = styled.div`
   background: ${color('brand.primary')};
   transition: width 220ms ease;
 `;
-
-function ProgressBar({ value = 0 }) {
-  return (
-    <div>
-      <ProgressTrack>
-        <ProgressFill $value={value} />
-      </ProgressTrack>
-    </div>
-  );
-}

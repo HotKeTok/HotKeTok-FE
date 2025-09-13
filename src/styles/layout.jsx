@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 // 공통 스타일 컴포넌트를 정의합니다.
 
@@ -6,7 +6,17 @@ import styled from "styled-components";
 export const CONTAINER_WIDTH = '390px';
 
 // 하단 바를 숨기고 싶은 경로
-export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess'];
+export const HIDE_BOTTOM_BAR_PATHS = [
+  '/splash',
+  '/sign-in',
+  '/sign-up',
+  '/init-process',
+  '/request-repair',
+  '/repair-progress',
+  '/repair-history',
+  '/contractor-profile',
+  '/write-review',
+];
 
 // 하단 바 높이
 export const BOTTOM_BAR_HEIGHT = '74px';
@@ -28,7 +38,6 @@ export const AppShell = styled.div`
 
 export const MainContainer = styled.main`
   flex: 1 1 auto;
-  overflow: auto;
   width: 100%;
 `;
 
@@ -50,10 +59,9 @@ export const BottomBar = styled.footer`
 /**
  * 템플릿의 최상위 부모 컨테이너입니다.
  */
-export const Page=  styled.section`
-`
+export const Page = styled.section``;
 
 export const ScrollableFullPage = styled.section`
   overflow: auto;
   height: 100dvh;
-`
+`;
