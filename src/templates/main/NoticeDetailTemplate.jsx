@@ -1,5 +1,5 @@
 import TopBar from "../../components/common/TopBar"
-import { ScrollableFullPage } from "../../styles/layout"
+import { ScrollableNoBottomBarContent } from "../../styles/layout"
 import styled from "styled-components";
 import { color, typo } from "../../styles/tokens";
 import { Row } from "../../styles/flex";
@@ -42,7 +42,7 @@ export default function NoticeDetailTemplate() {
     )
 }
 
-const Container = styled(ScrollableFullPage)`
+const Container = styled(ScrollableNoBottomBarContent)`
     background-color: white;
 `
 
