@@ -21,7 +21,7 @@ import WriteReview from './pages/repair/WriteReview';
 // 똑똑 관련
 import Communication from './pages/Communication';
 // 마이 관련
-import MyPage from './pages/MyPage';
+import MyPage from './pages/my/MyPage';
 // 컴포넌트
 import NavBar from './components/common/NavBar';
 import IndexWelcome from './pages/main/IndexWelcome';
