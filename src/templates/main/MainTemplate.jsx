@@ -8,6 +8,7 @@ import RepairBanner from "../../components/repair/RepairBanner"
 import ArrowRight from "../../assets/common/icon-arrow-right.svg?react"
 import { useNavigate } from "react-router-dom";
 import NoticeBanner from "../../components/main/index/NoticeBanner";
+import { BOTTOM_BAR_HEIGHT } from "../../styles/layout";
 
 /**
  * @function MainTemplate
@@ -24,7 +25,7 @@ export default function MainTemplate({address, utilityBill, commonBill}) {
   }
 
   return (
-    <Container $scroll={true}>
+    <Page>
 
       <ColorBackground>
       <PageHeader isLightVersion={true} leftComponent={<SelectHome homeTitle="우리집" isLightVersion={true}/>}/>
@@ -54,14 +55,13 @@ export default function MainTemplate({address, utilityBill, commonBill}) {
      <BottomContent $overlap={24} $gap={24}>
         <NoticeBanner/>
         <RepairBanner/>
+         <NoticeBanner/>
+        <RepairBanner/>
       </BottomContent>
-    </Container>
+    </Page>
   );
 }
 
-const Container = styled(Page)`
-  width: 100%;
-`
 
 const ColorBackground = styled.div`
   background: linear-gradient(180deg, #23DD95 42.31%, #36926F 100%);
@@ -81,11 +81,14 @@ const BottomContent = styled(Column)`
   position: relative;
   z-index: 1; /* 위로 */
   margin-top: calc(-1 * var(--ov));         
-  padding: calc(var(--ov) + 16px) 16px 16px;  
+  padding: calc(var(--ov) + 16px) 16px 0px 16px;  
 
   border-radius: 30px 30px 0 0;
   background: #fff;
 
+  height: 70vh; // 높이를 정확히 명시
+  padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 바텀바 높이만큼 하단 패딩
+  overflow-y: scroll; // scroll 
 `;
 
 const H3 = styled.div`

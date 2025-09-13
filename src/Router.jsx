@@ -1,6 +1,4 @@
-// src/Router.jsx
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
-import styled, { css } from 'styled-components';
 
 // 로그인 관련
 import SignIn from './pages/SignIn';
@@ -22,23 +20,31 @@ import MyPage from './pages/MyPage'
 import NavBar from './components/common/NavBar'
 import IndexWelcome from './pages/main/IndexWelcome';
 
-import { AppShell, MainContainer, BottomBar, HIDE_BOTTOM_BAR_PATHS, BOTTOM_BAR_HEIGHT } from './styles/layout';
+import { AppShell, MainContainer, BottomBar, HIDE_BOTTOM_BAR_PATHS,HIDE_HEADER_PATHS  } from './styles/layout';
 
 const Layout = () => {
   const { pathname } = useLocation();
   const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname);
 
-  // ✅ 특정 페이지 배경 조건
   const bgColor =
     pathname === '/signIn' || pathname === '/signUp' || pathname === '/initprocess'
       ? '#ffffff'
       : '#f9f9f9';
 
+  // 헤더 유무/높이는 각 페이지 성격에 맞게 결정
+  const hasHeader = !HIDE_HEADER_PATHS.includes(pathname);
+  const headerHeight = 100;         // 헤더 컴포넌트 높이(px)
+
   return (
     <AppShell $bg={bgColor}>
-      <MainContainer $hasBar={!hideBar}>
+      <MainContainer
+        $hasBar={!hideBar}
+        $hasHeader={hasHeader}
+        $headerHeight={headerHeight}
+      >
         <Outlet />
       </MainContainer>
+
       {!hideBar && (
         <BottomBar>
           <NavBar />

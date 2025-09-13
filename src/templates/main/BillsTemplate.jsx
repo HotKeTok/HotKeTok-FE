@@ -1,7 +1,7 @@
 // pages/BillsTemplate.jsx
 import { useMemo, useState } from "react";
 import styled from "styled-components";
-import { ScrollableFullPage } from "../../styles/layout";
+import { ScrollableNoBottomBarContent,} from "../../styles/layout";
 import TopBar from "../../components/common/TopBar";
 import { typo, color } from "../../styles/tokens";
 import TabBar from "../../components/common/TabBar";
@@ -114,7 +114,7 @@ const Wrapper = styled.div`
     position: relative;
 `
 
-const ScrollableContainer = styled(ScrollableFullPage)`
+const ScrollableContainer = styled(ScrollableNoBottomBarContent)`
 `;
 
 const Content = styled.div`

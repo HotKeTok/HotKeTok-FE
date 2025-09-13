@@ -1,5 +1,5 @@
 import TopBar from "../../components/common/TopBar"
-import { ScrollableFullPage } from "../../styles/layout"
+import { ScrollableNoBottomBarContent} from "../../styles/layout"
 import styled from "styled-components";
 import AlarmItem from "../../components/main/alarm/AlarmItem";
 import { Column } from "../../styles/flex";
@@ -28,7 +28,6 @@ export default function AlarmTemplate(){
     date: '2024.10.23',
     read: true,
   },
-  
 ];
 
     return (
@@ -49,7 +48,7 @@ export default function AlarmTemplate(){
     )
 }
 
-const Container = styled(ScrollableFullPage)`
+const Container = styled(ScrollableNoBottomBarContent)`
     background-color: #fff;
 `
 

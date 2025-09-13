@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import TopBar from "../../components/common/TopBar";
-import { Page, ScrollableFullPage } from "../../styles/layout";
-import { typo, color } from "../../styles/tokens";
+import { BottomButtonContainer, Page, ScrollableContent,  } from "../../styles/layout";
 import NoticeItem from "../../components/main/notice/NoticeItem";
+import Button from "../../components/common/Button";
 
 export default function NoticeTemplate({onNoticeItemClick}) {
    const notices = [
@@ -91,22 +91,26 @@ export default function NoticeTemplate({onNoticeItemClick}) {
 
 
   return (
-    <ScrollableFullPage>
+    <Page>
       <TopBar title="공지사항" />
-
         <Content>
             {notices.map((notice) => (
               <NoticeItem key={notice.id} {...notice} onClick={() => onNoticeItemClick(notice.id)} />
             ))}
         </Content>
-    </ScrollableFullPage >
+        <BottomButtonContainer>
+          <Button text="버튼 예시임니두"/>
+        </BottomButtonContainer>
+    </Page >
   );
 }
 
-const Content = styled.div`
-    padding: 16px 20px;
-    overflow: scroll;
-
+const Content = styled(ScrollableContent)`
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-left: 16px;
+    /* 필요시 부모의 padding bottom을 overwrite하여 자체 padding 추가 */
+    padding-bottom: calc(16px + var(--bar-safe-h));
     display: flex;
     flex-direction: column;
     gap: 6px;
