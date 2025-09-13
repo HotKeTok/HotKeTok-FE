@@ -15,41 +15,43 @@ import { BOTTOM_BAR_HEIGHT } from "../../styles/layout";
  * @param {string} address - 사용자 주소
  * @param {object} utilityBill - 공과금 정보
  * @param {object} commonBill - 공동 관리비 정보
- * @returns 
+ * @returns
  */
-export default function MainTemplate({address, utilityBill, commonBill}) {
+export default function MainTemplate({ address, utilityBill, commonBill }) {
   const navigate = useNavigate();
 
   const handleBillClick = () => {
-      navigate('/main/bills');
-  }
+    navigate('/main/bills');
+  };
 
   return (
     <Page>
 
       <ColorBackground>
-      <PageHeader isLightVersion={true} leftComponent={<SelectHome homeTitle="우리집" isLightVersion={true}/>}/>
-      <Content>
-        <H3 style={{color: '#fff', marginBottom: 16}}>{address}</H3>
+        <PageHeader
+          isLightVersion={true}
+          leftComponent={<SelectHome homeTitle="우리집" isLightVersion={true} />}
+        />
+        <Content>
+          <H3 style={{ color: '#fff', marginBottom: 16 }}>{address}</H3>
 
-        <Row $justify={'flex-end'} style={{marginBottom: 4}}>
-           <Row $gap={6} $align={"center"} style={{cursor: 'pointer'}} onClick={handleBillClick}>
-            <Button2 style={{color: '#fff'}}>내역 보기</Button2>
-            <ArrowRight style={{width: 4, height: 7}}/>
-         </Row>
-        </Row>
+          <Row $justify={'flex-end'} style={{ marginBottom: 4 }}>
+            <Row $gap={6} $align={'center'} style={{ cursor: 'pointer' }} onClick={handleBillClick}>
+              <Button2 style={{ color: '#fff' }}>내역 보기</Button2>
+              <ArrowRight style={{ width: 4, height: 7 }} />
+            </Row>
+          </Row>
 
-        <Row $justify={'space-between'}>
-          <Subtitle1 style={{color: '#fff'}}>공과금</Subtitle1>
-          <H3 style={{color: '#fff'}}>{utilityBill}원</H3>
-        </Row>
+          <Row $justify={'space-between'}>
+            <Subtitle1 style={{ color: '#fff' }}>공과금</Subtitle1>
+            <H3 style={{ color: '#fff' }}>{utilityBill}원</H3>
+          </Row>
 
-         <Row $justify={'space-between'}>
-          <Subtitle1 style={{color: '#fff'}}>공과금</Subtitle1>
-          <H3 style={{color: '#fff'}}>{commonBill}원</H3>
-        </Row>
-
-      </Content>
+          <Row $justify={'space-between'}>
+            <Subtitle1 style={{ color: '#fff' }}>공과금</Subtitle1>
+            <H3 style={{ color: '#fff' }}>{commonBill}원</H3>
+          </Row>
+        </Content>
       </ColorBackground>
 
      <BottomContent $overlap={24} $gap={24}>
@@ -62,21 +64,18 @@ export default function MainTemplate({address, utilityBill, commonBill}) {
   );
 }
 
-
 const ColorBackground = styled.div`
-  background: linear-gradient(180deg, #23DD95 42.31%, #36926F 100%);
+  background: linear-gradient(180deg, #23dd95 42.31%, #36926f 100%);
   padding-bottom: 24px;
- `;
+`;
 
 const Content = styled.div`
-  padding: 0 16px;  
+  padding: 0 16px;
   padding-bottom: 18px;
-  
-`
+`;
 
 const BottomContent = styled(Column)`
-  --ov: ${({ $overlap = 16 }) =>
-    typeof $overlap === 'number' ? `${$overlap}px` : $overlap};
+  --ov: ${({ $overlap = 16 }) => (typeof $overlap === 'number' ? `${$overlap}px` : $overlap)};
 
   position: relative;
   z-index: 1; /* 위로 */
@@ -93,12 +92,12 @@ const BottomContent = styled(Column)`
 
 const H3 = styled.div`
   ${typo('h3')}
-`
+`;
 
 const Subtitle1 = styled.div`
   ${typo('subtitle1')}
-`
+`;
 
 const Button2 = styled.div`
   ${typo('button2')}
-`
+`;

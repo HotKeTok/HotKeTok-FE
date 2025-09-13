@@ -1,10 +1,17 @@
 import styled from 'styled-components';
-import drillImg from '../../assets/Repair/Drill.png';
-import greenCurve from '../../assets/Repair/greenCurve.svg';
-import { color, typo } from '../../styles/tokens';
-import { Row, Column, Spacer } from '../../styles/flex';
+import drillImg from '../../../assets/repair/repair-home/Drill.png';
+import greenCurve from '../../../assets/repair/repair-home/greenCurve.svg';
+import { color, typo } from '../../../styles/tokens';
+import { Row, Column, Spacer } from '../../../styles/flex';
+import { useNavigate } from 'react-router-dom';
 
 export default function RepairBanner() {
+  const nav = useNavigate();
+
+  const handleRepairRequestPage = () => {
+    nav('/request-repair');
+  };
+
   return (
     <Container>
       <Curve>
@@ -28,7 +35,7 @@ export default function RepairBanner() {
             <Category>수도/보일러</Category>
             <Category>문/창문</Category>
             <Spacer />
-            <RequestText>수리 요청하기 &gt;</RequestText>
+            <RequestText onClick={handleRepairRequestPage}>수리 요청하기 &gt;</RequestText>
           </Row>
         </Column>
       </Content>

@@ -1,7 +1,7 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 /** 공통 상수 */
-export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/main/notice', '/main/notice'];
+export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/main/notice', '/main/notice', '/request-repair','/repair-progress', '/repair-history','/contractor-profile','/write-review',];
 export const HIDE_HEADER_PATHS = [];
 
 export const CONTAINER_WIDTH = '390px';

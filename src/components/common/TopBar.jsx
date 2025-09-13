@@ -5,17 +5,18 @@ import { color, typo } from '../../styles/tokens';
 import { Row } from '../../styles/flex';
 import { useNavigate } from 'react-router-dom';
 
-export default function TopBar({ title }) {
+export default function TopBar({ title, onBack }) {
   const nav = useNavigate();
 
-  const moveBack = () => {
-    nav(-1);
+  const handleBack = () => {
+    if (onBack) return onBack(); // ✅ 페이지에서 주입한 핸들러 우선
+    nav(-1); // 기본: 브라우저 back
   };
 
   return (
     <Container>
       <RowForTopBar $justify="space-between" $align="center">
-        <BackButtonWrapper onClick={moveBack}>
+        <BackButtonWrapper onClick={handleBack}>
           <img src={BackButton} alt="뒤로가기버튼" />
         </BackButtonWrapper>
         <Title>{title}</Title>

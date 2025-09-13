@@ -1,33 +1,42 @@
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 
-// 로그인 관련
-import SignIn from './pages/SignIn';
-import SignUp from './templates/SignUpTemplate';
-import InitProcess from './pages/InitProcess';
+// onboard 관련
+import SignIn from './pages/onboard/SignIn';
+import SignUp from './templates/onboard/SignUpTemplate';
+import InitProcess from './pages/onboard/InitProcess';
 // main 관련
-import Main from './pages/main/index'
-import Bills from './pages/main/Bills'
-import Notice from './pages/main/Notice'
-import NoticeDetail from './pages/main/NoticeDetail'
-import Alarm from './pages/main/Alarm'
+import Main from './pages/main/index';
+import Bills from './pages/main/Bills';
+import Notice from './pages/main/Notice';
+import NoticeDetail from './pages/main/NoticeDetail';
+import Alarm from './pages/main/Alarm';
 // 뚝딱 관련
-import Repair from './pages/Repair'
-// 똑똑 관련
-import Communication from './pages/Communication'
-// 마이 관련
-import MyPage from './pages/MyPage'
-// 컴포넌트
-import NavBar from './components/common/NavBar'
-import IndexWelcome from './pages/main/IndexWelcome';
+import RepairHome from './pages/repair/RepairHome';
+import RequestRepair from './pages/repair/RequestRepair';
+import RepairProgress from './pages/repair/RepairProgress';
+import ContractorProfile from './pages/repair/ContractorProfile';
+import WriteReview from './pages/repair/WriteReview';
 
-import { AppShell, MainContainer, BottomBar, HIDE_BOTTOM_BAR_PATHS,HIDE_HEADER_PATHS  } from './styles/layout';
+// 똑똑 관련
+import Communication from './pages/Communication';
+// 마이 관련
+import MyPage from './pages/MyPage';
+// 컴포넌트
+import NavBar from './components/common/NavBar';
+import IndexWelcome from './pages/main/IndexWelcome';
+import RepairHistory from './pages/repair/RepairHistory';
 
 const Layout = () => {
   const { pathname } = useLocation();
   const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname);
 
   const bgColor =
-    pathname === '/signIn' || pathname === '/signUp' || pathname === '/initprocess'
+    pathname === '/sign-in' ||
+    pathname === '/sign-up' ||
+    pathname === '/init-process' ||
+    pathname === '/request-repair' ||
+    pathname === '/repair-history' ||
+    pathname === '/write-review'
       ? '#ffffff'
       : '#f9f9f9';
 
@@ -59,18 +68,33 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/signIn" element={<SignIn />} />
-          <Route path="/signUp" element={<SignUp />} />
+          {/* onboard 관련 */}
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/init-process" element={<InitProcess />} />
+
+          {/* main 관련 */}
           <Route path="/" element={<Main />} />
           <Route path="/welcome" element={<IndexWelcome />} />
           <Route path="/main/bills" element={<Bills />} />
           <Route path="/main/alarm" element={<Alarm />} />
           <Route path="/main/notice" element={<Notice />} />
           <Route path="/main/notice/:id" element={<NoticeDetail />} />
+
+          {/* 뚝딱 관련*/}
+          <Route path="/repair" element={<RepairHome />} />
+          <Route path="/request-repair" element={<RequestRepair />} />
+          <Route path="/repair-progress" element={<RepairProgress />} />
+          <Route path="/repair-history" element={<RepairHistory />} />
+          <Route path="/contractor-profile" element={<ContractorProfile />} />
+          <Route path="/write-review" element={<WriteReview />} />
+
+          {/* 똑똑 관련*/}
           <Route path="/communication" element={<Communication />} />
-          <Route path="/repair" element={<Repair />} />
+
+          {/* 마이 관련*/}
           <Route path="/my-page" element={<MyPage />} />
-          <Route path="/initprocess" element={<InitProcess />} />
+
           <Route path="*" element={<div>Not Found</div>} />
         </Route>
       </Routes>
