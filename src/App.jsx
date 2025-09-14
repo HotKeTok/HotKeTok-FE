@@ -1,4 +1,3 @@
-
 import Router from './Router';
 import GlobalStyle from './styles/GlobalStyle';
 import ResetStyle from "./styles/ResetStyle";
@@ -10,7 +9,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <ResetStyle />
       <GlobalStyle />
-      <Router />
+           <Router />
     </ThemeProvider>
   );
 }

@@ -10,7 +10,7 @@ export default function Alarm({ isLightVersion = false }) {
     // TODO: 알림 상태 API 연동
 
     const onClick = () => {
-        navigate('/main/alarm')
+        navigate('/alarm')
     }
 
     return (
