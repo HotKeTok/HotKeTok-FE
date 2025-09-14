@@ -110,18 +110,21 @@ export const ScrollableContent = styled.section`
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
+  // 아래  코드 주석 해제하면 스크롤바 숨김 가능
+  // 근데 개발 가시성 위해 일단 보이게 해두고, 배포 전에 스크롤 안 보이게 깔끔하게 하면 좋을듯!
+
   /* 스크롤바 숨기기 (크로스 브라우징) */
 
   /* Chrome, Safari, Opera */
-  &::-webkit-scrollbar {
+  /* &::-webkit-scrollbar {
     display: none;
-  }
+  } */
 
   /* Firefox */
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
 
   /* IE, Edge (구버전은 지원 안 될 수도 있음) */
-  -ms-overflow-style: none;
+  /* -ms-overflow-style: none; */
 `;
 
 // 2-2. 바텀바 없는 페이지에서 스크롤 가능한 컨테이너로 사용
