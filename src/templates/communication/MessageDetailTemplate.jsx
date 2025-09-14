@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import TopBar from "../../components/common/TopBar";
-import { Page, ScrollableContent } from "../../styles/layout";
+import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from "../../styles/layout";
 import styled from "styled-components";
 import {EXAMPLE_RECEIVED_MESSAGE_LIST, EXAMPLE_SENT_MESSAGE_LIST} from "../../mocks/communication/message";
 import { TAG_ICONS } from "../../constants/main/communication/tag";
@@ -10,8 +10,8 @@ import { color, typo } from "../../styles/tokens";
 import MenuIcn from "../../assets/common/icon-menu.svg?react"
 import ReportMenuIcon from "../../components/communication/message/ReportMenuIcon";
 import ConfirmModal from "../../components/common/ConfirmModal";
-import { useSetRecoilState } from 'recoil';
-import { modalState } from '../../store/modal';
+import { TIME_OPTIONS } from "../../constants/main/communication/message";
+import { useNavigate } from "react-router-dom";
 
 /**
  * MessageDetailTemplate component
@@ -22,8 +22,8 @@ import { modalState } from '../../store/modal';
  * @returns 
  */
 export default function MessageDetailTemplate({ id, type = "receive", message = {}, onReply }) {
-  const [modal, setModal] = useSetRecoilState(modalState)
-  
+  const navigation = useNavigate();
+  const [modal, setModal] = useState(false);
   const messageDetail = (type === "receive" ? EXAMPLE_RECEIVED_MESSAGE_LIST : EXAMPLE_SENT_MESSAGE_LIST).find(msg => msg.id == id) || {};
   // todo: 탭에 따라 type 검토
 
@@ -32,24 +32,29 @@ export default function MessageDetailTemplate({ id, type = "receive", message = 
   }
 
   function handleReportClick() {
-   setModal({
-     isOpen: true,
-     title: "쪽지 신고",
-     content: "해당 쪽지를 신고하시겠어요?",
-     onConfirm: handleConfirmReport,
-   });
+    setModal(true);
   }
 
   function handleConfirmReport() {
-    // 신고하기 확인 시 동작
-    setModal({ ...modal, isOpen: false });
+    // todo: 신고시 삭제 api 요청
+    setModal(false);
+    navigation(-1);
   }
-  
 
+  const TagComponent = TAG_ICONS[messageDetail.tag];
+  
   return (
-    <Page>
-      <TopBar title={`${type === "sent" ? "보낸 쪽지" : "받은 쪽지"}`} rightComponent={<ReportMenuIcon onClick={handleReportClick} />} />
-      <ScrollableContent>
+    <PageWithoutBottomBar>
+      <TopBar title={`${type === "sent" ? "보낸 쪽지" : "받은 쪽지"}`} rightComponent={<ReportMenuIcon onClick={() => handleReportClick()} />} />
+        <ConfirmModal
+          isOpen={modal}
+          title="쪽지 신고"
+          description="해당 쪽지를 신고하시겠어요?"
+          onClose={() => setModal(false)}
+          onConfirm={handleConfirmReport}
+          confirmText="확인"
+        />
+      <ScrollableNoBottomBarContent>
         <ContentContainer>
           <IndexAndValue>
             <Title>{type==='sent' ? '보낸' : '받은'} 이웃</Title>
@@ -70,7 +75,7 @@ export default function MessageDetailTemplate({ id, type = "receive", message = 
           <IndexAndValue>
             <Title>태그</Title>
             <TagArea>
-              <img src={TAG_ICONS[messageDetail.tag]} alt={messageDetail.tag} />
+              <TagComponent/>
             </TagArea>
           </IndexAndValue>
 
@@ -92,16 +97,14 @@ export default function MessageDetailTemplate({ id, type = "receive", message = 
             </ButtonWrapper>
           ) : null}
         </ContentContainer>
-      </ScrollableContent>
-    </Page>
+      </ScrollableNoBottomBarContent>
+    </PageWithoutBottomBar>
   );
 }
 
 const ContentContainer = styled.div`
-  width: 100%;
-  flex: 1 0 0;
-  align-self: stretch;
   padding: 30px 24px;
+  
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -176,7 +179,3 @@ const TagArea = styled.div`
   align-items: center;
   gap: 8px;
 `;
-
-const MenuWrapper = styled.div`
-  cursor: pointer;
-`

@@ -8,7 +8,6 @@ import {EXAMPLE_NOTICES} from "../../mocks/main/notice"
 
 export default function NoticeTemplate({onNoticeItemClick}) {
 
-
   return (
     <Page>
       <TopBar title="공지사항" />
@@ -17,9 +16,6 @@ export default function NoticeTemplate({onNoticeItemClick}) {
               <NoticeItem key={notice.id} {...notice} onClick={() => onNoticeItemClick(notice.id)} />
             ))}
         </Content>
-        <BottomButtonContainer>
-          <Button text="버튼 예시임니두"/>
-        </BottomButtonContainer>
     </Page >
   );
 }

@@ -7,7 +7,7 @@ export const EXAMPLE_RECEIVED_MESSAGE_LIST = [
     anonymity: false,
     content: "안녕하세요! 오늘 아침에 택배가 잘못 놓여 있었어요. 혹시 집에 계시면 받아가실래요?",
     createdAt: "2025-09-14T07:30:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
   {
     id: 2,
@@ -17,7 +17,7 @@ export const EXAMPLE_RECEIVED_MESSAGE_LIST = [
     anonymity: false,
     content: "분리수거장이 이번 주 목요일 오전에 정리됩니다. 플라스틱은 따로 모아주세요.",
     createdAt: "2025-09-14T08:05:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
   {
     id: 3,
@@ -57,7 +57,7 @@ export const EXAMPLE_RECEIVED_MESSAGE_LIST = [
     anonymity: false,
     content: "어제 빌려주신 전동드릴 잘 썼습니다. 내일 저녁에 돌려드릴게요.",
     createdAt: "2025-09-14T10:45:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
   {
     id: 7,
@@ -97,7 +97,7 @@ export const EXAMPLE_RECEIVED_MESSAGE_LIST = [
     anonymity: false,
     content: "엘리베이터에서 만난 강아지에 대해 알려드립니다 — 작은 강아지이고 목걸이에 연락처가 붙어 있었어요.",
     createdAt: "2025-09-14T16:00:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
 ];
 
@@ -110,7 +110,7 @@ export const EXAMPLE_SENT_MESSAGE_LIST = [
     anonymity: false,
     content: "택배 알려주셔서 감사합니다! 제가 지금 집에 있으니 잠시 내려가서 받을게요.",
     createdAt: "2025-09-14T07:40:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
   {
     id: 102,
@@ -120,7 +120,7 @@ export const EXAMPLE_SENT_MESSAGE_LIST = [
     anonymity: false,
     content: "분리수거 일정 공지 잘 받았습니다. 비움 완료 후 스티커로 표시해둘게요.",
     createdAt: "2025-09-14T08:10:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
   {
     id: 103,
@@ -130,7 +130,7 @@ export const EXAMPLE_SENT_MESSAGE_LIST = [
     anonymity: false,
     content: "현관문 문제 저도 봤어요. 관리사무소에 같이 문의해서 빠르게 처리되도록 할게요.",
     createdAt: "2025-09-14T09:20:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
   {
     id: 104,
@@ -140,7 +140,7 @@ export const EXAMPLE_SENT_MESSAGE_LIST = [
     anonymity: false,
     content: "공구 사용 잘하셨어요? 필요하시면 다음에 또 빌려드릴게요.",
     createdAt: "2025-09-14T10:50:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
   {
     id: 105,
@@ -200,6 +200,6 @@ export const EXAMPLE_SENT_MESSAGE_LIST = [
     anonymity: false,
     content: "아기 강아지 귀엽더라구요! 연락처 알고 계시면 공유 부탁드려요.",
     createdAt: "2025-09-14T16:10:00Z",
-    tag: "Tag_compliment",
+    tag: "Tag_Compliment",
   },
 ];

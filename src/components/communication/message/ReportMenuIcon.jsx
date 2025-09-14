@@ -11,7 +11,7 @@ export default function ReportMenuIcon({ onClick }) {
   };
 
   const handleReportClick = () => {
-    onClick?.(); // 부모에서 정의한 onClick 실행
+    onClick(); // 부모에서 정의한 onClick 실행
     setShowReport(false); // 버튼 숨기기
   };
 
@@ -54,4 +54,8 @@ const ReportButton = styled.div`
   z-index: 10;
 
   ${typo('body1')}
+
+  &:active {
+    background-color: ${color('grayscale.200')};
+  }
 `;

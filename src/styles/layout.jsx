@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 /** 공통 상수 */
-export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/notice', '/notice/:id', '/request-repair','/repair-progress', '/repair-history','/contractor-profile','/write-review',];
+export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/notice', '/notice/:id', '/request-repair','/repair-progress', '/repair-history','/contractor-profile','/write-review', '/message'];
 export const HIDE_HEADER_PATHS = [];
 
 export const CONTAINER_WIDTH = '390px';
@@ -37,12 +37,13 @@ export const AppShell = styled.div`
 export const MainContainer = styled.main`
   flex: 1 1 auto;
   width: 100%;
+  height: 100vh; // 높이 고정
   overflow: auto;
 
   overscroll-behavior: contain;
 
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 0px; // 스크롤바 숨김
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 4px;
@@ -75,10 +76,19 @@ export const BottomBar = styled.footer`
 `;
 
 // 1-1. 페이지에서 import하여 사용하는 최상단 컴포넌트
+// 추가: 바텀바가 있는 페이지에 한해 사용
 export const Page = styled.section`
   width: 100%;
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 전체 페이지에서 바텀바를 가리지 않기 위함
-    background: #fff;
+  background: #fff;
+`
+
+// 1-2. 페이지에서 import하여 사용하는 최상단 컴포넌트
+// 추가: 바텀바가 없는 페이지에 한해 사용
+export const PageWithoutBottomBar = styled.section`
+  width: 100%;
+  background: #fff;
+  height: 100px;
 `
 
 // 1-2. 페이지에서 사용하는 최상단 컴포넌트, 바텀바 없음
@@ -98,6 +108,16 @@ export const ScrollableContent = styled.section`
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+    &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0,0,0,0.15);
+  }
 `;
 
 // 2-2. 바텀바 없는 페이지에서 스크롤 가능한 컨테이너로 사용
@@ -111,6 +131,16 @@ export const ScrollableNoBottomBarContent = styled.section`
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+    &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0,0,0,0.15);
+  }
 `;
 
 // 3-1. 바텀바가 없는 페이지에서 하단의 fixed된 버튼 컨테이너가 필요한 경우 사용
