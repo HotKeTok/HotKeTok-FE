@@ -13,6 +13,7 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/repair-history',
   '/contractor-profile',
   '/write-review',
+  '/address-admin',
 ];
 export const HIDE_HEADER_PATHS = [];
 

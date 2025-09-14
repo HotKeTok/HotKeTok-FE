@@ -42,7 +42,8 @@ const Layout = () => {
     pathname === '/init-process' ||
     pathname === '/request-repair' ||
     pathname === '/repair-history' ||
-    pathname === '/write-review'
+    pathname === '/write-review' ||
+    pathname === '/address-admin'
       ? '#ffffff'
       : '#f9f9f9';
 
