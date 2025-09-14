@@ -10,6 +10,11 @@ import RequestSummary from '../../components/repair/RequestSummary';
 
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
+import {
+  PageNoBottomBar,
+  ScrollableNoBottomBarContent,
+  BottomButtonContainer,
+} from '../../styles/layout';
 
 import meIcon from '../../assets/repair/request-repair/icon-me.svg';
 import landlordIcon from '../../assets/repair/request-repair/icon-landlord.svg';
@@ -201,126 +206,126 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
   );
 
   return (
-    <StepWrap>
+    <PageNoBottomBar>
       <TopBar title="수리요청서 작성" onBack={onBack} />
+      <ScrollableNoBottomBarContent2>
+        <HeaderToggle>
+          <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <Column>
+              <SectionTitle>AI로 작성하기</SectionTitle>
+              <Caption1_800>사진 한 장으로 간편하게 요청서를 완성해보세요.</Caption1_800>
+            </Column>
 
-      <HeaderToggle>
-        <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <Column>
-            <SectionTitle>AI로 작성하기</SectionTitle>
-            <Caption1_800>사진 한 장으로 간편하게 요청서를 완성해보세요.</Caption1_800>
-          </Column>
+            <ToggleSwitch
+              $on={draft.useAI}
+              onClick={() => setDraft(p => ({ ...p, useAI: !p.useAI }))}
+            >
+              <span />
+            </ToggleSwitch>
+          </Row>
+        </HeaderToggle>
 
-          <ToggleSwitch
-            $on={draft.useAI}
-            onClick={() => setDraft(p => ({ ...p, useAI: !p.useAI }))}
-          >
-            <span />
-          </ToggleSwitch>
-        </Row>
-      </HeaderToggle>
-
-      <Section>
-        {/* ❗️AI OFF일 때는 수리분야를 사진 섹션 '위'에서 노출 */}
-        {!draft.useAI && (
-          <div>
-            <SectionTitle style={{ marginBottom: '20px' }}>
-              어떤 분야의 견적을 받고 싶으신가요?
-            </SectionTitle>
-            <TypePickerSection />
-            <SectionTitle style={{ marginTop: '40px' }}>
-              증상 및 불편한 점을 알려주세요.
-            </SectionTitle>
-            <Caption1_600 style={{ marginBottom: '12px' }}>
-              상세하게 적으면 더 정확한 견적을 받아볼 수 있어요!
-            </Caption1_600>
-            <ImgUploadSection />
-            <div style={{ height: '12px' }} />
-          </div>
-        )}
-        <Column $gap={20}>
-          {/* ✅ AI ON일 때는 수리분야를 사진 섹션 '아래'에서 노출 (선택 가능, 선택 시 요약에 반영) */}
-          {draft.useAI && (
+        <Section>
+          {/* ❗️AI OFF일 때는 수리분야를 사진 섹션 '위'에서 노출 */}
+          {!draft.useAI && (
             <div>
-              <Column $gap={2}>
-                <SectionTitle>증상 사진을 업로드 해주세요.</SectionTitle>
-                <Caption1_600 style={{ marginBottom: '12px' }}>
-                  AI가 증상을 분석하고 요청서를 완성해드릴게요.
-                </Caption1_600>
-              </Column>
-              <Column $gap={20}>
-                <ImgUploadSection />
-                <Column $gap={6}>
-                  <Caption2_800>수리 분야</Caption2_800>
-                  <TypePickerSection />
-                </Column>
-              </Column>
+              <SectionTitle style={{ marginBottom: '20px' }}>
+                어떤 분야의 견적을 받고 싶으신가요?
+              </SectionTitle>
+              <TypePickerSection />
+              <SectionTitle style={{ marginTop: '40px' }}>
+                증상 및 불편한 점을 알려주세요.
+              </SectionTitle>
+              <Caption1_600 style={{ marginBottom: '12px' }}>
+                상세하게 적으면 더 정확한 견적을 받아볼 수 있어요!
+              </Caption1_600>
+              <ImgUploadSection />
+              <div style={{ height: '12px' }} />
             </div>
           )}
+          <Column $gap={20}>
+            {/* ✅ AI ON일 때는 수리분야를 사진 섹션 '아래'에서 노출 (선택 가능, 선택 시 요약에 반영) */}
+            {draft.useAI && (
+              <div>
+                <Column $gap={2}>
+                  <SectionTitle>증상 사진을 업로드 해주세요.</SectionTitle>
+                  <Caption1_600 style={{ marginBottom: '12px' }}>
+                    AI가 증상을 분석하고 요청서를 완성해드릴게요.
+                  </Caption1_600>
+                </Column>
+                <Column $gap={20}>
+                  <ImgUploadSection />
+                  <Column $gap={6}>
+                    <Caption2_800>수리 분야</Caption2_800>
+                    <TypePickerSection />
+                  </Column>
+                </Column>
+              </div>
+            )}
 
-          {/* 설명 */}
-          <Column $gap={6}>
-            <Caption2_800>증상 설명</Caption2_800>
-            <TextArea
-              placeholder="증상에 대한 설명을 상세하게 적어주세요."
-              value={draft.desc}
-              onChange={e => setDraft(p => ({ ...p, desc: e.target.value.slice(0, 300) }))}
-            />
-            <CharCount $over={draft.desc.length >= 300}>{draft.desc.length} / 300</CharCount>
+            {/* 설명 */}
+            <Column $gap={6}>
+              <Caption2_800>증상 설명</Caption2_800>
+              <TextArea
+                placeholder="증상에 대한 설명을 상세하게 적어주세요."
+                value={draft.desc}
+                onChange={e => setDraft(p => ({ ...p, desc: e.target.value.slice(0, 300) }))}
+              />
+              <CharCount $over={draft.desc.length >= 300}>{draft.desc.length} / 300</CharCount>
+            </Column>
           </Column>
-        </Column>
 
-        <div style={{ height: '40px' }} />
+          <div style={{ height: '40px' }} />
 
-        {/* 날짜/시간 */}
-        <Column $gap={2}>
-          <SectionTitle>원하는 날짜와 시간을 선택해주세요.</SectionTitle>
-          <Caption1_600>오늘부터 7일까지의 가능한 날짜를 선택해주세요.</Caption1_600>
-        </Column>
-        <Caption2_800 style={{ margin: '10px 0px' }}>수리 희망 날짜</Caption2_800>
-        <DateRow>
-          {days.map(d => (
-            <DateDot
-              key={d.key}
-              $active={draft.dateKey === d.key}
-              onClick={() => setDraft(p => ({ ...p, dateKey: d.key }))}
-              aria-pressed={draft.dateKey === d.key}
-            >
-              {d.justDate}
-            </DateDot>
-          ))}
-        </DateRow>
+          {/* 날짜/시간 */}
+          <Column $gap={2}>
+            <SectionTitle>원하는 날짜와 시간을 선택해주세요.</SectionTitle>
+            <Caption1_600>오늘부터 7일까지의 가능한 날짜를 선택해주세요.</Caption1_600>
+          </Column>
+          <Caption2_800 style={{ margin: '10px 0px' }}>수리 희망 날짜</Caption2_800>
+          <DateRow>
+            {days.map(d => (
+              <DateDot
+                key={d.key}
+                $active={draft.dateKey === d.key}
+                onClick={() => setDraft(p => ({ ...p, dateKey: d.key }))}
+                aria-pressed={draft.dateKey === d.key}
+              >
+                {d.justDate}
+              </DateDot>
+            ))}
+          </DateRow>
 
-        <Column $gap={6}>
-          <Caption2_800 style={{ marginTop: '10px' }}>수리 희망 시간</Caption2_800>
-          <Dropdown $open={open} onClick={() => setOpen(v => !v)}>
-            <span>{draft.time || '시간 선택'}</span>
-            <i>▾</i>
-          </Dropdown>
+          <Column $gap={6}>
+            <Caption2_800 style={{ marginTop: '10px' }}>수리 희망 시간</Caption2_800>
+            <Dropdown $open={open} onClick={() => setOpen(v => !v)}>
+              <span>{draft.time || '시간 선택'}</span>
+              <i>▾</i>
+            </Dropdown>
 
-          {open && (
-            <DropdownList>
-              {TIME_OPTIONS.map(t => (
-                <TimeItem
-                  key={t}
-                  $selected={draft.time === t}
-                  onClick={() => {
-                    setDraft(p => ({ ...p, time: t }));
-                    setOpen(false);
-                  }}
-                >
-                  {t}
-                </TimeItem>
-              ))}
-            </DropdownList>
-          )}
-        </Column>
-      </Section>
-      <Spacer />
-      <div style={{ padding: '40px 24px' }}>
+            {open && (
+              <DropdownList>
+                {TIME_OPTIONS.map(t => (
+                  <TimeItem
+                    key={t}
+                    $selected={draft.time === t}
+                    onClick={() => {
+                      setDraft(p => ({ ...p, time: t }));
+                      setOpen(false);
+                    }}
+                  >
+                    {t}
+                  </TimeItem>
+                ))}
+              </DropdownList>
+            )}
+          </Column>
+        </Section>
+      </ScrollableNoBottomBarContent2>
+      <BottomButtonContainer>
         <Button text="완료하기" active={canComplete} onClick={onNext} />
-      </div>
-    </StepWrap>
+      </BottomButtonContainer>
+    </PageNoBottomBar>
   );
 }
 
@@ -439,6 +444,11 @@ export default function RequestRepairTemplate() {
  * ======================================================= */
 
 // STEP 1
+const ScrollableNoBottomBarContent2 = styled(ScrollableNoBottomBarContent)`
+  /* 고정 바가 가리지 않도록 하단 여백 확보 */
+  padding-bottom: var(--bar-h);
+`;
+
 const StepWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -548,9 +558,10 @@ const TypeIcon = styled.img`
   flex: 0 0 28px;
 `;
 
-const TypeLabel = styled.span`
-  ${typo('subtitle2')};
+const TypeLabel = styled.div`
+  ${typo('body2')};
   color: ${({ $selected }) => ($selected ? color('grayscale.900') : color('grayscale.700'))};
+  white-space: nowrap; // ✅ 전체 줄바꿈 방지
 `;
 const ThumbGrid = styled.div`
   display: grid;

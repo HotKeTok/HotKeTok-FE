@@ -3,9 +3,9 @@ import styled from 'styled-components';
 /** 공통 상수 */
 export const HIDE_BOTTOM_BAR_PATHS = [
   '/splash',
-  '/signIn',
-  '/signUp',
-  '/initprocess',
+  '/sign-in',
+  '/sign-up',
+  '/init-process',
   '/main/notice',
   '/main/notice',
   '/request-repair',
@@ -89,13 +89,14 @@ export const BottomBar = styled.footer`
 export const Page = styled.section`
   width: 100%;
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 전체 페이지에서 바텀바를 가리지 않기 위함
-  min-height: 100dvh;
 `;
 
 // 1-2. 페이지에서 사용하는 최상단 컴포넌트, 바텀바 없음
 export const PageNoBottomBar = styled.section`
   width: 100%;
-  padding-bottom: 0; // 바텀바 없는 페이지용
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 `;
 
 // 2-1. 바텀바 있는 페이지에서 스크롤 필요한 경우 사용
@@ -131,13 +132,13 @@ export const ScrollableContent = styled.section`
 // 주의: Page로 감싸고, 헤더와 같은 레벨에 import하여 사용.
 export const ScrollableNoBottomBarContent = styled.section`
   flex: 1 1 auto;
-  height: calc(100vh - ${TOP_BAR_HEIGHT}); // 헤더 높이 고려한 높이
-  padding-bottom: 0;
 
-  overflow: auto;
-  overflow-y: scroll;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+
+  /* iOS에서 내부 스크롤 튐 방지용(옵션) */
+  contain: layout paint size style;
 `;
 
 // 3-1. 바텀바가 없는 페이지에서 하단의 fixed된 버튼 컨테이너가 필요한 경우 사용

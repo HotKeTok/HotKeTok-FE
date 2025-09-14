@@ -1,7 +1,7 @@
 // src/templates/my/MyPageTemplate.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Column, Row, Spacer } from '../../styles/flex';
+import { Column, Row } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 import { Page } from '../../styles/layout';
 
