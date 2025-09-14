@@ -15,6 +15,7 @@ import VerificationBadge from '../../components/my/VerificationBadge';
 // ✅ 공통 바텀시트
 import BottomSheet from '../../components/common/BottomSheet';
 import Button from '../../components/common/Button';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyPageTemplate() {
   // 화면 표시용(상단 카드)
@@ -43,6 +44,12 @@ export default function MyPageTemplate() {
     setPhone(editPhone);
     setAvatar(editAvatar);
     setOpen(false);
+  };
+
+  const nav = useNavigate();
+
+  const moveAddressAdmin = () => {
+    nav('/address-admin');
   };
 
   return (
@@ -79,7 +86,7 @@ export default function MyPageTemplate() {
           <Column $gap={10}>
             <Row $justify="space-between">
               <Label>주소</Label>
-              <MoveText>
+              <MoveText onClick={moveAddressAdmin}>
                 주소관리 <img src={iconChevron} />
               </MoveText>
             </Row>
