@@ -1,13 +1,24 @@
 import styled from 'styled-components';
 
 /** 공통 상수 */
-export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/main/notice', '/main/notice', '/request-repair','/repair-progress', '/repair-history','/contractor-profile','/write-review',];
+export const HIDE_BOTTOM_BAR_PATHS = [
+  '/splash',
+  '/signIn',
+  '/signUp',
+  '/initprocess',
+  '/main/notice',
+  '/main/notice',
+  '/request-repair',
+  '/repair-progress',
+  '/repair-history',
+  '/contractor-profile',
+  '/write-review',
+];
 export const HIDE_HEADER_PATHS = [];
 
 export const CONTAINER_WIDTH = '390px';
 export const BOTTOM_BAR_HEIGHT = '74px';
 export const TOP_BAR_HEIGHT = '100px'; // 필요시 사용
-
 
 export const AppShell = styled.div`
   --inset-b: env(safe-area-inset-bottom, 0px);
@@ -46,7 +57,7 @@ export const MainContainer = styled.main`
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 4px;
-    background: rgba(0,0,0,0.15);
+    background: rgba(0, 0, 0, 0.15);
   }
 `;
 
@@ -78,13 +89,13 @@ export const BottomBar = styled.footer`
 export const Page = styled.section`
   width: 100%;
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 전체 페이지에서 바텀바를 가리지 않기 위함
-`
+`;
 
 // 1-2. 페이지에서 사용하는 최상단 컴포넌트, 바텀바 없음
 export const PageNoBottomBar = styled.section`
   width: 100%;
   padding-bottom: 0; // 바텀바 없는 페이지용
-`
+`;
 
 // 2-1. 바텀바 있는 페이지에서 스크롤 필요한 경우 사용
 // 주의: Page로 감싸고, 헤더와 같은 레벨에 import하여 사용.
@@ -97,6 +108,19 @@ export const ScrollableContent = styled.section`
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+
+  /* 스크롤바 숨기기 (크로스 브라우징) */
+
+  /* Chrome, Safari, Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE, Edge (구버전은 지원 안 될 수도 있음) */
+  -ms-overflow-style: none;
 `;
 
 // 2-2. 바텀바 없는 페이지에서 스크롤 가능한 컨테이너로 사용
@@ -116,23 +140,23 @@ export const ScrollableNoBottomBarContent = styled.section`
 // 헤더, 페이지 컨테이너와 동일한 레벨에 import하여 사용.
 // 주의: fixed이므로, 스크롤 컨텐츠 위에 떠 있게 됨.
 export const BottomButtonContainer = styled.div`
-    position: fixed;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
 
-    /* 고정 폭 컨테이너와 동일하게 */
-    width: var(--container-w);
-    height: var(--bar-h);
+  /* 고정 폭 컨테이너와 동일하게 */
+  width: var(--container-w);
+  height: var(--bar-h);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    background: #fff;
-    border-top: 1px solid #eee;
-    padding: 30px 25px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 30px 25px;
 
-    /* 컨텐츠 위에 떠 있게 */
-    z-index: 1000;
+  /* 컨텐츠 위에 떠 있게 */
+  z-index: 1000;
 `;
