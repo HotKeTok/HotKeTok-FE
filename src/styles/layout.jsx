@@ -89,6 +89,7 @@ export const BottomBar = styled.footer`
 export const Page = styled.section`
   width: 100%;
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 전체 페이지에서 바텀바를 가리지 않기 위함
+  min-height: 100dvh;
 `;
 
 // 1-2. 페이지에서 사용하는 최상단 컴포넌트, 바텀바 없음

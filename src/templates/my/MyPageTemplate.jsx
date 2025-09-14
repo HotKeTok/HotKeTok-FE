@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Column, Row, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
+import { Page } from '../../styles/layout';
 
 import AvatarImg from '../../assets/my/img-profile.png';
 import iconPencil from '../../assets/my/icon-pencil.svg';
@@ -45,127 +46,134 @@ export default function MyPageTemplate() {
   };
 
   return (
-    <div>
-      <Header>
-        <RowForTopBar $justify="center" $align="center">
-          <Title>마이페이지</Title>
-        </RowForTopBar>
-      </Header>
+    <Page>
+      <PageWrapper>
+        <Header>
+          <RowForTopBar $justify="center" $align="center">
+            <Title>마이페이지</Title>
+          </RowForTopBar>
+        </Header>
 
-      <MiddleSection>
-        <Avatar src={avatar} />
-        <Column $gap={20}>
-          <Column $gap={24}>
+        <MiddleSection>
+          <Avatar src={avatar} />
+          <Column $gap={20}>
+            <Column $gap={24}>
+              <Row $justify="space-between">
+                <Label>이름</Label>
+                <Content>{name}</Content>
+              </Row>
+              <Row $justify="space-between">
+                <Label>휴대폰 번호</Label>
+                <Content>{phone}</Content>
+              </Row>
+              <Row $justify="space-between">
+                <Label>아이디</Label>
+                <Content>soongsil123</Content>
+              </Row>
+            </Column>
+            <EditButton onClick={openSheet}>프로필 편집</EditButton>
+          </Column>
+        </MiddleSection>
+
+        <EndSection>
+          <Column $gap={10}>
             <Row $justify="space-between">
-              <Label>이름</Label>
-              <Content>{name}</Content>
+              <Label>주소</Label>
+              <MoveText>
+                주소관리 <img src={iconChevron} />
+              </MoveText>
             </Row>
+            <CurrentAddress>서울특별시 강남구 영동대로 112길 46 304호</CurrentAddress>
+            <VerificationBadge status="pending" height={30} typoKey="button2" />
+            <div style={{ height: '30px' }} />
             <Row $justify="space-between">
-              <Label>휴대폰 번호</Label>
-              <Content>{phone}</Content>
-            </Row>
-            <Row $justify="space-between">
-              <Label>아이디</Label>
-              <Content>soongsil123</Content>
+              <Label>수리내역</Label>
+              <MoveText>
+                조회하기 <img src={iconChevron} />
+              </MoveText>
             </Row>
           </Column>
-          <EditButton onClick={openSheet}>프로필 편집</EditButton>
-        </Column>
-      </MiddleSection>
+        </EndSection>
 
-      <EndSection>
-        <Column $gap={10}>
-          <Row $justify="space-between">
-            <Label>주소</Label>
-            <MoveText>
-              주소관리 <img src={iconChevron} />
-            </MoveText>
-          </Row>
-          <CurrentAddress>서울특별시 강남구 영동대로 112길 46 304호</CurrentAddress>
-          <VerificationBadge status="pending" height={30} typoKey="button2" />
-          <div style={{ height: '30px' }} />
-          <Row $justify="space-between">
-            <Label>수리내역</Label>
-            <MoveText>
-              조회하기 <img src={iconChevron} />
-            </MoveText>
-          </Row>
-        </Column>
-      </EndSection>
+        {/* ===== 프로필 편집 바텀시트 ===== */}
+        <BottomSheet isOpen={open} onClose={closeSheet} height="100dvh">
+          <SheetBody>
+            <SheetHandle />
+            <SheetTitle>프로필 편집</SheetTitle>
 
-      {/* ===== 프로필 편집 바텀시트 ===== */}
-      <BottomSheet isOpen={open} onClose={closeSheet} height="100dvh">
-        <SheetBody>
-          <SheetHandle />
-          <SheetTitle>프로필 편집</SheetTitle>
-
-          {/* 프로필 이미지 + 편집버튼 */}
-          <AvatarWrap>
-            <AvatarBig src={editAvatar} alt="프로필" />
-            <EditBubble as="label">
-              <HiddenFile
-                type="file"
-                accept="image/*"
-                onChange={e => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    const url = URL.createObjectURL(file);
-                    setEditAvatar(url);
-                  }
-                }}
-              />
-              <PencilIconGreen src={iconPencilGreen} />
-            </EditBubble>
-          </AvatarWrap>
-
-          {/* 입력 폼 */}
-          <Form>
-            <Field>
-              <FieldLabel>이름</FieldLabel>
-              <InputBox>
-                <Input
-                  value={editName}
-                  onChange={e => setEditName(e.target.value)}
-                  placeholder="이름 입력"
+            {/* 프로필 이미지 + 편집버튼 */}
+            <AvatarWrap>
+              <AvatarBig src={editAvatar} alt="프로필" />
+              <EditBubble as="label">
+                <HiddenFile
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      setEditAvatar(url);
+                    }
+                  }}
                 />
-                <InlineIcon>
-                  <PencilIcon src={iconPencil} />
-                </InlineIcon>
-              </InputBox>
-            </Field>
+                <PencilIconGreen src={iconPencilGreen} />
+              </EditBubble>
+            </AvatarWrap>
 
-            <Field>
-              <FieldLabel>휴대폰 번호</FieldLabel>
-              <InputBox>
-                <Input
-                  value={editPhone}
-                  onChange={e => setEditPhone(e.target.value)}
-                  placeholder="휴대폰 번호"
-                />
-                <InlineIcon>
-                  <PencilIcon src={iconPencil} />
-                </InlineIcon>
-              </InputBox>
-            </Field>
+            {/* 입력 폼 */}
+            <Form>
+              <Field>
+                <FieldLabel>이름</FieldLabel>
+                <InputBox>
+                  <Input
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    placeholder="이름 입력"
+                  />
+                  <InlineIcon>
+                    <PencilIcon src={iconPencil} />
+                  </InlineIcon>
+                </InputBox>
+              </Field>
 
-            <Row $justify="space-between">
-              <FieldLabel>아이디</FieldLabel>
-              <IdValue>soongsil123</IdValue>
-            </Row>
-          </Form>
+              <Field>
+                <FieldLabel>휴대폰 번호</FieldLabel>
+                <InputBox>
+                  <Input
+                    value={editPhone}
+                    onChange={e => setEditPhone(e.target.value)}
+                    placeholder="휴대폰 번호"
+                  />
+                  <InlineIcon>
+                    <PencilIcon src={iconPencil} />
+                  </InlineIcon>
+                </InputBox>
+              </Field>
 
-          <Spacer />
+              <Row $justify="space-between">
+                <FieldLabel>아이디</FieldLabel>
+                <IdValue>soongsil123</IdValue>
+              </Row>
+            </Form>
 
-          <FooterSticky>
-            <Button text="저장" onClick={handleSave} />
-          </FooterSticky>
-        </SheetBody>
-      </BottomSheet>
-    </div>
+            <FooterSticky>
+              <Button text="저장" onClick={handleSave} />
+            </FooterSticky>
+          </SheetBody>
+        </BottomSheet>
+        <div style={{ flex: '1' }} />
+      </PageWrapper>
+    </Page>
   );
 }
 
 /* ===== 스타일 ===== */
+const PageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #fff;
+`;
 
 const Header = styled.div`
   width: 100%;
@@ -236,6 +244,10 @@ const MoveText = styled.div`
   ${typo('body2')};
   color: ${color('grayscale.700')};
   cursor: pointer;
+  display: inline-flex; // ✅ 텍스트 + 이미지 줄바꿈 방지
+  align-items: center;
+  gap: 4px; // ✅ 아이콘 간격 조정
+  white-space: nowrap; // ✅ 전체 줄바꿈 방지
 `;
 
 const CurrentAddress = styled.div`
@@ -364,8 +376,7 @@ const IdValue = styled.div`
 `;
 
 const FooterSticky = styled.div`
-  position: sticky;
-  bottom: 0;
+  margin-top: auto; // ✅ 남은 공간 밀어내기
   background: #fff;
   padding-bottom: 30px;
 `;
