@@ -1,11 +1,12 @@
 import TopBar from "../../components/common/TopBar";
-import { Page, ScrollableContent } from "../../styles/layout";
+import { Page, PageWithoutBottomBar, ScrollableNoBottomBarContent} from "../../styles/layout";
 import styled, {css} from "styled-components";
 import { useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { color, typo } from "../../styles/tokens";
 import MessageItem from "../../components/communication/message/MessageItem";
 import { Column } from "../../styles/flex";
+import WriteMessageBtn from "../../components/communication/message/WriteMessageBtn";
 
 export default function MessageTemplate({ receivedMessages, sentMessages }){
      const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function MessageTemplate({ receivedMessages, sentMessages }){
 
 
     return (
-        <Page>
+        <PageWithoutBottomBar>
             <TopBar title="쪽지 내역"/>
             <ToggleContainer>
                 <Toggle state={toggleState === 0} onClick={() => setToggleState(0)}>
@@ -36,7 +37,7 @@ export default function MessageTemplate({ receivedMessages, sentMessages }){
             <div>내용</div>
             <div>날짜</div>
         </IndexContainer>
-        <ScrollableContent style={{padding: "0 20px", paddingBottom: 200, backgroundColor: '#f5f6f6'}}>
+        <ScrollableNoBottomBarContent style={{padding: "0 20px", paddingBottom: 200, backgroundColor: '#f5f6f6'}}>
           <Column $gap={6}>
             {toggleState === 0
             ? receivedMessages.map((entry) => (
@@ -52,8 +53,9 @@ export default function MessageTemplate({ receivedMessages, sentMessages }){
                 />
               ))}
           </Column>
-        </ScrollableContent>
-    </Page>
+        </ScrollableNoBottomBarContent>
+        <WriteMessageBtn />
+    </PageWithoutBottomBar>
     )
 }
 

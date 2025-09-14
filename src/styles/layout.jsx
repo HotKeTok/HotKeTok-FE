@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 /** 공통 상수 */
-export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/notice', '/notice/:id', '/request-repair','/repair-progress', '/repair-history','/contractor-profile','/write-review', '/message'];
+export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/notice', '/notice/:id', '/request-repair','/repair-progress', '/repair-history','/contractor-profile','/write-review', '/message', '/alarm'];
 export const HIDE_HEADER_PATHS = [];
 
 export const CONTAINER_WIDTH = '390px';
@@ -88,13 +88,6 @@ export const Page = styled.section`
 export const PageWithoutBottomBar = styled.section`
   width: 100%;
   background: #fff;
-  height: 100px;
-`
-
-// 1-2. 페이지에서 사용하는 최상단 컴포넌트, 바텀바 없음
-export const PageNoBottomBar = styled.section`
-  width: 100%;
-  padding-bottom: 0; // 바텀바 없는 페이지용
 `
 
 // 2-1. 바텀바 있는 페이지에서 스크롤 필요한 경우 사용
@@ -131,7 +124,6 @@ export const ScrollableNoBottomBarContent = styled.section`
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-
 
   &::-webkit-scrollbar {
     width: 4px;

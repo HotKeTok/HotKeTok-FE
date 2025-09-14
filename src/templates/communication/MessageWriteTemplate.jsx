@@ -4,7 +4,6 @@ import WriteChoiceContent from "../../components/communication/message/WriteChoi
 import WriteFormContent from "../../components/communication/message/WriteFormContent";
 import { useState } from "react";
 import Button from "../../components/common/Button";
-import ConfirmModal from "../../components/common/ConfirmModal";
 import ActionGuideModal from "../../components/common/ActionGuideModal";
 import styled from "styled-components";
 import { color, typo } from "../../styles/tokens";
