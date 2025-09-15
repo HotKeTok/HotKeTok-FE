@@ -172,7 +172,7 @@ const ChatList = styled.ul`
 
 const ChatItemContainer = styled.li`
   background-color: #fff;
-  overflow: hidden; // このコンテナの外に要素が表示されないようにする
+  overflow: hidden;
   border-bottom: 1px solid #f0f0f0;
 `;
 
