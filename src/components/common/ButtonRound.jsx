@@ -1,6 +1,6 @@
-import styled from "styled-components"
-import { resolveWidth } from "./Button"
-import { typo, color } from "../../styles/tokens"
+import styled from 'styled-components';
+import { color, typo } from '../../styles/tokens';
+import { resolveWidth } from './Button';
 
 /**
  * @function ButtonRound
@@ -11,38 +11,28 @@ import { typo, color } from "../../styles/tokens"
  * @param {function} onClick - 클릭 핸들러 (비워진 상태라면 핸들러 실행되지 않음)
  */
 
-export default function ButtonRound ({ filled=true, text, width='auto', height=24, onClick }) {
-    return (
-        <StyledButton
-            type="button"
-            $filled={filled}
-            $width={width}
-            $height={height}
-            onClick={filled ? onClick : undefined}
-            disabled={!filled}
-        >
-            <div>{text}</div>
-        </StyledButton>
-    )
+export default function ButtonRound({ filled = true, text, width = 'auto', height = 24, onClick }) {
+  return (
+    <StyledButton type="button" $filled={filled} $width={width} $height={height} onClick={onClick}>
+      <div>{text}</div>
+    </StyledButton>
+  );
 }
 
 const StyledButton = styled.button`
   width: ${({ $width }) => resolveWidth($width)};
-height: ${({ $height }) => ($height ? `${$height}px` : '24px')};
+  height: ${({ $height }) => ($height ? `${$height}px` : '24px')};
   padding: 0 12px;
   border-radius: 30px;
   ${typo('button3')};
 
-  background-color: ${({ $filled }) =>
-    $filled ? color('brand.primary') : 'white'};
-  border: 1.5px solid rgba(1, 210, 129, 0.30);
+  background-color: ${({ $filled }) => ($filled ? color('brand.primary') : 'white')};
+  border: 1.5px solid rgba(1, 210, 129, 0.3);
   background-clip: padding-box;
   /* 배경이 보더 영역까지 칠하지 않도록 추가 */
-  color: ${({ $filled }) => ($filled ? 'white' : 'rgba(1, 210, 129, 0.50)')};
+  color: ${({ $filled }) => ($filled ? 'white' : 'rgba(1, 210, 129, 0.5)')};
 
-  pointer-events: ${({ $filled }) => ($filled ? 'auto' : 'none')};
-  cursor: ${({ $filled }) => ($filled ? 'pointer' : 'default')};
+  cursor: pointer;
 
   transition: background-color 0.15s ease, transform 0.02s ease;
 `;
-

@@ -1,13 +1,26 @@
 import styled from 'styled-components';
 
 /** 공통 상수 */
-export const HIDE_BOTTOM_BAR_PATHS = ['/splash', '/signIn', '/signUp', '/initprocess', '/notice', '/notice/:id', '/request-repair','/repair-progress', '/repair-history','/contractor-profile','/write-review', '/message', '/alarm'];
+export const HIDE_BOTTOM_BAR_PATHS = [
+  '/splash',
+  '/signIn',
+  '/signUp',
+  '/initprocess',
+  '/notice',
+  '/notice/:id',
+  '/request-repair',
+  '/repair-progress',
+  '/repair-history',
+  '/contractor-profile',
+  '/write-review',
+  '/message',
+  '/alarm',
+];
 export const HIDE_HEADER_PATHS = [];
 
 export const CONTAINER_WIDTH = '390px';
 export const BOTTOM_BAR_HEIGHT = '74px';
 export const TOP_BAR_HEIGHT = '100px'; // 필요시 사용
-
 
 export const AppShell = styled.div`
   --inset-b: env(safe-area-inset-bottom, 0px);
@@ -47,7 +60,7 @@ export const MainContainer = styled.main`
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 4px;
-    background: rgba(0,0,0,0.15);
+    background: rgba(0, 0, 0, 0.15);
   }
 `;
 
@@ -81,20 +94,22 @@ export const Page = styled.section`
   width: 100%;
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 전체 페이지에서 바텀바를 가리지 않기 위함
   background: #fff;
-`
+`;
 
 // 1-2. 페이지에서 import하여 사용하는 최상단 컴포넌트
 // 추가: 바텀바가 없는 페이지에 한해 사용
 export const PageWithoutBottomBar = styled.section`
   width: 100%;
   background: #fff;
-`
+`;
 
 // 2-1. 바텀바 있는 페이지에서 스크롤 필요한 경우 사용
 // 주의: Page로 감싸고, 헤더와 같은 레벨에 import하여 사용.
+// 추가 ) 탑바 외에도 고정되어야 하는 요소가 있을 경우 customheight prop으로 높이 지정 가능
 export const ScrollableContent = styled.section`
   flex: 1 1 auto;
-  height: calc(100vh - ${TOP_BAR_HEIGHT}); // 헤더 높이 고려한 높이
+  height: ${({ customheight }) =>
+    customheight || `calc(100vh - ${TOP_BAR_HEIGHT})`}; // 헤더 높이 고려한 높이
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 바텀바 고려 하단 패딩
 
   overflow: auto;
@@ -102,14 +117,13 @@ export const ScrollableContent = styled.section`
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-
   &::-webkit-scrollbar {
     width: 4px;
   }
 
-    &::-webkit-scrollbar-thumb {
+  &::-webkit-scrollbar-thumb {
     border-radius: 4px;
-    background: rgba(0,0,0,0.15);
+    background: rgba(0, 0, 0, 0.15);
   }
 `;
 
@@ -129,9 +143,9 @@ export const ScrollableNoBottomBarContent = styled.section`
     width: 4px;
   }
 
-    &::-webkit-scrollbar-thumb {
+  &::-webkit-scrollbar-thumb {
     border-radius: 4px;
-    background: rgba(0,0,0,0.15);
+    background: rgba(0, 0, 0, 0.15);
   }
 `;
 
@@ -139,23 +153,23 @@ export const ScrollableNoBottomBarContent = styled.section`
 // 헤더, 페이지 컨테이너와 동일한 레벨에 import하여 사용.
 // 주의: fixed이므로, 스크롤 컨텐츠 위에 떠 있게 됨.
 export const BottomButtonContainer = styled.div`
-    position: fixed;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
 
-    /* 고정 폭 컨테이너와 동일하게 */
-    width: var(--container-w);
-    height: var(--bar-h);
+  /* 고정 폭 컨테이너와 동일하게 */
+  width: var(--container-w);
+  height: var(--bar-h);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    background: #fff;
-    border-top: 1px solid #eee;
-    padding: 30px 25px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 30px 25px;
 
-    /* 컨텐츠 위에 떠 있게 */
-    z-index: 1000;
+  /* 컨텐츠 위에 떠 있게 */
+  z-index: 1000;
 `;
