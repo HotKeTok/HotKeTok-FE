@@ -9,7 +9,7 @@ export default function NoticeBanner({}) {
     const navigate= useNavigate();
 
     const handleBannerClick = () => {
-        navigate('/main/notice');
+        navigate('/notice');
     }
 
     return (

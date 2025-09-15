@@ -1,5 +1,5 @@
 import TopBar from "../../components/common/TopBar"
-import { ScrollableNoBottomBarContent} from "../../styles/layout"
+import { PageWithoutBottomBar, ScrollableNoBottomBarContent} from "../../styles/layout"
 import styled from "styled-components";
 import AlarmItem from "../../components/main/alarm/AlarmItem";
 import { Column } from "../../styles/flex";
@@ -31,9 +31,9 @@ export default function AlarmTemplate(){
 ];
 
     return (
-       <Container>
+      <PageWithoutBottomBar>
         <TopBar title="알림" />
-        <Content $gap={10} $align="center">
+        <Container $gap={10} $align="center">
           {alarms.map(alarm => (
             <AlarmItem
               key={alarm.id}
@@ -43,16 +43,12 @@ export default function AlarmTemplate(){
               read={alarm.read}
             />
           ))}
-        </Content>
-       </Container>
+        </Container>
+       </PageWithoutBottomBar>
     )
 }
 
 const Container = styled(ScrollableNoBottomBarContent)`
-    background-color: #fff;
-`
-
-const Content = styled(Column)`
     background-color: #fff;
 
     padding: 16px 24px;

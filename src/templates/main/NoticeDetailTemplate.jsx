@@ -1,5 +1,5 @@
 import TopBar from "../../components/common/TopBar"
-import { ScrollableNoBottomBarContent } from "../../styles/layout"
+import { Page, ScrollableNoBottomBarContent } from "../../styles/layout"
 import styled from "styled-components";
 import { color, typo } from "../../styles/tokens";
 import { Row } from "../../styles/flex";
@@ -19,7 +19,7 @@ export default function NoticeDetailTemplate() {
   };
 
     return (
-        <Container>
+        <Page>
             <TopBar title="공지사항" />
             <Content>
                 <div>
@@ -38,7 +38,7 @@ export default function NoticeDetailTemplate() {
                 </Body2>
             </Content>
             
-        </Container>
+        </Page>
     )
 }
 

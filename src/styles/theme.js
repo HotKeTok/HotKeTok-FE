@@ -44,7 +44,7 @@ export const theme = {
              'font-family' : 'Pretendard-Medium',
             'font-size' : '16px',
             'line-height' :'22px',
-             'font-weight' : '500',
+             'font-weight' : '400',
         },
         body2: {
              'font-family' : 'Pretendard-Regular',

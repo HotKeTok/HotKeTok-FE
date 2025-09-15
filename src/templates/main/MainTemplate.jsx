@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import NoticeBanner from "../../components/main/index/NoticeBanner";
 import { BOTTOM_BAR_HEIGHT } from "../../styles/layout";
 import RepairBanner from "../../components/repair/repair-home/RequestBanner"
+import CompanyCard from "../../components/repair/repair-home/ContractorAd";
 
 /**
  * @function MainTemplate
@@ -21,7 +22,7 @@ export default function MainTemplate({ address, utilityBill, commonBill }) {
   const navigate = useNavigate();
 
   const handleBillClick = () => {
-    navigate('/main/bills');
+    navigate('/bills');
   };
 
   return (
@@ -57,8 +58,7 @@ export default function MainTemplate({ address, utilityBill, commonBill }) {
      <BottomContent $overlap={24} $gap={24}>
         <NoticeBanner/>
         <RepairBanner/>
-         <NoticeBanner/>
-        <RepairBanner/>
+        <CompanyCard/>
       </BottomContent>
     </Page>
   );

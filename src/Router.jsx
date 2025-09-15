@@ -18,7 +18,13 @@ import ContractorProfile from './pages/repair/ContractorProfile';
 import WriteReview from './pages/repair/WriteReview';
 
 // 똑똑 관련
-import Communication from './pages/Communication';
+import Communication from './pages/communication/Communication';
+import Chat from './pages/communication/Chat';
+import ChatRoom from './pages/communication/ChatRoom';
+import Message from './pages/communication/Message';
+import MessageDetail from './pages/communication/MessageDetail';
+import MessageWrite from './pages/communication/MessageWrite';
+
 // 마이 관련
 import MyPage from './pages/MyPage';
 // 컴포넌트
@@ -32,7 +38,7 @@ import { AppShell, MainContainer, BottomBar} from './styles/layout';
 
 const Layout = () => {
   const { pathname } = useLocation();
-  const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname);
+  const hideBar = HIDE_BOTTOM_BAR_PATHS.map((path)=> pathname.startsWith(path)).includes(true);
 
   const bgColor =
     pathname === '/sign-in' ||
@@ -63,6 +69,7 @@ const Layout = () => {
           <NavBar />
         </BottomBar>
       )}
+       
     </AppShell>
   );
 };
@@ -80,10 +87,10 @@ export default function AppRouter() {
           {/* main 관련 */}
           <Route path="/" element={<Main />} />
           <Route path="/welcome" element={<IndexWelcome />} />
-          <Route path="/main/bills" element={<Bills />} />
-          <Route path="/main/alarm" element={<Alarm />} />
-          <Route path="/main/notice" element={<Notice />} />
-          <Route path="/main/notice/:id" element={<NoticeDetail />} />
+          <Route path="/bills" element={<Bills />} />
+          <Route path="/alarm" element={<Alarm />} />
+          <Route path="/notice" element={<Notice />} />
+          <Route path="/notice/:id" element={<NoticeDetail />} />
 
           {/* 뚝딱 관련*/}
           <Route path="/repair" element={<RepairHome />} />
@@ -95,6 +102,11 @@ export default function AppRouter() {
 
           {/* 똑똑 관련*/}
           <Route path="/communication" element={<Communication />} />
+          <Route path="/communication/chat" element={<Chat />} />
+          <Route path="/communication/chat-room" element={<ChatRoom />} />
+          <Route path="/message" element={<Message />} />
+          <Route path="/message/detail/:id" element={<MessageDetail />} />
+          <Route path="/message/write" element={<MessageWrite />} />
 
           {/* 마이 관련*/}
           <Route path="/my-page" element={<MyPage />} />

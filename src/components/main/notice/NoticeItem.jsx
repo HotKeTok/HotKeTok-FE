@@ -1,11 +1,10 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled, {css} from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
 import ArrowRight from "../../../assets/common/icon-arrow-right.svg?react"
 import NewIcn from "../../../assets/main/notice/icon-new.svg?react"
 import PinIcn from "../../../assets/main/notice/icon-pin.svg?react"
 import { Column, Row } from '../../../styles/flex';
-
 
 /**
  * 공지 아이템 (공통)
