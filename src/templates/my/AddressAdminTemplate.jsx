@@ -1,12 +1,13 @@
 // src/templates/my/AddressAdminTemplate.jsx
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 import styled, { css } from 'styled-components';
 import { Column, Row, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 import { Page } from '../../styles/layout';
 
 import TopBar from '../../components/common/TopBar';
-import BottomSheet from '../../components/common/BottomSheet';
 import Button from '../../components/common/Button';
 
 import iconChevron from '../../assets/repair/icon-chevron.svg';
@@ -14,6 +15,14 @@ import iconPlus from '../../assets/my/address-admin/icon-plus.svg';
 import iconHouse from '../../assets/my/address-admin/icon-house.svg';
 import iconCompany from '../../assets/my/address-admin/icon-building.svg';
 import iconEtc from '../../assets/my/address-admin/icon-location.svg';
+
+import Tag10PMActive from '../../assets/my/address-admin/Tag_10PM_active.svg';
+import Tag10PMDisactive from '../../assets/my/address-admin/Tag_10PM_disactive.svg';
+import TagBabyActive from '../../assets/my/address-admin/Tag_Baby_active.svg';
+import TagBabyDisactive from '../../assets/my/address-admin/Tag_Baby_disactive.svg';
+import TagPetActive from '../../assets/my/address-admin/Tag_Pet_active.svg';
+import TagPetDisactive from '../../assets/my/address-admin/Tag_Pet_disactive.svg';
+import iconSpeechBubble from '../../assets/my/address-admin/icon-speech-bubble.svg';
 
 import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../mocks/my/addresses';
 
@@ -33,35 +42,44 @@ const PLACE_ICON = {
   ETC: iconEtc,
 };
 
-function noteKeyToLabel(k) {
-  const f = ALLOWED_NOTES.find(n => n.key === k);
-  return f ? f.label : k;
-}
+// NOTE 아이콘 매핑
+const NOTE_ICONS = {
+  SLEEP_AFTER_10: {
+    active: Tag10PMActive,
+    inactive: Tag10PMDisactive,
+    alt: '10시 이후로는 잡니다',
+  },
+  HAS_BABY: { active: TagBabyActive, inactive: TagBabyDisactive, alt: '집에 아기가 있어요' },
+  HAS_PET: { active: TagPetActive, inactive: TagPetDisactive, alt: '반려동물이 있어요' },
+};
 
 // ----------------------------------------------------------
 // 메인 컴포넌트
 // ----------------------------------------------------------
 export default function AddressAdminTemplate() {
   const [items, setItems] = useState(ADDRESS_LIST_MOCK);
-  const [editId, setEditId] = useState(null);
-  const editing = useMemo(() => items.find(x => x.id === editId) || null, [items, editId]);
-
-  const openEdit = id => setEditId(id);
-  const closeEdit = () => setEditId(null);
+  const nav = useNavigate();
+  const location = useLocation();
 
   const setCurrentAddress = id => {
     setItems(prev => prev.map(it => ({ ...it, isCurrent: it.id === id })));
   };
 
-  const handleSaveEdit = draft => {
-    setItems(prev => prev.map(it => (it.id === draft.id ? { ...it, ...draft } : it)));
-    closeEdit();
-  };
+  // 상세에서 온 patch/remove를 목록에 즉시 반영 (서버 없이)
+  useEffect(() => {
+    const patch = location.state?.patch;
+    const removeId = location.state?.removeId;
+    if (!patch && !removeId) return;
 
-  const handleDeleteAddress = id => {
-    setItems(prev => prev.filter(it => it.id !== id));
-    closeEdit();
-  };
+    setItems(prev => {
+      if (removeId) return prev.filter(it => it.id !== removeId);
+      if (patch) return prev.map(it => (it.id === patch.id ? { ...it, ...patch } : it));
+      return prev;
+    });
+
+    // 중복 반영 방지: state 초기화
+    nav(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, nav]);
 
   return (
     <Page>
@@ -78,21 +96,11 @@ export default function AddressAdminTemplate() {
               key={addr.id}
               data={addr}
               onClickBox={() => setCurrentAddress(addr.id)}
-              onClickEdit={() => openEdit(addr.id)}
+              onClickEdit={() => nav(`/address-admin/${addr.id}`, { state: { item: addr } })}
             />
           ))}
         </Column>
       </Container>
-
-      {/* 편집 시트 */}
-      {editing && (
-        <EditSheet
-          data={editing}
-          onClose={closeEdit}
-          onSave={handleSaveEdit}
-          onDelete={handleDeleteAddress}
-        />
-      )}
     </Page>
   );
 }
@@ -106,33 +114,44 @@ function AddressItem({ data, onClickBox, onClickEdit }) {
   // ✅ placeType 기반 아이콘 선택
   const currentIcon = PLACE_ICON[data.placeType] || iconEtc;
 
-  const noteChips = [...neighborNotes.map(noteKeyToLabel), ...(extraNotes ? [extraNotes] : [])];
+  // extraNotes는 문자열/배열 혼용 가능성을 정규화
+  const extraList = Array.isArray(extraNotes) ? extraNotes : extraNotes ? [extraNotes] : [];
 
   return (
     <Card $active={isCurrent} onClick={onClickBox}>
-      <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Icon src={currentIcon} alt="" />
-        <Column style={{ gap: 6, flex: 1, minWidth: 0 }}>
-          <Row style={{ gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <Alias>{alias}</Alias>
-            <Badge $state={verified ? 'done' : 'pending'}>
-              {verified ? '인증 완료' : '인증 전'}
-            </Badge>
-            {isCurrent && <NowBadge>현재 설정된 주소</NowBadge>}
-          </Row>
-          <AddrLine title={address1}>{address1}</AddrLine>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Row $gap={20}>
+          <Icon src={currentIcon} alt="" />
+          <Column style={{ gap: 6, flex: 1, minWidth: 0 }}>
+            <Row style={{ gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <Alias>{alias}</Alias>
+              <Badge $state={verified ? 'done' : 'pending'}>
+                {verified ? '인증 완료' : '인증 전'}
+              </Badge>
+              {isCurrent && <NowBadge>현재 설정된 주소</NowBadge>}
+            </Row>
+            <AddrLine title={address1}>{address1}</AddrLine>
+            {/* 메모 태그: 기본 아이콘 + 커스텀 태그 */}
+            <Row style={{ gap: 8, flexWrap: 'wrap' }}>
+              {neighborNotes.map(key => {
+                const imgs = NOTE_ICONS[key];
+                if (!imgs) return null;
+                return (
+                  <NoteIcon key={key}>
+                    <img src={imgs.active} alt={imgs.alt} />
+                  </NoteIcon>
+                );
+              })}
 
-          {noteChips.length > 0 && (
-            <>
-              <Spacer h={6} />
-              <Row style={{ gap: 6, flexWrap: 'wrap' }}>
-                {noteChips.map((t, i) => (
-                  <NoteChip key={`${t}-${i}`}>{t}</NoteChip>
-                ))}
-              </Row>
-            </>
-          )}
-        </Column>
+              {extraList.map(txt => (
+                <CustomNoteTag key={txt}>
+                  <SpeechIcon src={iconSpeechBubble} alt="" />
+                  <span>{txt}</span>
+                </CustomNoteTag>
+              ))}
+            </Row>
+          </Column>
+        </Row>
 
         <EditBtn
           type="button"
@@ -142,7 +161,7 @@ function AddressItem({ data, onClickBox, onClickEdit }) {
             onClickEdit();
           }}
         >
-          <img src={iconChevron} alt="" />
+          <img src={iconChevron} />
         </EditBtn>
       </Row>
     </Card>
@@ -150,9 +169,9 @@ function AddressItem({ data, onClickBox, onClickEdit }) {
 }
 
 // ----------------------------------------------------------
-// 하위: 편집 바텀시트
+// 하위: 편집 전체 화면
 // ----------------------------------------------------------
-function EditSheet({ data, onClose, onSave, onDelete }) {
+function EditScreen({ data, onClose, onSave, onDelete }) {
   const [placeType, setPlaceType] = useState(data.placeType);
   const [customPlaceName, setCustomPlaceName] = useState(data.customPlaceName || '');
   const [neighborNotes, setNeighborNotes] = useState(data.neighborNotes || []);
@@ -192,104 +211,114 @@ function EditSheet({ data, onClose, onSave, onDelete }) {
   };
 
   return (
-    <BottomSheet isOpen={true} onClose={onClose} height="70dvh">
-      <SheetWrap>
-        <SheetTitle>주소 상세</SheetTitle>
+    <Fullscreen>
+      <TopBar title="주소 상세" onBack={onClose} />
 
-        {/* 주소 고정표시 */}
-        <AddressBox>
-          <AddrMain>{data.address1}</AddrMain>
-          {data.address2 ? <AddrSubText>{data.address2}</AddrSubText> : null}
-          {data.lot ? <AddrLotText>{data.lot}</AddrLotText> : null}
-        </AddressBox>
+      <FullscreenBody>
+        <SheetWrap>
+          <SheetTitle>주소 상세</SheetTitle>
 
-        <Section>
-          <SecTitle>주소 분류</SecTitle>
-          <Row style={{ gap: 8 }}>
-            {PLACE_TYPES.map(p => (
-              <SelectBtn
-                key={p.key}
-                $active={placeType === p.key}
-                onClick={() => applyPlace(p.key)}
-              >
-                {p.label}
-              </SelectBtn>
-            ))}
-          </Row>
+          {/* 주소 고정표시 */}
+          <AddressBox>
+            <AddrMain>{data.address1}</AddrMain>
+            {data.address2 ? <AddrSubText>{data.address2}</AddrSubText> : null}
+            {data.lot ? <AddrLotText>{data.lot}</AddrLotText> : null}
+          </AddressBox>
 
-          {placeType === 'ETC' && (
-            <>
-              <Spacer h={8} />
-              <EtcInput
-                placeholder="장소명을 입력하세요 (예: 본가, 학원)"
-                value={customPlaceName}
-                onChange={e => setCustomPlaceName(e.target.value)}
-                maxLength={15}
-              />
-            </>
-          )}
-        </Section>
+          {/* 주소 분류 */}
+          <Section>
+            <SecTitle>주소 분류</SecTitle>
+            <Row style={{ gap: 8 }}>
+              {PLACE_TYPES.map(p => (
+                <SelectBtn
+                  key={p.key}
+                  $active={placeType === p.key}
+                  onClick={() => applyPlace(p.key)}
+                >
+                  {p.label}
+                </SelectBtn>
+              ))}
+            </Row>
 
-        <Section>
-          <SecTitle>이웃에게 한마디</SecTitle>
-          <HelpText>다중 선택이 가능해요.</HelpText>
-          <Spacer h={8} />
-          <Row style={{ gap: 8, flexWrap: 'wrap' }}>
-            {ALLOWED_NOTES.map(n => (
-              <ToggleChip
-                key={n.key}
-                type="button"
-                $active={neighborNotes.includes(n.key)}
-                onClick={() => toggleNote(n.key)}
-              >
-                {n.label}
-              </ToggleChip>
-            ))}
-          </Row>
-
-          <Spacer h={10} />
-          <Row style={{ gap: 8, alignItems: 'center' }}>
-            <ToggleChip as="div" $active={Boolean(extraNotes)}>
-              직접 입력
-            </ToggleChip>
-            <ExtraInput
-              placeholder="예: 8시 이후 소음 자제 부탁"
-              value={extraDraft}
-              onChange={e => setExtraDraft(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') addExtra();
-              }}
-            />
-            <SmallBtn type="button" onClick={addExtra}>
-              추가
-            </SmallBtn>
-            {extraNotes && (
-              <SmallGhost
-                type="button"
-                onClick={() => setExtraNotes('')}
-                aria-label="직접입력 제거"
-              >
-                제거
-              </SmallGhost>
+            {placeType === 'ETC' && (
+              <>
+                <Spacer h={8} />
+                <EtcInput
+                  placeholder="장소명을 입력하세요 (예: 본가, 학원)"
+                  value={customPlaceName}
+                  onChange={e => setCustomPlaceName(e.target.value)}
+                  maxLength={15}
+                />
+              </>
             )}
-          </Row>
+          </Section>
 
-          {extraNotes && (
-            <>
-              <Spacer h={8} />
-              <Row style={{ gap: 6, flexWrap: 'wrap' }}>
-                <NoteChip>{extraNotes}</NoteChip>
-              </Row>
-            </>
-          )}
-        </Section>
+          {/* 이웃에게 한마디 */}
+          <Section>
+            <SecTitle>이웃에게 한마디</SecTitle>
+            <HelpText>다중 선택이 가능해요.</HelpText>
+            <Spacer h={8} />
+            <Row style={{ gap: 8, flexWrap: 'wrap' }}>
+              {ALLOWED_NOTES.map(n => (
+                <ToggleChip
+                  key={n.key}
+                  type="button"
+                  $active={neighborNotes.includes(n.key)}
+                  onClick={() => toggleNote(n.key)}
+                >
+                  {n.label}
+                </ToggleChip>
+              ))}
+            </Row>
 
-        <Spacer h={16} />
-        <Button onClick={handleSave}>수정하기</Button>
-        <Spacer h={10} />
-        <DangerBtn onClick={() => onDelete(data.id)}>주소 삭제</DangerBtn>
-      </SheetWrap>
-    </BottomSheet>
+            <Spacer h={10} />
+            <Row style={{ gap: 8, alignItems: 'center' }}>
+              <ToggleChip as="div" $active={Boolean(extraNotes)}>
+                직접 입력
+              </ToggleChip>
+              <ExtraInput
+                placeholder="예: 8시 이후 소음 자제 부탁"
+                value={extraDraft}
+                onChange={e => setExtraDraft(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') addExtra();
+                }}
+              />
+              <SmallBtn type="button" onClick={addExtra}>
+                추가
+              </SmallBtn>
+              {extraNotes && (
+                <SmallGhost
+                  type="button"
+                  onClick={() => setExtraNotes('')}
+                  aria-label="직접입력 제거"
+                >
+                  제거
+                </SmallGhost>
+              )}
+            </Row>
+
+            {extraNotes && (
+              <>
+                <Spacer h={8} />
+                <Row style={{ gap: 6, flexWrap: 'wrap' }}>
+                  <NoteChip>{extraNotes}</NoteChip>
+                </Row>
+              </>
+            )}
+          </Section>
+
+          <Spacer h={16} />
+          <Button onClick={handleSave}>수정하기</Button>
+          <Spacer h={10} />
+          <DangerBtn onClick={() => onDelete(data.id)}>주소 삭제</DangerBtn>
+          <Spacer h={24} />
+          <Button onClick={onClose} $variant="ghost">
+            닫기
+          </Button>
+        </SheetWrap>
+      </FullscreenBody>
+    </Fullscreen>
   );
 }
 
@@ -330,8 +359,8 @@ const AddButton = styled.div`
 const Card = styled.div`
   width: 100%;
   text-align: left;
-  padding: 14px 14px 12px;
-  background: #fff;
+  padding: 12px 0px 12px 16px;
+  background: ${color('grayscale.100')};
   border: 1px solid ${color('grayscale.200')};
   border-radius: 10px;
   cursor: pointer;
@@ -340,6 +369,7 @@ const Card = styled.div`
     p.$active &&
     css`
       border-color: ${color('brand.primary')};
+      background: #fff;
     `}
 `;
 
@@ -400,16 +430,20 @@ const NoteChip = styled.span`
 `;
 
 const EditBtn = styled.button`
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
   border: none;
   background: transparent;
   flex: 0 0 auto;
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
   img {
-    width: 20px;
-    height: 20px;
-    transform: rotate(-90deg); /* 오른쪽 화살표 느낌 */
+    width: 7px;
+    height: 12px;
   }
 `;
 
@@ -556,4 +590,52 @@ const DangerBtn = styled.button`
   border: 1px solid ${color('red.300')};
   background: ${color('red.50')};
   color: ${color('red.700')};
+`;
+
+const Fullscreen = styled.div`
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+
+  /* ✅ 앱 크기에 맞추기 */
+  max-width: var(--container-w);
+  margin: 0 auto;
+`;
+
+const FullscreenBody = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px 24px;
+`;
+
+// 상세와 비슷한 크기/여백으로 아이콘만 표시
+const NoteIcon = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    display: block;
+    height: 32px; /* 필요시 조절 */
+  }
+`;
+
+const SpeechIcon = styled.img`
+  width: 16px;
+  height: 16px;
+`;
+
+// 커스텀(직접입력) 태그 — 상세 페이지의 초록 칩 스타일 차용
+const CustomNoteTag = styled.div`
+  ${typo('button3')}
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 30px;
+  background: ${color('brand.primary')};
+  color: #fff;
 `;

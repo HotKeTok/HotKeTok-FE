@@ -22,6 +22,7 @@ import Communication from './pages/Communication';
 // 마이 관련
 import MyPage from './pages/my/MyPage';
 import AddressAdmin from './pages/my/AddressAdmin';
+import AddressAdminDetail from './pages/my/AddressAdminDetail';
 
 // 컴포넌트
 import NavBar from './components/common/NavBar';
@@ -34,18 +35,17 @@ import { AppShell, MainContainer, BottomBar } from './styles/layout';
 
 const Layout = () => {
   const { pathname } = useLocation();
-  const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname);
+  const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname) || pathname.startsWith('/address-admin');
 
-  const bgColor =
+  const isWhiteBg =
     pathname === '/sign-in' ||
     pathname === '/sign-up' ||
     pathname === '/init-process' ||
     pathname === '/request-repair' ||
     pathname === '/repair-history' ||
     pathname === '/write-review' ||
-    pathname === '/address-admin'
-      ? '#ffffff'
-      : '#f9f9f9';
+    pathname.startsWith('/address-admin');
+  const bgColor = isWhiteBg ? '#ffffff' : '#f9f9f9';
 
   // 헤더 유무/높이는 각 페이지 성격에 맞게 결정
   const hasHeader = !HIDE_HEADER_PATHS.includes(pathname);
@@ -98,6 +98,7 @@ export default function AppRouter() {
           {/* 마이 관련*/}
           <Route path="/my-page" element={<MyPage />} />
           <Route path="/address-admin" element={<AddressAdmin />} />
+          <Route path="/address-admin/:id" element={<AddressAdminDetail />} />
 
           <Route path="*" element={<div>Not Found</div>} />
         </Route>
