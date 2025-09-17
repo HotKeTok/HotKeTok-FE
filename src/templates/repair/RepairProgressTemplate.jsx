@@ -3,6 +3,12 @@ import styled, { css, keyframes } from 'styled-components';
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 
+import {
+  BottomButtonContainer,
+  PageNoBottomBar,
+  ScrollableNoBottomBarContent,
+} from '../../styles/layout';
+
 import TopBar from '../../components/common/TopBar';
 import Button from '../../components/common/Button';
 import ButtonSmall from '../../components/common/ButtonSmall';
@@ -173,146 +179,172 @@ export default function RepairProgressTemplate({
   );
 
   return (
-    <>
+    <PageNoBottomBar>
       <TopBar title={isDone ? '완료된 수리' : '진행중인 수리'} />
-
-      {/* 헤더 영역 */}
-      <WhiteSection>
-        <Row $justify="space-between" style={{ marginBottom: '15px' }}>
-          <ButtonRound text={isDone ? '처리 완료' : '진행중'} />
-          <InfoIcon src={iconInfo} onClick={() => setShowInfoModal(true)} />
-        </Row>
-        <Column $gap={20}>
-          <Column $gap={6}>
-            <Category>{request.categoryLabel}</Category>
-            <RequestDate>{request.requestedAt}</RequestDate>
-          </Column>
-
-          {/* 스텝 인디케이터 */}
-          <StepBar>
-            <StepDot $active={step === STEP.FINDING}>업체{'\n'}찾는 중</StepDot>
-            <StepDivider />
-            <StepDot $active={step === STEP.CHOOSE}>견적서{'\n'}선택</StepDot>
-            <StepDivider />
-            <StepDot $active={step === STEP.MATCHED}>업체{'\n'}매칭</StepDot>
-            <StepDivider />
-            <StepDot $active={step === STEP.DONE}>처리{'\n'}완료</StepDot>
-          </StepBar>
-
-          {/* 진행 상태 문구(완료는 숨김) */}
-          {!isDone && (
-            <GuideBubble>
-              {step === STEP.FINDING && '수리업체에서 요청서를 확인하고 있어요.'}
-              {step === STEP.CHOOSE &&
-                (mode === COST_MODE.SELF
-                  ? '마음에 드는 견적서를 선택해주세요!'
-                  : '집주인이 견적서를 선택하는 중이에요.')}
-              {step === STEP.MATCHED && '업체가 매칭되었어요!'}
-            </GuideBubble>
-          )}
-        </Column>
-      </WhiteSection>
-
-      {/* 요청서 아코디언 */}
-      <Accordion>
-        <AccordionHeader onClick={() => setOpenRequest(!openRequest)}>
-          <AccordionTitle>요청서</AccordionTitle>
-          <Chevron $open={openRequest} />
-        </AccordionHeader>
-
-        <Collapsible isOpen={openRequest}>
-          <AccordionBody>
-            <RequestSummary
-              context={{
-                typeKey: 'etc',
-                dateKey: request.hopeAt.split('/')[0].trim().replace(/\./g, '-'),
-                time: request.hopeAt.split('/')[1]?.trim() || '',
-                payer: mode === COST_MODE.SELF ? 'me' : 'landlord',
-                images: request.images,
-                desc: request.description,
-                useAI: false,
-              }}
-              address={request.address}
-              repairTypes={[{ key: 'etc', label: request.categoryLabel }]}
-            />
-          </AccordionBody>
-        </Collapsible>
-      </Accordion>
-
-      {/* 단계별 섹션 */}
-      {step === STEP.FINDING && (
-        <EmptyQuotes>
-          <EmptyBox>
-            <AccordionTitle>받은 견적</AccordionTitle>
-            <Caption1_600>아직 견적서가 도착하지 않았어요.</Caption1_600>
-          </EmptyBox>
-        </EmptyQuotes>
-      )}
-
-      {step === STEP.CHOOSE && (
-        <Accordion>
-          <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
-            <Column $gap={2}>
-              <AccordionTitle>
-                받은 견적
-                <Caption1_600>
-                  {quotes.length}개 업체에서 견적서를 보내왔어요.
-                  <br />
-                  수리를 진행할 업체를 선택해 주세요.
-                </Caption1_600>
-              </AccordionTitle>
+      <ScrollableNoBottomBarContent>
+        {/* 헤더 영역 */}
+        <WhiteSection>
+          <Row $justify="space-between" style={{ marginBottom: '15px' }}>
+            <ButtonRound text={isDone ? '처리 완료' : '진행중'} />
+            <InfoIcon src={iconInfo} onClick={() => setShowInfoModal(true)} />
+          </Row>
+          <Column $gap={20}>
+            <Column $gap={6}>
+              <Category>{request.categoryLabel}</Category>
+              <RequestDate>{request.requestedAt}</RequestDate>
             </Column>
-            <Chevron $open={openQuotes} />
+
+            {/* 스텝 인디케이터 */}
+            <StepBar>
+              <StepDot $active={step === STEP.FINDING}>업체{'\n'}찾는 중</StepDot>
+              <StepDivider />
+              <StepDot $active={step === STEP.CHOOSE}>견적서{'\n'}선택</StepDot>
+              <StepDivider />
+              <StepDot $active={step === STEP.MATCHED}>업체{'\n'}매칭</StepDot>
+              <StepDivider />
+              <StepDot $active={step === STEP.DONE}>처리{'\n'}완료</StepDot>
+            </StepBar>
+
+            {/* 진행 상태 문구(완료는 숨김) */}
+            {!isDone && (
+              <GuideBubble>
+                {step === STEP.FINDING && '수리업체에서 요청서를 확인하고 있어요.'}
+                {step === STEP.CHOOSE &&
+                  (mode === COST_MODE.SELF
+                    ? '마음에 드는 견적서를 선택해주세요!'
+                    : '집주인이 견적서를 선택하는 중이에요.')}
+                {step === STEP.MATCHED && '업체가 매칭되었어요!'}
+              </GuideBubble>
+            )}
+          </Column>
+        </WhiteSection>
+
+        {/* 요청서 아코디언 */}
+        <Accordion>
+          <AccordionHeader onClick={() => setOpenRequest(!openRequest)}>
+            <AccordionTitle>요청서</AccordionTitle>
+            <Chevron $open={openRequest} />
           </AccordionHeader>
 
-          <Collapsible isOpen={openQuotes}>
-            <AccordionBody2>
-              <Column $gap={10}>
-                {quotes.map(q => (
-                  <ModeItem
-                    key={q.id}
-                    selected={selectedQuoteId === q.id}
-                    onClick={() => (mode === COST_MODE.SELF ? setSelectedQuoteId(q.id) : null)}
-                    height="auto"
-                    padding="18px 24px"
-                  >
-                    <CardContent>
-                      <Row style={{ alignItems: 'center' }} $gap={10}>
-                        <Avatar src={q.avatar} alt="" />
-                        <CompanyName>
-                          {q.companyName} <ArrowRight src={iconChevron} />
-                        </CompanyName>
-                      </Row>
-                      <Phone>{q.phone}</Phone>
-                      <Content>{q.content}</Content>
-                      <Price>{comma(q.price)}원</Price>
-                    </CardContent>
-                  </ModeItem>
-                ))}
-              </Column>
-              <Footer>
-                <Button
-                  active={canProceed}
-                  onClick={handleChooseQuote}
-                  text={mode === COST_MODE.LANDLORD ? '집주인이 선택합니다' : '견적서 선택'}
-                />
-              </Footer>
-            </AccordionBody2>
+          <Collapsible isOpen={openRequest}>
+            <AccordionBody>
+              <RequestSummary
+                context={{
+                  typeKey: 'etc',
+                  dateKey: request.hopeAt.split('/')[0].trim().replace(/\./g, '-'),
+                  time: request.hopeAt.split('/')[1]?.trim() || '',
+                  payer: mode === COST_MODE.SELF ? 'me' : 'landlord',
+                  images: request.images,
+                  desc: request.description,
+                  useAI: false,
+                }}
+                address={request.address}
+                repairTypes={[{ key: 'etc', label: request.categoryLabel }]}
+              />
+            </AccordionBody>
           </Collapsible>
         </Accordion>
-      )}
 
-      {step === STEP.MATCHED && selectedQuote && (
-        <Accordion>
-          <AccordionHeader>
-            <AccordionTitle>선택한 견적</AccordionTitle>
-            {mode === COST_MODE.SELF && (
-              <ButtonSmall width={60} text="취소" onClick={handleCancelMatch} />
-            )}
-          </AccordionHeader>
+        {/* 단계별 섹션 */}
+        {step === STEP.FINDING && (
+          <EmptyQuotes>
+            <EmptyBox>
+              <AccordionTitle>받은 견적</AccordionTitle>
+              <Caption1_600>아직 견적서가 도착하지 않았어요.</Caption1_600>
+            </EmptyBox>
+          </EmptyQuotes>
+        )}
 
-          <Collapsible isOpen={openQuotes}>
-            <AccordionBody>
+        {step === STEP.CHOOSE && (
+          <Accordion>
+            <AccordionHeader onClick={() => setOpenQuotes(!openQuotes)}>
+              <Column $gap={2}>
+                <AccordionTitle>
+                  받은 견적
+                  <Caption1_600>
+                    {quotes.length}개 업체에서 견적서를 보내왔어요.
+                    <br />
+                    수리를 진행할 업체를 선택해 주세요.
+                  </Caption1_600>
+                </AccordionTitle>
+              </Column>
+              <Chevron $open={openQuotes} />
+            </AccordionHeader>
+
+            <Collapsible isOpen={openQuotes}>
+              <AccordionBody2>
+                <Column $gap={10}>
+                  {quotes.map(q => (
+                    <ModeItem
+                      key={q.id}
+                      selected={selectedQuoteId === q.id}
+                      onClick={() => (mode === COST_MODE.SELF ? setSelectedQuoteId(q.id) : null)}
+                      height="auto"
+                      padding="18px 24px"
+                    >
+                      <CardContent>
+                        <Row style={{ alignItems: 'center' }} $gap={10}>
+                          <Avatar src={q.avatar} alt="" />
+                          <CompanyName>
+                            {q.companyName} <ArrowRight src={iconChevron} />
+                          </CompanyName>
+                        </Row>
+                        <Phone>{q.phone}</Phone>
+                        <Content>{q.content}</Content>
+                        <Price>{comma(q.price)}원</Price>
+                      </CardContent>
+                    </ModeItem>
+                  ))}
+                </Column>
+                <Footer>
+                  <Button
+                    active={canProceed}
+                    onClick={handleChooseQuote}
+                    text={mode === COST_MODE.LANDLORD ? '집주인이 선택합니다' : '견적서 선택'}
+                  />
+                </Footer>
+              </AccordionBody2>
+            </Collapsible>
+          </Accordion>
+        )}
+
+        {step === STEP.MATCHED && selectedQuote && (
+          <Accordion>
+            <AccordionHeader>
+              <AccordionTitle>선택한 견적</AccordionTitle>
+              {mode === COST_MODE.SELF && (
+                <ButtonSmall width={60} text="취소" onClick={handleCancelMatch} />
+              )}
+            </AccordionHeader>
+
+            <Collapsible isOpen={openQuotes}>
+              <AccordionBody>
+                <RepairDetailRows
+                  companyName={selectedQuote.companyName}
+                  phone={selectedQuote.phone}
+                  price={selectedQuote.price}
+                  schedule={request.hopeAt}
+                  content={selectedQuote.content}
+                  avatar={selectedQuote.avatar}
+                  arrowIcon={iconChevron}
+                  onCompanyClick={() => {
+                    /* 업체 상세 이동 등 */
+                  }}
+                />
+              </AccordionBody>
+            </Collapsible>
+          </Accordion>
+        )}
+
+        {/* ✅ STEP4: 처리 완료 화면 */}
+        {step === STEP.DONE && selectedQuote && (
+          <>
+            <DividerLine />
+            <SectionHeader>
+              <AccordionTitle>수리 정보</AccordionTitle>
+            </SectionHeader>
+
+            <InfoCard>
               <RepairDetailRows
                 companyName={selectedQuote.companyName}
                 phone={selectedQuote.phone}
@@ -325,96 +357,71 @@ export default function RepairProgressTemplate({
                   /* 업체 상세 이동 등 */
                 }}
               />
-            </AccordionBody>
-          </Collapsible>
-        </Accordion>
-      )}
+            </InfoCard>
 
-      {/* ✅ STEP4: 처리 완료 화면 */}
-      {step === STEP.DONE && selectedQuote && (
-        <>
-          <DividerLine />
-          <SectionHeader>
-            <AccordionTitle>수리 정보</AccordionTitle>
-          </SectionHeader>
+            <FooterSticky>
+              <Button text="후기 작성하기" active={true} onClick={goWriteReview} />
+            </FooterSticky>
+          </>
+        )}
 
-          <InfoCard>
-            <RepairDetailRows
-              companyName={selectedQuote.companyName}
-              phone={selectedQuote.phone}
-              price={selectedQuote.price}
-              schedule={request.hopeAt}
-              content={selectedQuote.content}
-              avatar={selectedQuote.avatar}
-              arrowIcon={iconChevron}
-              onCompanyClick={() => {
-                /* 업체 상세 이동 등 */
-              }}
-            />
-          </InfoCard>
+        {/* 모달들 */}
+        {showCancelModal && (
+          <Dim onClick={() => setShowCancelModal(false)}>
+            <Modal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+              <ModalTitle>{selectedQuote?.companyName ?? '업체'}</ModalTitle>
+              <ModalDesc>업체 선택을 취소하시겠어요?</ModalDesc>
+              <Row $gap={10}>
+                <ModalButton $variant="ghost" onClick={() => setShowCancelModal(false)}>
+                  아니요
+                </ModalButton>
+                <ModalButton onClick={confirmCancelMatch}>취소하기</ModalButton>
+              </Row>
+            </Modal>
+          </Dim>
+        )}
 
-          <FooterSticky>
-            <Button text="후기 작성하기" active={true} onClick={goWriteReview} />
-          </FooterSticky>
-        </>
-      )}
+        {showInfoModal && (
+          <Dim onClick={() => setShowInfoModal(false)}>
+            <GuideModal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+              <Row $justify={'space-between'}>
+                <GuideTitle>STEP 01</GuideTitle>
+                <GuideClose src={iconClose} onClick={() => setShowInfoModal(false)} />
+              </Row>
+              <GuideBlock>
+                <GuideStep>업체 찾는 중</GuideStep>
+                <GuideText>
+                  제출하신 요청서를 바탕으로 업체에서 견적서를 작성중이에요!{'\n'} 잠시 기다려주시면
+                  합리적인 견적서를 찾아드릴게요.
+                </GuideText>
+              </GuideBlock>
+              <GuideTitle>STEP 02</GuideTitle>
+              <GuideBlock>
+                <GuideStep>견적서 선택</GuideStep>
+                <GuideText>
+                  주변 시공업체에서 요청서를 확인하고 견적서를 보내왔어요. {'\n'}도착한 견적서 중
+                  가장 합리적인 견적서를 선택하는 단계예요.
+                </GuideText>
+              </GuideBlock>
+              <GuideTitle>STEP 03</GuideTitle>
+              <GuideBlock>
+                <GuideStep>업체 매칭</GuideStep>
+                <GuideText>업체 매칭이 완료됐어요! 곧 수리 기사님이 방문하실 예정이에요.</GuideText>
+              </GuideBlock>
+              <GuideTitle>STEP 04</GuideTitle>
+              <GuideBlock style={{ margin: '4px 0px 0px 0px' }}>
+                <GuideStep>처리 완료</GuideStep>
+                <GuideText>
+                  수리가 완료됐어요! 만족스러우셨나요? {'\n'}앞으로도 핫케톡에서 만나요!
+                </GuideText>
+              </GuideBlock>
+            </GuideModal>
+          </Dim>
+        )}
 
-      {/* 모달들 */}
-      {showCancelModal && (
-        <Dim onClick={() => setShowCancelModal(false)}>
-          <Modal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
-            <ModalTitle>{selectedQuote?.companyName ?? '업체'}</ModalTitle>
-            <ModalDesc>업체 선택을 취소하시겠어요?</ModalDesc>
-            <Row $gap={10}>
-              <ModalButton $variant="ghost" onClick={() => setShowCancelModal(false)}>
-                아니요
-              </ModalButton>
-              <ModalButton onClick={confirmCancelMatch}>취소하기</ModalButton>
-            </Row>
-          </Modal>
-        </Dim>
-      )}
-
-      {showInfoModal && (
-        <Dim onClick={() => setShowInfoModal(false)}>
-          <GuideModal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
-            <Row $justify={'space-between'}>
-              <GuideTitle>STEP 01</GuideTitle>
-              <GuideClose src={iconClose} onClick={() => setShowInfoModal(false)} />
-            </Row>
-            <GuideBlock>
-              <GuideStep>업체 찾는 중</GuideStep>
-              <GuideText>
-                제출하신 요청서를 바탕으로 업체에서 견적서를 작성중이에요!{'\n'} 잠시 기다려주시면
-                합리적인 견적서를 찾아드릴게요.
-              </GuideText>
-            </GuideBlock>
-            <GuideTitle>STEP 02</GuideTitle>
-            <GuideBlock>
-              <GuideStep>견적서 선택</GuideStep>
-              <GuideText>
-                주변 시공업체에서 요청서를 확인하고 견적서를 보내왔어요. {'\n'}도착한 견적서 중 가장
-                합리적인 견적서를 선택하는 단계예요.
-              </GuideText>
-            </GuideBlock>
-            <GuideTitle>STEP 03</GuideTitle>
-            <GuideBlock>
-              <GuideStep>업체 매칭</GuideStep>
-              <GuideText>업체 매칭이 완료됐어요! 곧 수리 기사님이 방문하실 예정이에요.</GuideText>
-            </GuideBlock>
-            <GuideTitle>STEP 04</GuideTitle>
-            <GuideBlock style={{ margin: '4px 0px 0px 0px' }}>
-              <GuideStep>처리 완료</GuideStep>
-              <GuideText>
-                수리가 완료됐어요! 만족스러우셨나요? {'\n'}앞으로도 핫케톡에서 만나요!
-              </GuideText>
-            </GuideBlock>
-          </GuideModal>
-        </Dim>
-      )}
-
-      <DemoSwitch />
-    </>
+        <DemoSwitch />
+      </ScrollableNoBottomBarContent>
+    </PageNoBottomBar>
   );
 }
 
@@ -607,6 +614,7 @@ const Avatar = styled.img`
 const CompanyName = styled.div`
   ${typo('subtitle1')}
   color: ${color('grayscale.600')};
+  display: inline-flex; // ✅ 텍스트 + 이미지 줄바꿈 방지
 `;
 
 const ArrowRight = styled.img`

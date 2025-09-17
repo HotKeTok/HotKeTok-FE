@@ -17,8 +17,8 @@ const Z_INDEX_SHEET = 9999;
 function BottomSheet({
   isOpen,
   onClose,
-  height = '422px',    // 기본 높이       
-  children,                  
+  height = '422px', // 기본 높이
+  children,
 }) {
   const [mounted, setMounted] = useState(isOpen);
   const [opening, setOpening] = useState(isOpen);
@@ -33,14 +33,18 @@ function BottomSheet({
       setOpening(false);
       timerRef.current = setTimeout(() => setMounted(false), 240);
     }
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [isOpen, mounted]);
 
   // body 스크롤 잠금
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, [opening]);
 
   if (!mounted) return null;
@@ -49,11 +53,15 @@ function BottomSheet({
     onClose?.();
   };
 
-  const stop = (e) => e.stopPropagation();
+  const stop = e => e.stopPropagation();
 
   return createPortal(
     <>
-      <Backdrop className={opening ? 'open' : ''} onClick={handleBackdropClick} />
+      <Backdrop
+        className={opening ? 'open' : ''}
+        onClick={handleBackdropClick}
+        $CONTAINER_WIDTH={CONTAINER_WIDTH}
+      />
       <Sheet
         className={opening ? 'open' : ''}
         onClick={stop}
@@ -71,14 +79,22 @@ function BottomSheet({
 
 export default BottomSheet;
 
+/* ⬇️ 기존 inset:0 제거 → 중앙 정렬 + 고정 너비 + 전체 높이 */
 const Backdrop = styled.div`
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.2);
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: ${({ $CONTAINER_WIDTH }) => $CONTAINER_WIDTH};
+  height: 100dvh;
+
+  background: rgba(0, 0, 0, 0.2);
   opacity: 0;
   transition: opacity 180ms ease;
   z-index: ${Z_INDEX_BACKDROP};
-  &.open { opacity: 1; }
+  &.open {
+    opacity: 1;
+  }
 `;
 
 const Sheet = styled.div`
@@ -91,11 +107,13 @@ const Sheet = styled.div`
   max-height: 95dvh;
   background: #fff;
   border-radius: 16px 16px 0 0;
-  box-shadow: 0 -8px 24px rgba(0,0,0,.18);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
   padding-bottom: env(safe-area-inset-bottom);
-  transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
   z-index: ${Z_INDEX_SHEET};
   will-change: transform;
 
-  &.open { transform: translate(-50%, 0); }
+  &.open {
+    transform: translate(-50%, 0);
+  }
 `;

@@ -4,11 +4,11 @@ import styled from 'styled-components';
 import IconChat from '../../assets/common/icon-chat.svg?react';
 import { useNavigate } from 'react-router-dom';
 
-export default function PageHeader({ leftComponent, isLightVersion = false }) {
+export default function PageHeader({ leftComponent, isLightVersion = false, background }) {
   const navigate = useNavigate();
 
   return (
-    <Container>
+    <Container background={background}>
       {leftComponent}
       <BtnContainer>
         <IconChat
@@ -26,11 +26,11 @@ export default function PageHeader({ leftComponent, isLightVersion = false }) {
 const Container = styled.div`
   width: auto;
   padding: 28px 24px;
-
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  background: ${({ background }) => background || 'transparent'};
 
   ${typo('subtitle1')}
 `;

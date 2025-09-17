@@ -3,6 +3,7 @@ import PageHeader from '../../components/common/PageHeader';
 import styled from 'styled-components';
 import { color, typo } from '../../styles/tokens';
 import { Column, Row } from '../../styles/flex';
+import { Page, ScrollableContent } from '../../styles/layout';
 
 import RequestBanner from '../../components/repair/repair-home/RequestBanner';
 import ContractorAd from '../../components/repair/repair-home/ContractorAd';
@@ -20,71 +21,67 @@ export default function RepairHomeTemplate() {
   const goProgress = id => nav(`/repair-progress?id=${encodeURIComponent(id)}`);
 
   return (
-    <Screen>
-      <TopSurface>
-        <PageHeader leftComponent="뚝딱" />
+    <Page>
+      <PageHeader leftComponent="뚝딱" background={'#fff'} />
+      <ScrollableContent>
+        <TopSurface>
+          <RowWrapper>
+            <StatusText>
+              {hasActive
+                ? `총 ${list.length}건의 수리가 진행중이에요.`
+                : '현재 진행중인 수리가 없어요.'}
+            </StatusText>
+            <MoveRepairHistory onClick={goHistory}>
+              지난 수리내역 <Chevron src={iconChevron} />
+            </MoveRepairHistory>
+          </RowWrapper>
+          {hasActive && (
+            <CardsWrap>
+              <Column $gap={12}>
+                {list.map(item => (
+                  <ActiveCard key={item.id} onClick={() => goProgress(item.id)}>
+                    <Row $justify="space-between" style={{ alignItems: 'flex-start' }}>
+                      <div>
+                        <CardTitle>{item.categoryLabel}</CardTitle>
+                        <CardMeta>{item.schedule}</CardMeta>
+                      </div>
+                      <RightCol>
+                        <Payer>{item.payerLabel}</Payer>
+                        <StatusCTA>
+                          {item.statusLabel} <Chevron src={iconChevron} />
+                        </StatusCTA>
+                      </RightCol>
+                    </Row>
+                  </ActiveCard>
+                ))}
+              </Column>
+            </CardsWrap>
+          )}
+          {/* ✅ 진행 중이 없을 때만 배너 표시 */}
+          {!hasActive && (
+            <div style={{ padding: '13px 20px' }}>
+              <RequestBanner />
+            </div>
+          )}
+        </TopSurface>
 
-        <RowWrapper>
-          <StatusText>
-            {hasActive
-              ? `총 ${list.length}건의 수리가 진행중이에요.`
-              : '현재 진행중인 수리가 없어요.'}
-          </StatusText>
-          <MoveRepairHistory onClick={goHistory}>
-            지난 수리내역 <Chevron src={iconChevron} />
-          </MoveRepairHistory>
-        </RowWrapper>
+        <Wrapper>
+          <Column>
+            <RecommandTitle>수리가 필요하신가요?</RecommandTitle>
+            <RecommandSub>이런 업체는 어떠세요?</RecommandSub>
+          </Column>
+          <ContractorAd />
+        </Wrapper>
 
-        {hasActive && (
-          <CardsWrap>
-            <Column $gap={12}>
-              {list.map(item => (
-                <ActiveCard key={item.id} onClick={() => goProgress(item.id)}>
-                  <Row $justify="space-between" style={{ alignItems: 'flex-start' }}>
-                    <div>
-                      <CardTitle>{item.categoryLabel}</CardTitle>
-                      <CardMeta>{item.schedule}</CardMeta>
-                    </div>
-                    <RightCol>
-                      <Payer>{item.payerLabel}</Payer>
-                      <StatusCTA>
-                        {item.statusLabel} <Chevron src={iconChevron} />
-                      </StatusCTA>
-                    </RightCol>
-                  </Row>
-                </ActiveCard>
-              ))}
-            </Column>
-          </CardsWrap>
-        )}
-        {/* ✅ 진행 중이 없을 때만 배너 표시 */}
-        {!hasActive && (
-          <div style={{ padding: '13px 20px' }}>
-            <RequestBanner />
-          </div>
-        )}
-      </TopSurface>
-
-      <Wrapper>
-        <Column>
-          <RecommandTitle>수리가 필요하신가요?</RecommandTitle>
-          <RecommandSub>이런 업체는 어떠세요?</RecommandSub>
-        </Column>
-        <ContractorAd />
-      </Wrapper>
-
-      <RequestFab type="button" aria-label="수리 요청하기" onClick={() => nav('/request-repair')}>
-        수리 요청하기
-      </RequestFab>
-    </Screen>
+        <RequestFab type="button" aria-label="수리 요청하기" onClick={() => nav('/request-repair')}>
+          수리 요청하기
+        </RequestFab>
+      </ScrollableContent>
+    </Page>
   );
 }
 
 /* ===== styles ===== */
-const Screen = styled.div`
-  position: relative;
-`;
-
 const TopSurface = styled.div`
   background: #fff;
   border-radius: 0 0 30px 30px;
@@ -96,7 +93,6 @@ const RowWrapper = styled(Row)`
   justify-content: space-between;
   padding: 0 20px;
   align-items: center;
-  margin-top: 4px;
 `;
 
 const StatusText = styled.div`
@@ -108,7 +104,10 @@ const MoveRepairHistory = styled.div`
   ${typo('caption1')}
   color: ${color('grayscale.800')};
   cursor: pointer;
-  user-select: none;
+  display: inline-flex; // ✅ 텍스트 + 이미지 줄바꿈 방지
+  align-items: center;
+  gap: 4px; // ✅ 아이콘 간격 조정
+  white-space: nowrap; // ✅ 전체 줄바꿈 방지
 `;
 
 const CardsWrap = styled.div`
@@ -172,7 +171,7 @@ const RecommandSub = styled.div`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 30px 0 0 24px;
+  padding: 30px 0 30px 24px;
   gap: 16px;
 `;
 
@@ -182,10 +181,11 @@ const RequestFab = styled.div`
   bottom: calc(env(safe-area-inset-bottom, 0) + var(--bar-h, 56px) + 16px);
   z-index: 1000;
 
+  white-space: nowrap; // ✅ 줄바꿈 방지
   ${typo('button1')}
   display: flex;
-  width: 90px;
-  height: 25px;
+  width: 132px;
+  height: 54px;
   justify-content: center;
   align-items: center;
   padding: 14px 18px;
