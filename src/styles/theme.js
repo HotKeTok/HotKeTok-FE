@@ -15,6 +15,7 @@ export const theme = {
       primary: '#01D281',
     },
     white: '#fff',
+    transparent: 'transparent',
   },
   fonts: {
     h1: {

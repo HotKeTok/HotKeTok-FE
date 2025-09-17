@@ -16,12 +16,10 @@ import iconHouse from '../../assets/my/address-admin/icon-house.svg';
 import iconCompany from '../../assets/my/address-admin/icon-building.svg';
 import iconEtc from '../../assets/my/address-admin/icon-location.svg';
 
-import Tag10PMActive from '../../assets/my/address-admin/Tag_10PM_active.svg';
-import Tag10PMDisactive from '../../assets/my/address-admin/Tag_10PM_disactive.svg';
-import TagBabyActive from '../../assets/my/address-admin/Tag_Baby_active.svg';
-import TagBabyDisactive from '../../assets/my/address-admin/Tag_Baby_disactive.svg';
-import TagPetActive from '../../assets/my/address-admin/Tag_Pet_active.svg';
-import TagPetDisactive from '../../assets/my/address-admin/Tag_Pet_disactive.svg';
+import Tag10PM from '../../assets/my/address-admin/Tag_10PM.svg';
+import TagBaby from '../../assets/my/address-admin/Tag_Baby.svg';
+import TagPet from '../../assets/my/address-admin/Tag_Pet.svg';
+
 import iconSpeechBubble from '../../assets/my/address-admin/icon-speech-bubble.svg';
 
 import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../mocks/my/addresses';
@@ -45,12 +43,11 @@ const PLACE_ICON = {
 // NOTE 아이콘 매핑
 const NOTE_ICONS = {
   SLEEP_AFTER_10: {
-    active: Tag10PMActive,
-    inactive: Tag10PMDisactive,
+    tag: Tag10PM,
     alt: '10시 이후로는 잡니다',
   },
-  HAS_BABY: { active: TagBabyActive, inactive: TagBabyDisactive, alt: '집에 아기가 있어요' },
-  HAS_PET: { active: TagPetActive, inactive: TagPetDisactive, alt: '반려동물이 있어요' },
+  HAS_BABY: { tag: TagBaby, alt: '집에 아기가 있어요' },
+  HAS_PET: { tag: TagPet, alt: '반려동물이 있어요' },
 };
 
 // ----------------------------------------------------------
@@ -138,7 +135,7 @@ function AddressItem({ data, onClickBox, onClickEdit }) {
                 if (!imgs) return null;
                 return (
                   <NoteIcon key={key}>
-                    <img src={imgs.active} alt={imgs.alt} />
+                    <img src={imgs.tag} alt={imgs.alt} />
                   </NoteIcon>
                 );
               })}
@@ -165,160 +162,6 @@ function AddressItem({ data, onClickBox, onClickEdit }) {
         </EditBtn>
       </Row>
     </Card>
-  );
-}
-
-// ----------------------------------------------------------
-// 하위: 편집 전체 화면
-// ----------------------------------------------------------
-function EditScreen({ data, onClose, onSave, onDelete }) {
-  const [placeType, setPlaceType] = useState(data.placeType);
-  const [customPlaceName, setCustomPlaceName] = useState(data.customPlaceName || '');
-  const [neighborNotes, setNeighborNotes] = useState(data.neighborNotes || []);
-  const [extraNotes, setExtraNotes] = useState(data.extraNotes || '');
-  const [extraDraft, setExtraDraft] = useState('');
-
-  const applyPlace = key => setPlaceType(key);
-
-  const toggleNote = key => {
-    setNeighborNotes(prev => (prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]));
-  };
-
-  const addExtra = () => {
-    const v = (extraDraft || '').trim();
-    if (!v) return;
-    setExtraNotes(v);
-    setExtraDraft('');
-  };
-
-  const handleSave = () => {
-    const alias =
-      placeType === 'HOME'
-        ? '우리집'
-        : placeType === 'WORK'
-        ? '공유오피스'
-        : customPlaceName || '기타';
-
-    onSave({
-      ...data,
-      placeType,
-      placeTypeLabel: PLACE_TYPES.find(p => p.key === placeType)?.label || '기타',
-      customPlaceName: placeType === 'ETC' ? customPlaceName : '',
-      alias,
-      neighborNotes,
-      extraNotes,
-    });
-  };
-
-  return (
-    <Fullscreen>
-      <TopBar title="주소 상세" onBack={onClose} />
-
-      <FullscreenBody>
-        <SheetWrap>
-          <SheetTitle>주소 상세</SheetTitle>
-
-          {/* 주소 고정표시 */}
-          <AddressBox>
-            <AddrMain>{data.address1}</AddrMain>
-            {data.address2 ? <AddrSubText>{data.address2}</AddrSubText> : null}
-            {data.lot ? <AddrLotText>{data.lot}</AddrLotText> : null}
-          </AddressBox>
-
-          {/* 주소 분류 */}
-          <Section>
-            <SecTitle>주소 분류</SecTitle>
-            <Row style={{ gap: 8 }}>
-              {PLACE_TYPES.map(p => (
-                <SelectBtn
-                  key={p.key}
-                  $active={placeType === p.key}
-                  onClick={() => applyPlace(p.key)}
-                >
-                  {p.label}
-                </SelectBtn>
-              ))}
-            </Row>
-
-            {placeType === 'ETC' && (
-              <>
-                <Spacer h={8} />
-                <EtcInput
-                  placeholder="장소명을 입력하세요 (예: 본가, 학원)"
-                  value={customPlaceName}
-                  onChange={e => setCustomPlaceName(e.target.value)}
-                  maxLength={15}
-                />
-              </>
-            )}
-          </Section>
-
-          {/* 이웃에게 한마디 */}
-          <Section>
-            <SecTitle>이웃에게 한마디</SecTitle>
-            <HelpText>다중 선택이 가능해요.</HelpText>
-            <Spacer h={8} />
-            <Row style={{ gap: 8, flexWrap: 'wrap' }}>
-              {ALLOWED_NOTES.map(n => (
-                <ToggleChip
-                  key={n.key}
-                  type="button"
-                  $active={neighborNotes.includes(n.key)}
-                  onClick={() => toggleNote(n.key)}
-                >
-                  {n.label}
-                </ToggleChip>
-              ))}
-            </Row>
-
-            <Spacer h={10} />
-            <Row style={{ gap: 8, alignItems: 'center' }}>
-              <ToggleChip as="div" $active={Boolean(extraNotes)}>
-                직접 입력
-              </ToggleChip>
-              <ExtraInput
-                placeholder="예: 8시 이후 소음 자제 부탁"
-                value={extraDraft}
-                onChange={e => setExtraDraft(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') addExtra();
-                }}
-              />
-              <SmallBtn type="button" onClick={addExtra}>
-                추가
-              </SmallBtn>
-              {extraNotes && (
-                <SmallGhost
-                  type="button"
-                  onClick={() => setExtraNotes('')}
-                  aria-label="직접입력 제거"
-                >
-                  제거
-                </SmallGhost>
-              )}
-            </Row>
-
-            {extraNotes && (
-              <>
-                <Spacer h={8} />
-                <Row style={{ gap: 6, flexWrap: 'wrap' }}>
-                  <NoteChip>{extraNotes}</NoteChip>
-                </Row>
-              </>
-            )}
-          </Section>
-
-          <Spacer h={16} />
-          <Button onClick={handleSave}>수정하기</Button>
-          <Spacer h={10} />
-          <DangerBtn onClick={() => onDelete(data.id)}>주소 삭제</DangerBtn>
-          <Spacer h={24} />
-          <Button onClick={onClose} $variant="ghost">
-            닫기
-          </Button>
-        </SheetWrap>
-      </FullscreenBody>
-    </Fullscreen>
   );
 }
 
@@ -369,7 +212,6 @@ const Card = styled.div`
     p.$active &&
     css`
       border-color: ${color('brand.primary')};
-      background: #fff;
     `}
 `;
 
@@ -380,11 +222,12 @@ const Alias = styled.div`
 
 const Badge = styled.div`
   ${typo('button3')}
-  padding: 2px 6px;
+  padding: 1px 6px;
   border-radius: 30px;
-  background: ${p => (p.$state === 'done' ? color('grayscale.700') : color('orange.400'))};
-  color: ${p => (p.$state === 'done' ? color('white') : color('grayscale.500'))};
-  border: 1px solid ${p => (p.$state === 'done' ? color('grayscale.800') : color('grayscale.500'))};
+  background: ${p => (p.$state === 'done' ? color('brand.primary') : color('transparent'))};
+  color: ${p => (p.$state === 'done' ? color('white') : color('brand.primary'))};
+  border: 1px solid ${p => (p.$state === 'done' ? color('transparent') : color('brand.primary'))};
+  opacity: ${p => (p.$state === 'done' ? 1 : 0.5)};
 `;
 
 const NowBadge = styled.div`
@@ -619,7 +462,8 @@ const NoteIcon = styled.div`
   justify-content: center;
   img {
     display: block;
-    height: 32px; /* 필요시 조절 */
+    height: 34px; /* 필요시 조절 */
+    width: 100%;
   }
 `;
 
@@ -636,6 +480,6 @@ const CustomNoteTag = styled.div`
   gap: 6px;
   padding: 8px 12px;
   border-radius: 30px;
-  background: ${color('brand.primary')};
-  color: #fff;
+  background: ${color('grayscale.200')};
+  color: ${color('grayscale.600')};
 `;
