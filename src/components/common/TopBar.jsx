@@ -5,7 +5,7 @@ import { color, typo } from '../../styles/tokens';
 import { Row } from '../../styles/flex';
 import { useNavigate } from 'react-router-dom';
 
-export default function TopBar({ title, onBack }) {
+export default function TopBar({ title, onBack, rightComponent }) {
   const nav = useNavigate();
 
   const handleBack = () => {
@@ -20,7 +20,7 @@ export default function TopBar({ title, onBack }) {
           <img src={BackButton} alt="뒤로가기버튼" />
         </BackButtonWrapper>
         <Title>{title}</Title>
-        <div style={{ width: '44px', height: '44px' }} />
+        {rightComponent ? rightComponent : <div style={{ width: '44px', height: '44px' }} />}
       </RowForTopBar>
     </Container>
   );

@@ -15,7 +15,7 @@ export default function PageHeader({ leftComponent, isLightVersion = false, back
           width={44}
           height={44}
           style={{ cursor: 'pointer' }}
-          onClick={() => navigate('/communication')}
+          onClick={() => navigate('/message')}
         />
         <Alarm isLightVersion={isLightVersion} />
       </BtnContainer>

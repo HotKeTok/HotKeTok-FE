@@ -5,7 +5,7 @@ export default function Notice(){
     const navigate = useNavigate();
 
     const onNoticeItemClick = (id) => {
-        navigate(`/main/notice/${id}`);
+        navigate(`/notice/${id}`);
     }
 
     return (<NoticeTemplate onNoticeItemClick={onNoticeItemClick} />)
