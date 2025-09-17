@@ -19,10 +19,12 @@ import WriteReview from './pages/repair/WriteReview';
 
 // 똑똑 관련
 import Communication from './pages/Communication';
+
 // 마이 관련
 import MyPage from './pages/my/MyPage';
 import AddressAdmin from './pages/my/AddressAdmin';
 import AddressAdminDetail from './pages/my/AddressAdminDetail';
+import ExtraAddressRegister from './pages/my/ExtraAddressRegister';
 
 // 컴포넌트
 import NavBar from './components/common/NavBar';
@@ -35,7 +37,10 @@ import { AppShell, MainContainer, BottomBar } from './styles/layout';
 
 const Layout = () => {
   const { pathname } = useLocation();
-  const hideBar = HIDE_BOTTOM_BAR_PATHS.includes(pathname) || pathname.startsWith('/address-admin');
+  const hideBar =
+    HIDE_BOTTOM_BAR_PATHS.includes(pathname) ||
+    pathname.startsWith('/address-admin') ||
+    pathname.startsWith('/address/add');
 
   const isWhiteBg =
     pathname === '/sign-in' ||
@@ -44,7 +49,8 @@ const Layout = () => {
     pathname === '/request-repair' ||
     pathname === '/repair-history' ||
     pathname === '/write-review' ||
-    pathname.startsWith('/address-admin');
+    pathname.startsWith('/address-admin') ||
+    pathname.startsWith('/address/add');
   const bgColor = isWhiteBg ? '#ffffff' : '#f9f9f9';
 
   // 헤더 유무/높이는 각 페이지 성격에 맞게 결정
@@ -99,6 +105,7 @@ export default function AppRouter() {
           <Route path="/my-page" element={<MyPage />} />
           <Route path="/address-admin" element={<AddressAdmin />} />
           <Route path="/address-admin/:id" element={<AddressAdminDetail />} />
+          <Route path="/address/add/:step" element={<ExtraAddressRegister />} />
 
           <Route path="*" element={<div>Not Found</div>} />
         </Route>

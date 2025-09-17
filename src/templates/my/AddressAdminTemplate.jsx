@@ -8,7 +8,6 @@ import { color, typo } from '../../styles/tokens';
 import { Page } from '../../styles/layout';
 
 import TopBar from '../../components/common/TopBar';
-import Button from '../../components/common/Button';
 
 import iconChevron from '../../assets/repair/icon-chevron.svg';
 import iconPlus from '../../assets/my/address-admin/icon-plus.svg';
@@ -62,19 +61,46 @@ export default function AddressAdminTemplate() {
     setItems(prev => prev.map(it => ({ ...it, isCurrent: it.id === id })));
   };
 
-  // 상세에서 온 patch/remove를 목록에 즉시 반영 (서버 없이)
+  // ✅ 상세/추가에서 온 patch/remove/add를 목록에 즉시 반영
   useEffect(() => {
     const patch = location.state?.patch;
     const removeId = location.state?.removeId;
-    if (!patch && !removeId) return;
+    const addItem = location.state?.add;
+    const replaceHome = Boolean(location.state?.replaceHome);
+
+    if (!patch && !removeId && !addItem) return;
 
     setItems(prev => {
-      if (removeId) return prev.filter(it => it.id !== removeId);
-      if (patch) return prev.map(it => (it.id === patch.id ? { ...it, ...patch } : it));
-      return prev;
+      let next = [...prev];
+      if (removeId) {
+        next = next.filter(it => it.id !== removeId);
+      }
+      if (patch) {
+        next = next.map(it => (it.id === patch.id ? { ...it, ...patch } : it));
+      }
+      if (addItem) {
+        // 1) '우리집' 교체 시 기존 HOME의 현재주소 해제
+        if (replaceHome && addItem.placeType === 'HOME') {
+          next = next.map(it => (it.placeType === 'HOME' ? { ...it, isCurrent: false } : it));
+        }
+
+        // 2) 중복 판별(주소1+주소2+타입 기준) → 있으면 업데이트, 없으면 '아래에' 추가
+        const norm = s => (s || '').trim();
+        const keyOf = a => [a.placeType, norm(a.address1), norm(a.address2)].join('|');
+        const idx = next.findIndex(it => keyOf(it) === keyOf(addItem));
+
+        if (idx >= 0) {
+          // 같은 주소가 이미 있으면 그 항목만 갱신 (id는 기존 유지)
+          next[idx] = { ...next[idx], ...addItem };
+        } else {
+          // 새 주소는 목록 '맨 아래'에 붙이기
+          next = [...next, addItem];
+        }
+      }
+      return next;
     });
 
-    // 중복 반영 방지: state 초기화
+    // 중복 반영 방지
     nav(location.pathname, { replace: true, state: null });
   }, [location.state, location.pathname, nav]);
 
@@ -83,7 +109,15 @@ export default function AddressAdminTemplate() {
       <TopBar title="주소 관리" />
       <ButtonWrapper>
         <IconPlus src={iconPlus} />
-        <AddButton type="button">주소 등록하기</AddButton>
+        <AddButton
+          type="button"
+          onClick={() => {
+            const hasHomeAlready = items.some(it => it.placeType === 'HOME');
+            nav('/address/add/AddressKeyword', { state: { hasHomeAlready } });
+          }}
+        >
+          주소 등록하기
+        </AddButton>
       </ButtonWrapper>
 
       <Container>
@@ -241,35 +275,18 @@ const NowBadge = styled.div`
 const AddrLine = styled.div`
   ${typo('body2')}
   color: ${color('grayscale.500')};
-  white-space: nowrap;
-`;
-
-const AddrSub = styled.p`
-  ${typo('caption1')}
-  color: ${color('grayscale.600')};
-  margin: 0;
+  /* 2줄까지 표시 + 말줄임 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const LotLine = styled.p`
-  ${typo('caption2')}
-  color: ${color('grayscale.500')};
-  margin: 0;
+  /* 한국어 줄바꿈 안정화 */
+  word-break: break-word;
+  overflow-wrap: anywhere;
 `;
 
 const Icon = styled.img`
   width: 20px;
-`;
-
-const NoteChip = styled.span`
-  ${typo('caption1')}
-  padding: 6px 10px;
-  background: ${color('grayscale.100')};
-  border: 1px solid ${color('grayscale.200')};
-  border-radius: 999px;
-  color: ${color('grayscale.700')};
 `;
 
 const EditBtn = styled.button`
@@ -288,171 +305,6 @@ const EditBtn = styled.button`
     width: 7px;
     height: 12px;
   }
-`;
-
-/* ===== Sheet ===== */
-
-const SheetWrap = styled.div`
-  padding: 16px 16px 28px;
-`;
-
-const SheetTitle = styled.h3`
-  ${typo('subtitle1')}
-  color: ${color('grayscale.900')};
-  margin-bottom: 10px;
-`;
-
-const AddressBox = styled.div`
-  padding: 12px;
-  border: 1px solid ${color('grayscale.200')};
-  border-radius: 12px;
-  background: ${color('grayscale.50')};
-`;
-
-const AddrMain = styled.p`
-  ${typo('body2')}
-  color: ${color('grayscale.900')};
-  margin: 0;
-`;
-
-const AddrSubText = styled.p`
-  ${typo('caption1')}
-  color: ${color('grayscale.700')};
-  margin: 2px 0 0 0;
-`;
-
-const AddrLotText = styled.p`
-  ${typo('caption2')}
-  color: ${color('grayscale.500')};
-  margin: 2px 0 0 0;
-`;
-
-const Section = styled.section`
-  margin-top: 16px;
-`;
-
-const SecTitle = styled.p`
-  ${typo('subtitle2')}
-  color: ${color('grayscale.900')};
-  margin: 0 0 8px 0;
-`;
-
-const HelpText = styled.p`
-  ${typo('caption2')}
-  color: ${color('grayscale.600')};
-  margin: 0;
-`;
-
-const SelectBtn = styled.button`
-  ${typo('button2')}
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid ${color('grayscale.300')};
-  background: #fff;
-  color: ${color('grayscale.800')};
-
-  ${p =>
-    p.$active &&
-    css`
-      border-color: ${color('brand.500')};
-      background: ${color('brand.50')};
-      color: ${color('brand.700')};
-    `}
-`;
-
-const EtcInput = styled.input`
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid ${color('grayscale.300')};
-  border-radius: 12px;
-  ${typo('body2')}
-  color: ${color('grayscale.900')};
-
-  &:focus {
-    outline: none;
-    border-color: ${color('brand.500')};
-    box-shadow: 0 0 0 3px ${color('brand.50')};
-  }
-`;
-
-const ToggleChip = styled.button`
-  ${typo('caption1')}
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid ${color('grayscale.300')};
-  background: #fff;
-  color: ${color('grayscale.800')};
-
-  ${p =>
-    p.$active &&
-    css`
-      background: ${color('green.50')};
-      color: ${color('green.700')};
-      border-color: ${color('green.300')};
-    `}
-`;
-
-const ExtraInput = styled.input`
-  flex: 1;
-  min-width: 0;
-  padding: 8px 10px;
-  border: 1px solid ${color('grayscale.300')};
-  border-radius: 10px;
-  ${typo('caption1')}
-  color: ${color('grayscale.900')};
-  &:focus {
-    outline: none;
-    border-color: ${color('brand.500')};
-    box-shadow: 0 0 0 2px ${color('brand.50')};
-  }
-`;
-
-const SmallBtn = styled.button`
-  ${typo('caption1')}
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid ${color('brand.500')};
-  background: ${color('brand.500')};
-  color: #fff;
-`;
-
-const SmallGhost = styled.button`
-  ${typo('caption1')}
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid ${color('grayscale.300')};
-  background: #fff;
-  color: ${color('grayscale.700')};
-`;
-
-const DangerBtn = styled.button`
-  ${typo('button2')}
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid ${color('red.300')};
-  background: ${color('red.50')};
-  color: ${color('red.700')};
-`;
-
-const Fullscreen = styled.div`
-  position: fixed;
-  inset: 0;
-
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-
-  /* ✅ 앱 크기에 맞추기 */
-  max-width: var(--container-w);
-  margin: 0 auto;
-`;
-
-const FullscreenBody = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 12px 16px 24px;
 `;
 
 // 상세와 비슷한 크기/여백으로 아이콘만 표시
