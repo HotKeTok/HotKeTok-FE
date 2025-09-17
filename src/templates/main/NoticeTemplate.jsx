@@ -1,4 +1,4 @@
-import React, from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import TopBar from '../../components/common/TopBar';
 import { BottomButtonContainer, Page, ScrollableContent } from '../../styles/layout';
