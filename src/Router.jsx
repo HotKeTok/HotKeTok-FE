@@ -18,16 +18,12 @@ import ContractorProfile from './pages/repair/ContractorProfile';
 import WriteReview from './pages/repair/WriteReview';
 
 // 똑똑 관련
-<<<<<<< HEAD
-import Communication from './pages/Communication';
-=======
 import Communication from './pages/communication/Communication';
 import Chat from './pages/communication/Chat';
 import ChatRoom from './pages/communication/ChatRoom';
 import Message from './pages/communication/Message';
 import MessageDetail from './pages/communication/MessageDetail';
 import MessageWrite from './pages/communication/MessageWrite';
->>>>>>> develop
 
 // 마이 관련
 import MyPage from './pages/my/MyPage';
@@ -46,9 +42,10 @@ import { AppShell, MainContainer, BottomBar } from './styles/layout';
 
 const Layout = () => {
   const { pathname } = useLocation();
-  const hideBar = HIDE_BOTTOM_BAR_PATHS.map((path)=> pathname.startsWith(path)).includes(true)||
-  pathname.startsWith('/address-admin') ||
-  pathname.startsWith('/address/add');
+  const hideBar =
+    HIDE_BOTTOM_BAR_PATHS.map(path => pathname.startsWith(path)).includes(true) ||
+    pathname.startsWith('/address-admin') ||
+    pathname.startsWith('/address/add');
 
   const isWhiteBg =
     pathname === '/sign-in' ||
@@ -76,7 +73,6 @@ const Layout = () => {
           <NavBar />
         </BottomBar>
       )}
-       
     </AppShell>
   );
 };
