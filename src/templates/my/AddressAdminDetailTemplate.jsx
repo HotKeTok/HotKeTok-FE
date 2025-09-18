@@ -5,7 +5,7 @@ import TopBar from '../../components/common/TopBar';
 import Button from '../../components/common/Button';
 import { Column, Row } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
-import { PageNoBottomBar, BottomButtonContainer } from '../../styles/layout';
+import { PageWithoutBottomBar, BottomButtonContainer } from '../../styles/layout';
 
 import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../mocks/my/addresses';
 import iconHouse from '../../assets/my/address-admin/icon-house.svg';
@@ -118,7 +118,7 @@ export default function AddressAdminDetailTemplate() {
   };
 
   return (
-    <PageNoBottomBar>
+    <PageWithoutBottomBar>
       <TopBar title="주소 상세" onBack={() => nav(-1)} />
 
       <Body>
@@ -237,7 +237,7 @@ export default function AddressAdminDetailTemplate() {
       <BottomButtonContainer>
         <Button text={'수정하기'} onClick={handleSave} />
       </BottomButtonContainer>
-    </PageNoBottomBar>
+    </PageWithoutBottomBar>
   );
 }
 

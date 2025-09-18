@@ -5,7 +5,7 @@ import { color, typo } from '../../styles/tokens';
 
 import {
   BottomButtonContainer,
-  PageNoBottomBar,
+  PageWithoutBottomBar,
   ScrollableNoBottomBarContent,
 } from '../../styles/layout';
 
@@ -179,7 +179,7 @@ export default function RepairProgressTemplate({
   );
 
   return (
-    <PageNoBottomBar>
+    <PageWithoutBottomBar>
       <TopBar title={isDone ? '완료된 수리' : '진행중인 수리'} />
       <ScrollableNoBottomBarContent>
         {/* 헤더 영역 */}
@@ -421,7 +421,7 @@ export default function RepairProgressTemplate({
 
         <DemoSwitch />
       </ScrollableNoBottomBarContent>
-    </PageNoBottomBar>
+    </PageWithoutBottomBar>
   );
 }
 

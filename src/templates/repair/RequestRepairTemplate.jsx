@@ -11,7 +11,7 @@ import RequestSummary from '../../components/repair/RequestSummary';
 import { Row, Column, Spacer } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
 import {
-  PageNoBottomBar,
+  PageWithoutBottomBar,
   ScrollableNoBottomBarContent,
   BottomButtonContainer,
 } from '../../styles/layout';
@@ -206,7 +206,7 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
   );
 
   return (
-    <PageNoBottomBar>
+    <PageWithoutBottomBar>
       <TopBar title="수리요청서 작성" onBack={onBack} />
       <ScrollableNoBottomBarContent2>
         <HeaderToggle>
@@ -325,7 +325,7 @@ function StepForm({ draft, setDraft, days, onNext, onBack }) {
       <BottomButtonContainer>
         <Button text="완료하기" active={canComplete} onClick={onNext} />
       </BottomButtonContainer>
-    </PageNoBottomBar>
+    </PageWithoutBottomBar>
   );
 }
 
