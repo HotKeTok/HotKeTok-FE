@@ -1,8 +1,8 @@
-import TopBar from "../../components/common/TopBar"
-import { PageWithoutBottomBar, ScrollableNoBottomBarContent} from "../../styles/layout"
+import TopBar from "../../../components/common/TopBar"
+import { PageWithoutBottomBar, ScrollableNoBottomBarContent} from "../../../styles/layout"
 import styled from "styled-components";
-import AlarmItem from "../../components/main/alarm/AlarmItem";
-import { Column } from "../../styles/flex";
+import AlarmItem from "../../../components/main/alarm/AlarmItem";
+import { Column } from "../../../styles/flex";
 
 export default function AlarmTemplate(){
     //TODO: 더미 데이터 -> API 연동

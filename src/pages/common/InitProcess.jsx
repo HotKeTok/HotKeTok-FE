@@ -1,5 +1,5 @@
 import React from 'react';
-import InitProcessTemplate from '../../templates/onboard/InitProcessTemplate';
+import InitProcessTemplate from '../../templates/common/InitProcessTemplate';
 
 export default function InitProcess() {
   return (

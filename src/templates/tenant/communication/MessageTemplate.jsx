@@ -1,12 +1,12 @@
-import TopBar from "../../components/common/TopBar";
-import { Page, PageWithoutBottomBar, ScrollableNoBottomBarContent} from "../../styles/layout";
+import TopBar from "../../../components/common/TopBar";
+import { Page, PageWithoutBottomBar, ScrollableNoBottomBarContent} from "../../../styles/layout";
 import styled, {css} from "styled-components";
 import { useState} from "react";
 import { useNavigate } from "react-router-dom";
-import { color, typo } from "../../styles/tokens";
-import MessageItem from "../../components/communication/message/MessageItem";
-import { Column } from "../../styles/flex";
-import WriteMessageBtn from "../../components/communication/message/WriteMessageBtn";
+import { color, typo } from "../../../styles/tokens";
+import MessageItem from "../../../components/communication/message/MessageItem";
+import { Column } from "../../../styles/flex";
+import WriteMessageBtn from "../../../components/communication/message/WriteMessageBtn";
 
 export default function MessageTemplate({ receivedMessages, sentMessages }){
      const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import IndexWelcomeTemplate from "../../templates/tenant/main/IndexWelcomeTemplate";
+import IndexWelcomeTemplate from "../../../templates/tenant/main/IndexWelcomeTemplate";
 
 export default function IndexWelcome() {
     return (<IndexWelcomeTemplate/>)

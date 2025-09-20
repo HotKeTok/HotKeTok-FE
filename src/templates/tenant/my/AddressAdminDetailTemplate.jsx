@@ -1,26 +1,26 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import TopBar from '../../components/common/TopBar';
-import Button from '../../components/common/Button';
-import { Column, Row } from '../../styles/flex';
-import { color, typo } from '../../styles/tokens';
-import { PageWithoutBottomBar, BottomButtonContainer } from '../../styles/layout';
+import TopBar from '../../../components/common/TopBar';
+import Button from '../../../components/common/Button';
+import { Column, Row } from '../../../styles/flex';
+import { color, typo } from '../../../styles/tokens';
+import { PageWithoutBottomBar, BottomButtonContainer } from '../../../styles/layout';
 
-import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../mocks/my/addresses';
-import iconHouse from '../../assets/my/address-admin/icon-house.svg';
-import iconCompany from '../../assets/my/address-admin/icon-building.svg';
-import iconEtc from '../../assets/my/address-admin/icon-location.svg';
-import iconPlus from '../../assets/my/address-admin/icon-plus.svg';
-import iconX from '../../assets/my/address-admin/icon-x.svg';
-import iconSpeechBubble from '../../assets/my/address-admin/icon-speech-bubble.svg';
+import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../../mocks/my/addresses';
+import iconHouse from '../../../assets/my/address-admin/icon-house.svg';
+import iconCompany from '../../../assets/my/address-admin/icon-building.svg';
+import iconEtc from '../../../assets/my/address-admin/icon-location.svg';
+import iconPlus from '../../../assets/my/address-admin/icon-plus.svg';
+import iconX from '../../../assets/my/address-admin/icon-x.svg';
+import iconSpeechBubble from '../../../assets/my/address-admin/icon-speech-bubble.svg';
 
-import Tag10PMActive from '../../assets/my/address-admin/Tag_10PM_active.svg';
-import Tag10PMDisactive from '../../assets/my/address-admin/Tag_10PM_disactive.svg';
-import TagBabyActive from '../../assets/my/address-admin/Tag_Baby_active.svg';
-import TagBabyDisactive from '../../assets/my/address-admin/Tag_Baby_disactive.svg';
-import TagPetActive from '../../assets/my/address-admin/Tag_Pet_active.svg';
-import TagPetDisactive from '../../assets/my/address-admin/Tag_Pet_disactive.svg';
+import Tag10PMActive from '../../../assets/my/address-admin/Tag_10PM_active.svg';
+import Tag10PMDisactive from '../../../assets/my/address-admin/Tag_10PM_disactive.svg';
+import TagBabyActive from '../../../assets/my/address-admin/Tag_Baby_active.svg';
+import TagBabyDisactive from '../../../assets/my/address-admin/Tag_Baby_disactive.svg';
+import TagPetActive from '../../../assets/my/address-admin/Tag_Pet_active.svg';
+import TagPetDisactive from '../../../assets/my/address-admin/Tag_Pet_disactive.svg';
 
 const NOTE_ICONS = {
   SLEEP_AFTER_10: {

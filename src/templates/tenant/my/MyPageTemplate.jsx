@@ -1,20 +1,20 @@
 // src/templates/tenant/my/MyPageTemplate.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Column, Row } from '../../styles/flex';
-import { color, typo } from '../../styles/tokens';
-import { Page } from '../../styles/layout';
+import { Column, Row } from '../../../styles/flex';
+import { color, typo } from '../../../styles/tokens';
+import { Page } from '../../../styles/layout';
 
-import AvatarImg from '../../assets/my/img-profile.png';
-import iconPencil from '../../assets/my/icon-pencil.svg';
-import iconPencilGreen from '../../assets/my/icon-pencil-green.svg';
-import iconChevron from '../../assets/repair/icon-chevron.svg';
+import AvatarImg from '../../../assets/my/img-profile.png';
+import iconPencil from '../../../assets/my/icon-pencil.svg';
+import iconPencilGreen from '../../../assets/my/icon-pencil-green.svg';
+import iconChevron from '../../../assets/repair/icon-chevron.svg';
 
-import VerificationBadge from '../../components/my/VerificationBadge';
+import VerificationBadge from '../../../components/my/VerificationBadge';
 
 // ✅ 공통 바텀시트
-import BottomSheet from '../../components/common/BottomSheet';
-import Button from '../../components/common/Button';
+import BottomSheet from '../../../components/common/BottomSheet';
+import Button from '../../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
 
 export default function MyPageTemplate() {

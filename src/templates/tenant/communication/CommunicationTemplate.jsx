@@ -1,13 +1,13 @@
-import PageHeader from "../../components/common/PageHeader";
-import TopBar from "../../components/common/TopBar";
-import { BOTTOM_BAR_HEIGHT, Page, ScrollableContent } from "../../styles/layout";
+import PageHeader from "../../../components/common/PageHeader";
+import TopBar from "../../../components/common/TopBar";
+import { BOTTOM_BAR_HEIGHT, Page, ScrollableContent } from "../../../styles/layout";
 import styled from "styled-components";
-import { typo, color } from "../../styles/tokens";
-import { EXAMPLE_NOTICES } from "../../mocks/main/notice";
-import NoticeItem from "../../components/main/notice/NoticeItem";
-import { Column } from "../../styles/flex";
-import MessageIcn from "../../assets/communication/message/message-icon.svg?react";
-import MessageImg from "../../assets/communication/message/message.png";
+import { typo, color } from "../../../styles/tokens";
+import { EXAMPLE_NOTICES } from "../../../mocks/main/notice";
+import NoticeItem from "../../../components/main/notice/NoticeItem";
+import { Column } from "../../../styles/flex";
+import MessageIcn from "../../../assets/communication/message/message-icon.svg?react";
+import MessageImg from "../../../assets/communication/message/message.png";
 
 export default function CommunicationTemplate ({
     onNoticeDetailRoute,

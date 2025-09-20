@@ -1,15 +1,15 @@
-import PageHeader from "../../components/common/PageHeader";
+import PageHeader from "../../../components/common/PageHeader";
 import styled from "styled-components";
-import SelectHome from "../../components/main/index/SelectHome";
-import { Page } from "../../styles/layout";
-import { typo } from "../../styles/tokens";
-import { Column, Row } from "../../styles/flex";
-import ArrowRight from "../../assets/common/icon-arrow-right.svg?react"
+import SelectHome from "../../../components/main/index/SelectHome";
+import { Page } from "../../../styles/layout";
+import { typo } from "../../../styles/tokens";
+import { Column, Row } from "../../../styles/flex";
+import ArrowRight from "../../../assets/common/icon-arrow-right.svg?react"
 import { useNavigate } from "react-router-dom";
-import NoticeBanner from "../../components/main/index/NoticeBanner";
-import { BOTTOM_BAR_HEIGHT } from "../../styles/layout";
-import RepairBanner from "../../components/repair/repair-home/RequestBanner"
-import CompanyCard from "../../components/repair/repair-home/ContractorAd";
+import NoticeBanner from "../../../components/main/index/NoticeBanner";
+import { BOTTOM_BAR_HEIGHT } from "../../../styles/layout";
+import RepairBanner from "../../../components/repair/repair-home/RequestBanner"
+import CompanyCard from "../../../components/repair/repair-home/ContractorAd";
 
 /**
  * @function MainTemplate

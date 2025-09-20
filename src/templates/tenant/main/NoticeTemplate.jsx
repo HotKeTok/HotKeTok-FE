@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import TopBar from '../../components/common/TopBar';
-import { BottomButtonContainer, Page, ScrollableContent } from '../../styles/layout';
-import NoticeItem from '../../components/main/notice/NoticeItem';
-import Button from '../../components/common/Button';
-import { EXAMPLE_NOTICES } from '../../mocks/main/notice';
+import TopBar from '../../../components/common/TopBar';
+import { BottomButtonContainer, Page, ScrollableContent } from '../../../styles/layout';
+import NoticeItem from '../../../components/main/notice/NoticeItem';
+import Button from '../../../components/common/Button';
+import { EXAMPLE_NOTICES } from '../../../mocks/main/notice';
 
 export default function NoticeTemplate({ onNoticeItemClick }) {
   return (

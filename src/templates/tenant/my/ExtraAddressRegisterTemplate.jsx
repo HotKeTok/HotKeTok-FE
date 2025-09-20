@@ -4,17 +4,17 @@ import styled, { keyframes, css } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import TopBar from '../../components/common/TopBar';
-import { Row, Column, Spacer } from '../../styles/flex';
-import { color, typo } from '../../styles/tokens';
-import TextField from '../../components/common/TextField';
-import Button from '../../components/common/Button';
-import ButtonSmall from '../../components/common/ButtonSmall';
+import TopBar from '../../../components/common/TopBar';
+import { Row, Column, Spacer } from '../../../styles/flex';
+import { color, typo } from '../../../styles/tokens';
+import TextField from '../../../components/common/TextField';
+import Button from '../../../components/common/Button';
+import ButtonSmall from '../../../components/common/ButtonSmall';
 
-import iconCheck from '../../assets/repair/request-repair/icon_big-check.png';
-import iconHouse from '../../assets/my/address-admin/icon-house.svg';
-import iconCompany from '../../assets/my/address-admin/icon-building.svg';
-import iconEtc from '../../assets/my/address-admin/icon-location.svg';
+import iconCheck from '../../../assets/repair/request-repair/icon_big-check.png';
+import iconHouse from '../../../assets/my/address-admin/icon-house.svg';
+import iconCompany from '../../../assets/my/address-admin/icon-building.svg';
+import iconEtc from '../../../assets/my/address-admin/icon-location.svg';
 
 /* =========================================================
  * 공통: 주소 검색 목데이터 (InitProcess 동일)

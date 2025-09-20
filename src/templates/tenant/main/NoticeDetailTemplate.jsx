@@ -1,10 +1,10 @@
-import TopBar from "../../components/common/TopBar"
-import { Page, ScrollableNoBottomBarContent } from "../../styles/layout"
+import TopBar from "../../../components/common/TopBar"
+import { Page, ScrollableNoBottomBarContent } from "../../../styles/layout"
 import styled from "styled-components";
-import { color, typo } from "../../styles/tokens";
-import { Row } from "../../styles/flex";
-import ProfileDefault from "../../assets/common/icon-profile-default.svg?react";
-import { theme } from "../../styles/theme";
+import { color, typo } from "../../../styles/tokens";
+import { Row } from "../../../styles/flex";
+import ProfileDefault from "../../../assets/common/icon-profile-default.svg?react";
+import { theme } from "../../../styles/theme";
 
 export default function NoticeDetailTemplate() {
     // TODO: 공지사항 클릭시 해당 아이템과 함께 navigate하여 정보를 받음.

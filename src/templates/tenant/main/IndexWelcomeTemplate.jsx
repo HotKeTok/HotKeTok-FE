@@ -1,11 +1,11 @@
 import styled from "styled-components"
-import PageHeader from "../../components/common/PageHeader"
-import SelectHome from "../../components/main/index/SelectHome"
-import AddressBox from "../../components/main/index/AddressBox"
-import { Column } from "../../styles/flex"
-import WelcomeHouse from "../../assets/main/icn-welcome-house.svg?react"
-import { typo , color} from "../../styles/tokens"
-import { ScrollableContent } from "../../styles/layout"
+import PageHeader from "../../../components/common/PageHeader"
+import SelectHome from "../../../components/main/index/SelectHome"
+import AddressBox from "../../../components/main/index/AddressBox"
+import { Column } from "../../../styles/flex"
+import WelcomeHouse from "../../../assets/main/icn-welcome-house.svg?react"
+import { typo , color} from "../../../styles/tokens"
+import { ScrollableContent } from "../../../styles/layout"
 
 export default function IndexWelcomeTemplate() {
     const MAIN_FEATURES = [

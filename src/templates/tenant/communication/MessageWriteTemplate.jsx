@@ -1,13 +1,13 @@
-import TopBar from "../../components/common/TopBar";
-import { PageWithoutBottomBar, ScrollableContent, BottomButtonContainer} from "../../styles/layout";
-import WriteChoiceContent from "../../components/communication/message/WriteChoiceContent";
-import WriteFormContent from "../../components/communication/message/WriteFormContent";
+import TopBar from "../../../components/common/TopBar";
+import { PageWithoutBottomBar, ScrollableContent, BottomButtonContainer} from "../../../styles/layout";
+import WriteChoiceContent from "../../../components/communication/message/WriteChoiceContent";
+import WriteFormContent from "../../../components/communication/message/WriteFormContent";
 import { useState } from "react";
-import Button from "../../components/common/Button";
-import ActionGuideModal from "../../components/common/ActionGuideModal";
+import Button from "../../../components/common/Button";
+import ActionGuideModal from "../../../components/common/ActionGuideModal";
 import styled from "styled-components";
-import { color, typo } from "../../styles/tokens";
-import { Row } from "../../styles/flex";
+import { color, typo } from "../../../styles/tokens";
+import { Row } from "../../../styles/flex";
 import { useNavigate } from "react-router-dom";
 
 export default function MessageWriteTemplate(){

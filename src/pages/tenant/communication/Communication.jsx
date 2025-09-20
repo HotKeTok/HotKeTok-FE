@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import CommunicationTemplate from "../../templates/tenant/communication/CommunicationTemplate";
+import CommunicationTemplate from "../../../templates/tenant/communication/CommunicationTemplate";
 
 export default function Communication() {
     const navigate = useNavigate();

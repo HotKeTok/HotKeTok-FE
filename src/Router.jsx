@@ -1,40 +1,64 @@
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 
-// onboard 관련
-import SignIn from './pages/onboard/SignIn';
-import SignUp from './templates/onboard/SignUpTemplate';
-import InitProcess from './pages/onboard/InitProcess';
-// main 관련
-import Main from './pages/main/index';
-import Bills from './pages/main/Bills';
-import Notice from './pages/main/Notice';
-import NoticeDetail from './pages/main/NoticeDetail';
-import Alarm from './pages/main/Alarm';
-// 뚝딱 관련
-import RepairHome from './pages/repair/RepairHome';
-import RequestRepair from './pages/repair/RequestRepair';
-import RepairProgress from './pages/repair/RepairProgress';
-import ContractorProfile from './pages/repair/ContractorProfile';
-import WriteReview from './pages/repair/WriteReview';
+///////////////////////////////// 공통 //////////////////////////////////
+// 공통 onboard 관련
+import SignIn from './pages/common/SignIn';
+import SignUp from './pages/common/SignUp';
+import InitProcess from './templates/common/InitProcessTemplate';
 
-// 똑똑 관련
-import Communication from './pages/communication/Communication';
-import Chat from './pages/communication/Chat';
-import ChatRoom from './pages/communication/ChatRoom';
-import Message from './pages/communication/Message';
-import MessageDetail from './pages/communication/MessageDetail';
-import MessageWrite from './pages/communication/MessageWrite';
+///////////////////////////////// landlord(집주인) 관련 //////////////////////////////////
+// main 관련
+import AlarmLandlord from "./pages/landlord/main/Alarm"
+import MainLandlord from "./pages/landlord/main/Index"
+
+// 뚝딱 관련
+import RepairHomeLandlord from "./pages/landlord/repair/RepairHome"
+import RepairProgressLandlord from "./pages/landlord/repair/RepairProgress"
+import WriteReviewLandlord from "./pages/landlord/repair/WriteReview"
+import ContractorProfileLandlord from "./pages/landlord/repair/ContractorProfile"
+import RepairHistoryLandlord from "./pages/landlord/repair/RepairHistory"
+
+// 채팅 관련
+import ChatMainLandlord from "./pages/landlord/chat/ChatMain"
+import ChatRoomLandlord from "./pages/landlord/chat/ChatRoom"
 
 // 마이 관련
-import MyPage from './pages/my/MyPage';
-import AddressAdmin from './pages/my/AddressAdmin';
-import AddressAdminDetail from './pages/my/AddressAdminDetail';
-import ExtraAddressRegister from './pages/my/ExtraAddressRegister';
+import MyPageLandlord from "./pages/landlord/my/MyPage"
+import AddressAdminLandlord from "./pages/landlord/my/AddressAdmin"
+import ExtraAddressRegisterLandlord from "./pages/landlord/my/ExtraAddressRegister"
 
-// 컴포넌트
+///////////////////////////////// tenant(세입자) 관련 //////////////////////////////////
+// main 관련
+import Main from './pages/tenant/main/Index';
+import Bills from './pages/tenant/main/Bills';
+import Notice from './pages/tenant/main/Notice';
+import NoticeDetail from './pages/tenant/main/NoticeDetail';
+import Alarm from './pages/tenant/main/Alarm';
+// 뚝딱 관련
+import RepairHome from './pages/tenant/repair/RepairHome';
+import RequestRepair from './pages/tenant/repair/RequestRepair';
+import RepairProgress from './pages/tenant/repair/RepairProgress';
+import ContractorProfile from './pages/tenant/repair/ContractorProfile';
+import WriteReview from './pages/tenant/repair/WriteReview';
+import RepairHistory from './pages/tenant/repair/RepairHistory';
+
+// 똑똑 관련
+import Communication from './pages/tenant/communication/Communication';
+import Chat from './pages/tenant/communication/Chat';
+import ChatRoom from './pages/tenant/communication/ChatRoom';
+import Message from './pages/tenant/communication/Message';
+import MessageDetail from './pages/tenant/communication/MessageDetail';
+import MessageWrite from './pages/tenant/communication/MessageWrite';
+
+// 마이 관련
+import MyPage from './pages/tenant/my/MyPage';
+import AddressAdmin from './pages/tenant/my/AddressAdmin';
+import AddressAdminDetail from './pages/tenant/my/AddressAdminDetail';
+import ExtraAddressRegister from './pages/tenant/my/ExtraAddressRegister';
+
+///////////////////////////////// 공통 컴포넌트 //////////////////////////////////
 import NavBar from './components/common/NavBar';
-import IndexWelcome from './pages/main/IndexWelcome';
-import RepairHistory from './pages/repair/RepairHistory';
+import IndexWelcome from './pages/tenant/main/IndexWelcome';
 
 import { HIDE_BOTTOM_BAR_PATHS } from './styles/layout';
 import { HIDE_HEADER_PATHS } from './styles/layout';
@@ -77,46 +101,77 @@ const Layout = () => {
   );
 };
 
-export default function AppRouter() {
+export default function AppRouter({ role }) {
+  const currentRole = 'landlord';
+  // const currentRole = 'tenant';
+
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          {/* onboard 관련 */}
+          {/* 공통 onboard 관련 */}
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/init-process" element={<InitProcess />} />
 
-          {/* main 관련 */}
-          <Route path="/" element={<Main />} />
-          <Route path="/welcome" element={<IndexWelcome />} />
-          <Route path="/bills" element={<Bills />} />
-          <Route path="/alarm" element={<Alarm />} />
-          <Route path="/notice" element={<Notice />} />
-          <Route path="/notice/:id" element={<NoticeDetail />} />
+          {/* 현재 역할(role)에 따라 다른 라우트 그룹을 렌더링 */}
+          {currentRole === 'landlord' ? (
+            <>
+              {/* 집주인 main 관련 */}
+              <Route path="/" element={<MainLandlord />} />
+              <Route path="/alarm" element={<AlarmLandlord />} />
 
-          {/* 뚝딱 관련*/}
-          <Route path="/repair" element={<RepairHome />} />
-          <Route path="/request-repair" element={<RequestRepair />} />
-          <Route path="/repair-progress" element={<RepairProgress />} />
-          <Route path="/repair-history" element={<RepairHistory />} />
-          <Route path="/contractor-profile" element={<ContractorProfile />} />
-          <Route path="/write-review" element={<WriteReview />} />
+              {/* 집주인 뚝딱 관련 */}
+              <Route path="/repair" element={<RepairHomeLandlord />} />
+              <Route path="/repair-progress" element={<RepairProgressLandlord />} />
+              <Route path="/repair-history" element={<RepairHistoryLandlord />} />
+              <Route path="/contractor-profile" element={<ContractorProfileLandlord />} />
+              <Route path="/write-review" element={<WriteReviewLandlord />} />
 
-          {/* 똑똑 관련*/}
-          <Route path="/communication" element={<Communication />} />
-          <Route path="/communication/chat" element={<Chat />} />
-          <Route path="/communication/chat-room" element={<ChatRoom />} />
-          <Route path="/message" element={<Message />} />
-          <Route path="/message/detail/:id" element={<MessageDetail />} />
-          <Route path="/message/write" element={<MessageWrite />} />
+              {/* 집주인 채팅 관련 */}
+              <Route path="/chat" element={<ChatMainLandlord />} />
+              <Route path="/chat-room/:id" element={<ChatRoomLandlord />} />
 
-          {/* 마이 관련*/}
-          <Route path="/my-page" element={<MyPage />} />
-          <Route path="/address-admin" element={<AddressAdmin />} />
-          <Route path="/address-admin/:id" element={<AddressAdminDetail />} />
-          <Route path="/address/add/:step" element={<ExtraAddressRegister />} />
+              {/* 집주인 마이 관련 */}
+              <Route path="/my-page" element={<MyPageLandlord />} />
+              <Route path="/address-admin" element={<AddressAdminLandlord />} />
+              <Route path="/address/add/:step" element={<ExtraAddressRegisterLandlord />} />
+            </>
+          ) : (
+            <>
+              {/* 세입자 main 관련 */}
+              <Route path="/" element={<Main />} />
+              <Route path="/welcome" element={<IndexWelcome />} />
+              <Route path="/bills" element={<Bills />} />
+              <Route path="/alarm" element={<Alarm />} />
+              <Route path="/notice" element={<Notice />} />
+              <Route path="/notice/:id" element={<NoticeDetail />} />
 
+              {/* 세입자 뚝딱 관련 */}
+              <Route path="/repair" element={<RepairHome />} />
+              <Route path="/request-repair" element={<RequestRepair />} />
+              <Route path="/repair-progress" element={<RepairProgress />} />
+              <Route path="/repair-history" element={<RepairHistory />} />
+              <Route path="/contractor-profile" element={<ContractorProfile />} />
+              <Route path="/write-review" element={<WriteReview />} />
+
+              {/* 세입자 똑똑 관련 */}
+              <Route path="/communication" element={<Communication />} />
+              <Route path="/communication/chat" element={<Chat />} />
+              <Route path="/communication/chat-room" element={<ChatRoom />} />
+              <Route path="/message" element={<Message />} />
+              <Route path="/message/detail/:id" element={<MessageDetail />} />
+              <Route path="/message/write" element={<MessageWrite />} />
+
+              {/* 세입자 마이 관련 */}
+              <Route path="/my-page" element={<MyPage />} />
+              <Route path="/address-admin" element={<AddressAdmin />} />
+              <Route path="/address-admin/:id" element={<AddressAdminDetail />} />
+              <Route path="/address/add/:step" element={<ExtraAddressRegister />} />
+            </>
+          )}
+
+          {/* Not Found 페이지 */}
           <Route path="*" element={<div>Not Found</div>} />
         </Route>
       </Routes>

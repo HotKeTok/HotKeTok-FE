@@ -1,16 +1,16 @@
 import React, { useMemo } from 'react';
-import PageHeader from '../../components/common/PageHeader';
+import PageHeader from '../../../components/common/PageHeader';
 import styled from 'styled-components';
-import { color, typo } from '../../styles/tokens';
-import { Column, Row } from '../../styles/flex';
-import { Page, ScrollableContent } from '../../styles/layout';
+import { color, typo } from '../../../styles/tokens';
+import { Column, Row } from '../../../styles/flex';
+import { Page, ScrollableContent } from '../../../styles/layout';
 
-import RequestBanner from '../../components/repair/repair-home/RequestBanner';
-import ContractorAd from '../../components/repair/repair-home/ContractorAd';
+import RequestBanner from '../../../components/repair/repair-home/RequestBanner';
+import ContractorAd from '../../../components/repair/repair-home/ContractorAd';
 import { useNavigate } from 'react-router-dom';
-import { getActiveRepairs } from '../../mocks';
+import { getActiveRepairs } from '../../../mocks';
 
-import iconChevron from '../../assets/repair/icon-chevron.svg';
+import iconChevron from '../../../assets/repair/icon-chevron.svg';
 
 export default function RepairHomeTemplate() {
   const nav = useNavigate();

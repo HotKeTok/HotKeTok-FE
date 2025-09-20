@@ -1,25 +1,25 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
-import { Row, Column, Spacer } from '../../styles/flex';
-import { color, typo } from '../../styles/tokens';
+import { Row, Column, Spacer } from '../../../styles/flex';
+import { color, typo } from '../../../styles/tokens';
 
 import {
   BottomButtonContainer,
   PageWithoutBottomBar,
   ScrollableNoBottomBarContent,
-} from '../../styles/layout';
+} from '../../../styles/layout';
 
-import TopBar from '../../components/common/TopBar';
-import Button from '../../components/common/Button';
-import ButtonSmall from '../../components/common/ButtonSmall';
-import ButtonRound from '../../components/common/ButtonRound';
-import ModeItem from '../../components/common/ModeItem';
-import RequestSummary from '../../components/repair/RequestSummary';
-import RepairDetailRows from '../../components/repair/repair-progress/RepairDetailRows';
+import TopBar from '../../../components/common/TopBar';
+import Button from '../../../components/common/Button';
+import ButtonSmall from '../../../components/common/ButtonSmall';
+import ButtonRound from '../../../components/common/ButtonRound';
+import ModeItem from '../../../components/common/ModeItem';
+import RequestSummary from '../../../components/repair/RequestSummary';
+import RepairDetailRows from '../../../components/repair/repair-progress/RepairDetailRows';
 
-import iconInfo from '../../assets/repair/repair-progress/icon-info.svg';
-import iconChevron from '../../assets/repair/icon-chevron.svg';
-import iconClose from '../../assets/common/icon-close.svg';
+import iconInfo from '../../../assets/repair/repair-progress/icon-info.svg';
+import iconChevron from '../../../assets/repair/icon-chevron.svg';
+import iconClose from '../../../assets/common/icon-close.svg';
 
 /* =========================================================
  * 타입/상수

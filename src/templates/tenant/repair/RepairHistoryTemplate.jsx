@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import TopBar from '../../components/common/TopBar';
-import ButtonRound from '../../components/common/ButtonRound';
+import TopBar from '../../../components/common/TopBar';
+import ButtonRound from '../../../components/common/ButtonRound';
 
-import { color, typo } from '../../styles/tokens';
-import { Column, Row } from '../../styles/flex';
-import { getHistoryItems } from '../../mocks';
+import { color, typo } from '../../../styles/tokens';
+import { Column, Row } from '../../../styles/flex';
+import { getHistoryItems } from '../../../mocks';
 import { useNavigate } from 'react-router-dom';
 
 export default function RepairHistorTemplate() {

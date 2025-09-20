@@ -2,22 +2,22 @@
 import React, { useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import TopBar from '../../components/common/TopBar';
-import Button from '../../components/common/Button';
-import { Row, Column, Spacer } from '../../styles/flex';
-import { color, typo } from '../../styles/tokens';
+import TopBar from '../../../components/common/TopBar';
+import Button from '../../../components/common/Button';
+import { Row, Column, Spacer } from '../../../styles/flex';
+import { color, typo } from '../../../styles/tokens';
 
-import iconGreenStar from '../../assets/repair/icon-star-green.svg';
-import iconClock from '../../assets/repair/icon-clock.svg';
-import iconPhone from '../../assets/repair/icon-phone.svg';
-import iconBookmark from '../../assets/repair/icon-bookmark.svg';
-import iconAddress from '../../assets/repair/icon-address.svg';
-import iconChevron from '../../assets/common/icon-arrow-down.svg';
-import iconYelloStar from '../../assets/repair/contractor-profile/icon-star-yellow.svg';
-import iconGrayStar from '../../assets/repair/contractor-profile/icon-star-gray.svg';
+import iconGreenStar from '../../../assets/repair/icon-star-green.svg';
+import iconClock from '../../../assets/repair/icon-clock.svg';
+import iconPhone from '../../../assets/repair/icon-phone.svg';
+import iconBookmark from '../../../assets/repair/icon-bookmark.svg';
+import iconAddress from '../../../assets/repair/icon-address.svg';
+import iconChevron from '../../../assets/common/icon-arrow-down.svg';
+import iconYelloStar from '../../../assets/repair/contractor-profile/icon-star-yellow.svg';
+import iconGrayStar from '../../../assets/repair/contractor-profile/icon-star-gray.svg';
 
 // ✅ mock 데이터 import
-import { MOCK_CONTRACTORS } from '../../mocks/repair/contractors';
+import { MOCK_CONTRACTORS } from '../../../mocks/repair/contractors';
 
 /* =========================================================
  * 메인 컴포넌트

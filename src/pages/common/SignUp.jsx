@@ -1,5 +1,5 @@
 import React from 'react';
-import SignUpTemplate from '../../templates/onboard/SignUpTemplate';
+import SignUpTemplate from "../../templates/common/SignUpTemplate"
 
 export default function SignUp() {
   return (

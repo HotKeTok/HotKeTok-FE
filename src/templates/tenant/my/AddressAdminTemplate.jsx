@@ -3,25 +3,25 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import styled, { css } from 'styled-components';
-import { Column, Row, Spacer } from '../../styles/flex';
-import { color, typo } from '../../styles/tokens';
-import { Page } from '../../styles/layout';
+import { Column, Row, Spacer } from '../../../styles/flex';
+import { color, typo } from '../../../styles/tokens';
+import { Page } from '../../../styles/layout';
 
-import TopBar from '../../components/common/TopBar';
+import TopBar from '../../../components/common/TopBar';
 
-import iconChevron from '../../assets/repair/icon-chevron.svg';
-import iconPlus from '../../assets/my/address-admin/icon-plus.svg';
-import iconHouse from '../../assets/my/address-admin/icon-house.svg';
-import iconCompany from '../../assets/my/address-admin/icon-building.svg';
-import iconEtc from '../../assets/my/address-admin/icon-location.svg';
+import iconChevron from '../../../assets/repair/icon-chevron.svg';
+import iconPlus from '../../../assets/my/address-admin/icon-plus.svg';
+import iconHouse from '../../../assets/my/address-admin/icon-house.svg';
+import iconCompany from '../../../assets/my/address-admin/icon-building.svg';
+import iconEtc from '../../../assets/my/address-admin/icon-location.svg';
 
-import Tag10PM from '../../assets/my/address-admin/Tag_10PM.svg';
-import TagBaby from '../../assets/my/address-admin/Tag_Baby.svg';
-import TagPet from '../../assets/my/address-admin/Tag_Pet.svg';
+import Tag10PM from '../../../assets/my/address-admin/Tag_10PM.svg';
+import TagBaby from '../../../assets/my/address-admin/Tag_Baby.svg';
+import TagPet from '../../../assets/my/address-admin/Tag_Pet.svg';
 
-import iconSpeechBubble from '../../assets/my/address-admin/icon-speech-bubble.svg';
+import iconSpeechBubble from '../../../assets/my/address-admin/icon-speech-bubble.svg';
 
-import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../mocks/my/addresses';
+import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../../mocks/my/addresses';
 
 // ----------------------------------------------------------
 // 상수

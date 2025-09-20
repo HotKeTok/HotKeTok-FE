@@ -2,16 +2,16 @@
 import React, { useMemo, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-import TopBar from '../../components/common/TopBar';
-import Button from '../../components/common/Button';
-import { Row, Column, Spacer } from '../../styles/flex';
-import { color, typo } from '../../styles/tokens';
+import TopBar from '../../../components/common/TopBar';
+import Button from '../../../components/common/Button';
+import { Row, Column, Spacer } from '../../../styles/flex';
+import { color, typo } from '../../../styles/tokens';
 
-import iconChecked from '../../assets/repair/request-repair/icon_checked.svg';
-import iconUnchecked from '../../assets/repair/request-repair/icon_unchecked.svg';
-import cameraIcon from '../../assets/repair/request-repair/icon-camera.svg';
-import starYellow from '../../assets/repair/contractor-profile/icon-star-yellow.svg';
-import starGray from '../../assets/repair/contractor-profile/icon-star-gray.svg';
+import iconChecked from '../../../assets/repair/request-repair/icon_checked.svg';
+import iconUnchecked from '../../../assets/repair/request-repair/icon_unchecked.svg';
+import cameraIcon from '../../../assets/repair/request-repair/icon-camera.svg';
+import starYellow from '../../../assets/repair/contractor-profile/icon-star-yellow.svg';
+import starGray from '../../../assets/repair/contractor-profile/icon-star-gray.svg';
 
 /* =========================================================
  * 상수

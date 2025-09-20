@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import TopBar from "../../components/common/TopBar";
-import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from "../../styles/layout";
+import TopBar from "../../../components/common/TopBar";
+import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from "../../../styles/layout";
 import styled from "styled-components";
-import {EXAMPLE_RECEIVED_MESSAGE_LIST, EXAMPLE_SENT_MESSAGE_LIST} from "../../mocks/communication/message";
-import { TAG_ICONS } from "../../constants/main/communication/tag";
-import PencilIcn from "../../assets/communication/message/pencil-icon.svg?react"
-import {formatDateToYMD, getHHMMTime} from "../../utils/dateFormat";
-import { color, typo } from "../../styles/tokens";
-import MenuIcn from "../../assets/common/icon-menu.svg?react"
-import ReportMenuIcon from "../../components/communication/message/ReportMenuIcon";
-import ConfirmModal from "../../components/common/ConfirmModal";
-import { TIME_OPTIONS } from "../../constants/main/communication/message";
+import {EXAMPLE_RECEIVED_MESSAGE_LIST, EXAMPLE_SENT_MESSAGE_LIST} from "../../../mocks/communication/message";
+import { TAG_ICONS } from "../../../constants/main/communication/tag";
+import PencilIcn from "../../../assets/communication/message/pencil-icon.svg?react"
+import {formatDateToYMD, getHHMMTime} from "../../../utils/dateFormat";
+import { color, typo } from "../../../styles/tokens";
+import MenuIcn from "../../../assets/common/icon-menu.svg?react"
+import ReportMenuIcon from "../../../components/communication/message/ReportMenuIcon";
+import ConfirmModal from "../../../components/common/ConfirmModal";
+import { TIME_OPTIONS } from "../../../constants/main/communication/message";
 import { useNavigate } from "react-router-dom";
 
 /**
