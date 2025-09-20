@@ -102,8 +102,8 @@ const Layout = () => {
 };
 
 export default function AppRouter({ role }) {
-  const currentRole = 'landlord';
-  // const currentRole = 'tenant';
+  // const currentRole = 'landlord';
+  const currentRole = 'tenant';
 
   return (
     <BrowserRouter>
@@ -129,8 +129,8 @@ export default function AppRouter({ role }) {
               <Route path="/write-review" element={<WriteReviewLandlord />} />
 
               {/* 집주인 채팅 관련 */}
-              <Route path="/chat" element={<ChatMainLandlord />} />
-              <Route path="/chat-room/:id" element={<ChatRoomLandlord />} />
+              <Route path="/communication" element={<ChatMainLandlord />} />
+              <Route path="/communication/chat-room/:id" element={<ChatRoomLandlord />} />
 
               {/* 집주인 마이 관련 */}
               <Route path="/my-page" element={<MyPageLandlord />} />
