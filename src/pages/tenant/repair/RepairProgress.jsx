@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import TopBar from '../../components/common/TopBar';
-import RepairProgressTemplate from '../../templates/repair/RepairProgressTemplate';
+import RepairProgressTemplate from '../../templates/tenant/repair/RepairProgressTemplate';
 import { getProgressInitialProps } from '../../mocks';
 
 export default function RepairProgress() {

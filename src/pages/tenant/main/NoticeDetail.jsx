@@ -1,4 +1,4 @@
-import NoticeDetailTemplate from '../../templates/main/NoticeDetailTemplate'
+import NoticeDetailTemplate from '../../templates/tenant/main/NoticeDetailTemplate'
 
 export default function NoticeDetail(){
     return (<NoticeDetailTemplate/>)

@@ -1,4 +1,4 @@
-import BillsTemplate from "../../templates/main/BillsTemplate"
+import BillsTemplate from "../../templates/tenant/main/BillsTemplate"
 import { useState } from "react";
 
 export default function Bills(){

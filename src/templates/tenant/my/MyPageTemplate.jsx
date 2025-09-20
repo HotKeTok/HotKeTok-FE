@@ -1,4 +1,4 @@
-// src/templates/my/MyPageTemplate.jsx
+// src/templates/tenant/my/MyPageTemplate.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Column, Row } from '../../styles/flex';

@@ -1,4 +1,4 @@
-import AlarmTemplate from "../../templates/main/AlarmTemplate";
+import AlarmTemplate from "../../templates/tenant/main/AlarmTemplate";
 
 export default function Alarm(){
     return (

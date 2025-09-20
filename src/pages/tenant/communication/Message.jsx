@@ -1,4 +1,4 @@
-import MessageTemplate from "../../templates/communication/MessageTemplate";
+import MessageTemplate from "../../templates/tenant/communication/MessageTemplate";
 import { EXAMPLE_SENT_MESSAGE_LIST, EXAMPLE_RECEIVED_MESSAGE_LIST } from "../../mocks/communication/message";
 
 export default function Message(){

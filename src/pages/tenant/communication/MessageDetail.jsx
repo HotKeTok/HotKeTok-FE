@@ -1,4 +1,4 @@
-import MessageDetailTemplate from "../../templates/communication/MessageDetailTemplate"
+import MessageDetailTemplate from "../../templates/tenant/communication/MessageDetailTemplate"
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function MessageDetail(){

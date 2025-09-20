@@ -1,4 +1,4 @@
-// src/templates/my/AddressAddFlow.jsx
+// src/templates/tenant/my/AddressAddFlow.jsx
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';

@@ -1,4 +1,4 @@
-import RepairHomeTemplate from '../../templates/repair/RepairHomeTemplate';
+import RepairHomeTemplate from '../../templates/tenant/repair/RepairHomeTemplate';
 
 export default function RepairHome() {
   return <RepairHomeTemplate />;

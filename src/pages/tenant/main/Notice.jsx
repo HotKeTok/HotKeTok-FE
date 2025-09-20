@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import NoticeTemplate from '../../templates/main/NoticeTemplate'
+import NoticeTemplate from '../../templates/tenant/main/NoticeTemplate'
 
 export default function Notice(){
     const navigate = useNavigate();
