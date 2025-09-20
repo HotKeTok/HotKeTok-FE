@@ -19,8 +19,8 @@ import ContractorProfileLandlord from "./pages/landlord/repair/ContractorProfile
 import RepairHistoryLandlord from "./pages/landlord/repair/RepairHistory"
 
 // 채팅 관련
-import ChatMainLandlord from "./pages/landlord/chat/ChatMain"
-import ChatRoomLandlord from "./pages/landlord/chat/ChatRoom"
+import ChatMainLandlord from "./pages/landlord/communication/ChatMain"
+import ChatRoomLandlord from "./pages/landlord/communication/ChatRoom"
 
 // 마이 관련
 import MyPageLandlord from "./pages/landlord/my/MyPage"
