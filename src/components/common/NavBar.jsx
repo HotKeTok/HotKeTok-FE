@@ -1,18 +1,23 @@
-import styled, { css } from 'styled-components'
-import { Link, useLocation } from 'react-router-dom'
+import styled, { css } from 'styled-components';
+import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 
-import HomeIcon from '../../assets/common/icon-home.svg?react'
-import CommunicationIcon from '../../assets/common/icon-communication.svg?react'
-import RepairIcon from '../../assets/common/icon-repair.svg?react'
-import MyIcon from '../../assets/common/icon-my.svg?react'
+// Import your icons
+import HomeIcon from '../../assets/common/icon-home.svg?react';
+import CommunicationIcon from '../../assets/common/icon-communication.svg?react';
+import RepairIcon from '../../assets/common/icon-repair.svg?react';
+import AdminIcon from '../../assets/common/icon-admin.svg?react';
+import MyIcon from '../../assets/common/icon-my.svg?react';
+import HomeIconActive from '../../assets/common/icon-home-active.svg?react';
+import CommunicationIconActive from '../../assets/common/icon-communication-active.svg?react';
+import RepairIconActive from '../../assets/common/icon-repair-active.svg?react';
+import AdminIconActive from '../../assets/common/icon-admin-active.svg?react';
+import MyIconActive from '../../assets/common/icon-my-active.svg?react';
 
-import {typo, color} from '../../styles/tokens'
-import { useState } from 'react'
-
-import BottomSheet from './BottomSheet'
-import AuthModal from '../main/index/AuthModal'
-
-import { BOTTOM_BAR_HEIGHT } from '../../styles/layout'
+import { typo, color } from '../../styles/tokens';
+import { BOTTOM_BAR_HEIGHT } from '../../styles/layout';
+import BottomSheet from './BottomSheet';
+import AuthModal from '../main/index/AuthModal';
 
 const Nav = styled.nav`
   width: 100%;
@@ -21,7 +26,7 @@ const Nav = styled.nav`
   align-items: center;
   justify-content: space-around;
   padding: 0 8px;
-`
+`;
 
 const NavItem = styled(Link)`
   display: flex;
@@ -29,56 +34,78 @@ const NavItem = styled(Link)`
   align-items: center;
   gap: 4px;
   text-decoration: none;
-  color: ${color('grayscale.100')};
-  ${typo('caption1')}
   flex: 1;
+  ${({ $role }) =>
+    $role === 'landlord'
+      ? css`
+          ${typo('button2')}
+        `
+      : css`
+          ${typo('caption1')}
+        `}
 
-  color: ${({ $active }) => ($active ? '#222' : '#323232')};
+  color: ${({ $active }) => ($active ? color('brand.primary') : color('grayscale.700'))};
 
-  svg { width: 22px; height: 22px; }
-  svg [stroke] {
-    stroke: ${({ $active }) => ($active ? '#222' : '#323232')} !important;
-    transition: stroke .2s ease;
+  svg {
+    width: 22px;
+    height: 22px;
   }
+`;
 
-  ${({ $active }) =>
-    $active &&
-    css`
-      svg * { fill: ${color('brand.primary')} !important; transition: fill .2s ease; }
-    `}
-`
-
-export default function NavBar() {
-  // TODO: 인증상태 확인 후 미인증 상태이면 바텀 시트 open
+export default function NavBar({ currentRole }) {
   const [open, setOpen] = useState(false);
+  const address = '서울특별시 강남구 영동대로 112길 46'; // TODO: 유저 주소로 변경
+  const { pathname } = useLocation();
 
-  const address= "서울특별시 강남구 영동대로 112길 46"; // TODO: 유저 주소로 변경
+  // Define active states for clarity
+  const isHomeActive = pathname === '/' || pathname === '/welcome' || pathname.startsWith('/main');
+  const isRepairActive = pathname.startsWith('/repair');
+  const isAdminActive = pathname.startsWith('/admin');
+  const isCommunicationActive = pathname.startsWith('/communication');
+  const isChatActive = pathname.startsWith('/chat');
+  const isMyPageActive = pathname.startsWith('/my-page');
 
-  const { pathname } = useLocation()
   return (
     <Nav>
       <BottomSheet
         isOpen={open}
         onClose={() => setOpen(false)}
-        height="260px"          
-        children={<AuthModal address={address}/>}
-      ></BottomSheet>
-      <NavItem to="/" $active={pathname === '/' || pathname === 'welcome' || pathname.startsWith('/main')}>
-        <HomeIcon />
-        홈
+        height="260px"
+        children={<AuthModal address={address} />}
+      />
+
+      <NavItem to="/" $active={isHomeActive} $role={currentRole}>
+        {isHomeActive ? <HomeIconActive /> : <HomeIcon />}홈
       </NavItem>
-      <NavItem to="/repair" $active={pathname === '/repair'}>
-        <RepairIcon />
+
+      <NavItem to="/repair" $active={isRepairActive} $role={currentRole}>
+        {isRepairActive ? <RepairIconActive /> : <RepairIcon />}
         뚝딱
       </NavItem>
-      <NavItem to="/communication" $active={pathname === '/communication'}>
-        <CommunicationIcon />
-        똑똑
-      </NavItem>
-      <NavItem to="/my-page" $active={pathname === '/my-page'}>
-        <MyIcon />
+
+      {currentRole === 'landlord' && (
+        <NavItem to="/admin" $active={isAdminActive} $role={currentRole}>
+          {isAdminActive ? <AdminIconActive /> : <AdminIcon />}
+          관리
+        </NavItem>
+      )}
+
+      {currentRole === 'tenant' ? (
+        <NavItem to="/communication" $active={isCommunicationActive} $role={currentRole}>
+          {isCommunicationActive ? <CommunicationIconActive /> : <CommunicationIcon />}
+          똑똑
+        </NavItem>
+      ) : (
+        <NavItem to="/chat" $active={isChatActive} $role={currentRole}>
+          {isChatActive ? <CommunicationIconActive /> : <CommunicationIcon />}
+          채팅
+        </NavItem>
+      )}
+
+      <NavItem to="/my-page" $active={isMyPageActive} $role={currentRole}>
+        {isMyPageActive ? <MyIconActive /> : <MyIcon />}
         마이
       </NavItem>
     </Nav>
-  )
+  );
 }
