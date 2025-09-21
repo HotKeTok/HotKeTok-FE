@@ -139,8 +139,8 @@ export default function AppRouter({ role }) {
               {/* 집주인 어드민 관련 */}
               <Route path="/admin" element={<AdminHome />} />
               <Route path="/admin/auth" element={<AdminAuth />} />
-              <Route path="/admin/notice" element={<AdminNotice />} />
-              <Route path="/admin/notice/write" element={<AdminNoticeWrite />} />
+              <Route path="/notice" element={<AdminNotice />} />
+              <Route path="/notice/write" element={<AdminNoticeWrite />} />
               <Route path="/admin/tenants" element={<AdminTenantsInfo />} />
               <Route path="/admin/common-bills" element={<AdminCommonBills />} />
 
