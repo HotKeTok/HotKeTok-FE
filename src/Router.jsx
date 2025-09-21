@@ -22,6 +22,7 @@ import RepairHistoryLandlord from './pages/landlord/repair/RepairHistory';
 import AdminAuth from './pages/landlord/admin/AdminAuth';
 import AdminHome from './pages/landlord/admin/AdminHome';
 import AdminNotice from './pages/landlord/admin/AdminNotice';
+import AdminNoticeDetail from './pages/landlord/admin/AdminNoticeDetail';
 import AdminNoticeWrite from './pages/landlord/admin/AdminNoticeWrite';
 import AdminTenantsInfo from './pages/landlord/admin/AdminTenantsInfo';
 import AdminCommonBills from './pages/landlord/admin/AdminCommonBills';
@@ -140,6 +141,7 @@ export default function AppRouter({ role }) {
               <Route path="/admin" element={<AdminHome />} />
               <Route path="/admin/auth" element={<AdminAuth />} />
               <Route path="/notice" element={<AdminNotice />} />
+              <Route path="/notice/:id" element={<AdminNoticeDetail />} />
               <Route path="/notice/write" element={<AdminNoticeWrite />} />
               <Route path="/admin/tenants" element={<AdminTenantsInfo />} />
               <Route path="/admin/common-bills" element={<AdminCommonBills />} />

@@ -5,14 +5,21 @@ import { BottomButtonContainer, Page, ScrollableContent } from '../../../styles/
 import NoticeItem from '../../../components/main/notice/NoticeItem';
 import Button from '../../../components/common/Button';
 import { EXAMPLE_NOTICES } from '../../../mocks/main/notice';
+import { useNavigate } from 'react-router-dom';
 
-export default function NoticeTemplate({ onNoticeItemClick }) {
+export default function NoticeTemplate() {
+  const navigate = useNavigate();
+
   return (
     <Page>
       <TopBar title="공지사항" />
       <Content>
         {EXAMPLE_NOTICES.map(notice => (
-          <NoticeItem key={notice.id} {...notice} onClick={() => onNoticeItemClick(notice.id)} />
+          <NoticeItem
+            key={notice.id}
+            {...notice}
+            onClick={() => navigate(`/notice/${notice.id}`)}
+          />
         ))}
       </Content>
     </Page>
