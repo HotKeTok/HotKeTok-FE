@@ -8,24 +8,32 @@ import InitProcess from './templates/common/InitProcessTemplate';
 
 ///////////////////////////////// landlord(집주인) 관련 //////////////////////////////////
 // main 관련
-import AlarmLandlord from "./pages/landlord/main/Alarm"
-import MainLandlord from "./pages/landlord/main/Index"
+import AlarmLandlord from './pages/landlord/main/Alarm';
+import MainLandlord from './pages/landlord/main/Index';
 
 // 뚝딱 관련
-import RepairHomeLandlord from "./pages/landlord/repair/RepairHome"
-import RepairProgressLandlord from "./pages/landlord/repair/RepairProgress"
-import WriteReviewLandlord from "./pages/landlord/repair/WriteReview"
-import ContractorProfileLandlord from "./pages/landlord/repair/ContractorProfile"
-import RepairHistoryLandlord from "./pages/landlord/repair/RepairHistory"
+import RepairHomeLandlord from './pages/landlord/repair/RepairHome';
+import RepairProgressLandlord from './pages/landlord/repair/RepairProgress';
+import WriteReviewLandlord from './pages/landlord/repair/WriteReview';
+import ContractorProfileLandlord from './pages/landlord/repair/ContractorProfile';
+import RepairHistoryLandlord from './pages/landlord/repair/RepairHistory';
+
+// 어드민 관련
+import AdminAuth from './pages/landlord/admin/AdminAuth';
+import AdminHome from './pages/landlord/admin/AdminHome';
+import AdminNotice from './pages/landlord/admin/AdminNotice';
+import AdminNoticeWrite from './pages/landlord/admin/AdminNoticeWrite';
+import AdminTenantsInfo from './pages/landlord/admin/AdminTenantsInfo';
+import AdminCommonBills from './pages/landlord/admin/AdminCommonBills';
 
 // 채팅 관련
-import ChatMainLandlord from "./pages/landlord/communication/ChatMain"
-import ChatRoomLandlord from "./pages/landlord/communication/ChatRoom"
+import ChatMainLandlord from './pages/landlord/communication/ChatMain';
+import ChatRoomLandlord from './pages/landlord/communication/ChatRoom';
 
 // 마이 관련
-import MyPageLandlord from "./pages/landlord/my/MyPage"
-import AddressAdminLandlord from "./pages/landlord/my/AddressAdmin"
-import ExtraAddressRegisterLandlord from "./pages/landlord/my/ExtraAddressRegister"
+import MyPageLandlord from './pages/landlord/my/MyPage';
+import AddressAdminLandlord from './pages/landlord/my/AddressAdmin';
+import ExtraAddressRegisterLandlord from './pages/landlord/my/ExtraAddressRegister';
 
 ///////////////////////////////// tenant(세입자) 관련 //////////////////////////////////
 // main 관련
@@ -64,7 +72,7 @@ import { HIDE_BOTTOM_BAR_PATHS } from './styles/layout';
 import { HIDE_HEADER_PATHS } from './styles/layout';
 import { AppShell, MainContainer, BottomBar } from './styles/layout';
 
-const Layout = () => {
+const Layout = ({ currentRole }) => {
   const { pathname } = useLocation();
   const hideBar =
     HIDE_BOTTOM_BAR_PATHS.map(path => pathname.startsWith(path)).includes(true) ||
@@ -94,7 +102,7 @@ const Layout = () => {
 
       {!hideBar && (
         <BottomBar>
-          <NavBar />
+          <NavBar currentRole={currentRole} />
         </BottomBar>
       )}
     </AppShell>
@@ -102,13 +110,13 @@ const Layout = () => {
 };
 
 export default function AppRouter({ role }) {
-  // const currentRole = 'landlord';
-  const currentRole = 'tenant';
+  const currentRole = 'landlord';
+  // const currentRole = 'tenant';
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout />}>
+        <Route element={<Layout currentRole={currentRole} />}>
           {/* 공통 onboard 관련 */}
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
@@ -128,9 +136,17 @@ export default function AppRouter({ role }) {
               <Route path="/contractor-profile" element={<ContractorProfileLandlord />} />
               <Route path="/write-review" element={<WriteReviewLandlord />} />
 
+              {/* 집주인 어드민 관련 */}
+              <Route path="/admin" element={<AdminHome />} />
+              <Route path="/admin/auth" element={<AdminAuth />} />
+              <Route path="/admin/notice" element={<AdminNotice />} />
+              <Route path="/admin/notice/write" element={<AdminNoticeWrite />} />
+              <Route path="/admin/tenants" element={<AdminTenantsInfo />} />
+              <Route path="/admin/common-bills" element={<AdminCommonBills />} />
+
               {/* 집주인 채팅 관련 */}
-              <Route path="/communication" element={<ChatMainLandlord />} />
-              <Route path="/communication/chat-room/:id" element={<ChatRoomLandlord />} />
+              <Route path="/chat" element={<ChatMainLandlord />} />
+              <Route path="/chat/chat-room/:id" element={<ChatRoomLandlord />} />
 
               {/* 집주인 마이 관련 */}
               <Route path="/my-page" element={<MyPageLandlord />} />
@@ -157,8 +173,8 @@ export default function AppRouter({ role }) {
 
               {/* 세입자 똑똑 관련 */}
               <Route path="/communication" element={<Communication />} />
-              <Route path="/communication/chat" element={<Chat />} />
-              <Route path="/communication/chat-room" element={<ChatRoom />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/chat/chat-room" element={<ChatRoom />} />
               <Route path="/message" element={<Message />} />
               <Route path="/message/detail/:id" element={<MessageDetail />} />
               <Route path="/message/write" element={<MessageWrite />} />
