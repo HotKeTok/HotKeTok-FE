@@ -1,27 +1,26 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { color, typo } from "../../../styles/tokens";
-import IconChecked from "../../../assets/common/icon-checked.svg?react";
-import IconUnChecked from "../../../assets/common/icon-unchecked.svg?react";
-import { TAG_DATA } from "../../../constants/main/communication/tag";
-import { Row } from "../../../styles/flex";
-import {TIME_OPTIONS} from "../../../constants/main/communication/message";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { color, typo } from '../../../styles/tokens';
+import IconChecked from '../../../assets/common/icon-checked.svg?react';
+import IconUnChecked from '../../../assets/common/icon-unchecked.svg?react';
+import { TAG_DATA } from '../../../constants/tenant/main/communication/tag';
+import { Row } from '../../../styles/flex';
+import { TIME_OPTIONS } from '../../../constants/tenant/main/communication/message';
 
 export default function WriteFormContent({ selectedId }) {
   const [anonymity, setAnonymity] = useState(true);
-  const [tag, setTag] = useState([]); 
-  const [descript, setDescript] = useState("");
-  const [silenceTime, setSilenceTime] = useState("");
+  const [tag, setTag] = useState([]);
+  const [descript, setDescript] = useState('');
+  const [silenceTime, setSilenceTime] = useState('');
 
-  const toggleTag = (id) => {
-    setTag((prev) => {
-      if (prev.includes(id)) return prev.filter((x) => x !== id);
+  const toggleTag = id => {
+    setTag(prev => {
+      if (prev.includes(id)) return prev.filter(x => x !== id);
       return [...prev, id];
     });
   };
 
-  const isSelected = (id) => tag.includes(id);
-
+  const isSelected = id => tag.includes(id);
 
   return (
     <ContentContainer>
@@ -29,19 +28,17 @@ export default function WriteFormContent({ selectedId }) {
         {/* 1. 받는 이웃 */}
         <BasicInfoRow>
           <BasicInfoIndex>받는 이웃</BasicInfoIndex>
-          <Body1 style={{color: `#1f1f1f`}}>
-            {selectedId}호
-          </Body1>
+          <Body1 style={{ color: `#1f1f1f` }}>{selectedId}호</Body1>
         </BasicInfoRow>
 
         {/* 익명 여부 */}
         <BasicInfoRow>
-          <BasicInfoIndex >익명 여부</BasicInfoIndex>
+          <BasicInfoIndex>익명 여부</BasicInfoIndex>
           <Row $align="center">
-             <CheckBtnContainer onClick={() => setAnonymity((v) => !v)}>
+            <CheckBtnContainer onClick={() => setAnonymity(v => !v)}>
               {anonymity ? <IconChecked /> : <IconUnChecked />}
             </CheckBtnContainer>
-            <Caption2 style={{color: "#9a9a9a"}}>쪽지가 익명으로 전송돼요.</Caption2>
+            <Caption2 style={{ color: '#9a9a9a' }}>쪽지가 익명으로 전송돼요.</Caption2>
           </Row>
         </BasicInfoRow>
 
@@ -49,21 +46,23 @@ export default function WriteFormContent({ selectedId }) {
         <BasicInfoColumn>
           <BasicInfoSmallColumn>
             <BasicInfoIndex>태그</BasicInfoIndex>
-            <BasicInfoDescript>
-              다중선택이 가능해요.
-            </BasicInfoDescript>
+            <BasicInfoDescript>다중선택이 가능해요.</BasicInfoDescript>
           </BasicInfoSmallColumn>
           <TagTotalContainer>
             <TagRowContainer>
-              {TAG_DATA.map((tagItem) => {
+              {TAG_DATA.map(tagItem => {
                 const selected = isSelected(tagItem.id);
                 // 3. 선택 상태에 따라 적절한 아이콘 컴포넌트를 변수에 할당합니다.
                 const IconComponent = selected ? tagItem.activeIcon : tagItem.icon;
-                
+
                 return (
-                    <IconWrap key={tagItem.id} selected={selected} onClick={() => toggleTag(tagItem.id)}>
-                      <IconComponent />
-                    </IconWrap>
+                  <IconWrap
+                    key={tagItem.id}
+                    selected={selected}
+                    onClick={() => toggleTag(tagItem.id)}
+                  >
+                    <IconComponent />
+                  </IconWrap>
                 );
               })}
             </TagRowContainer>
@@ -75,18 +74,13 @@ export default function WriteFormContent({ selectedId }) {
       <BasicInfoContainer>
         <BasicInfoSmallColumn>
           <BasicInfoIndex>이 시간대에는 침묵을 지켜주세요.</BasicInfoIndex>
-          <BasicInfoDescript>
-            층간소음을 원하지 않는 시간대를 선택 해주세요.
-          </BasicInfoDescript>
+          <BasicInfoDescript>층간소음을 원하지 않는 시간대를 선택 해주세요.</BasicInfoDescript>
         </BasicInfoSmallColumn>
-        <TimeSelect
-          value={silenceTime}
-          onChange={(e) => setSilenceTime(e.target.value)}
-        >
+        <TimeSelect value={silenceTime} onChange={e => setSilenceTime(e.target.value)}>
           <option value="" disabled>
             시간 선택
           </option>
-          {TIME_OPTIONS.map((option) => (
+          {TIME_OPTIONS.map(option => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -97,18 +91,16 @@ export default function WriteFormContent({ selectedId }) {
       {/* 상세 작성 */}
       <BasicInfoContainer style={{ gap: 5 }}>
         <BasicInfoIndex>상세 작성</BasicInfoIndex>
-        <BasicInfoDescript>
-          이웃에게 보낼 메세지를 작성해주세요.
-        </BasicInfoDescript>
+        <BasicInfoDescript>이웃에게 보낼 메세지를 작성해주세요.</BasicInfoDescript>
 
         <DescriptInput
           placeholder="이웃에게 불쾌감을 줄 수 있는 내용은 삼가해 주세요."
           value={descript}
-          onChange={(e) => setDescript(e.target.value)}
+          onChange={e => setDescript(e.target.value)}
           maxLength={100}
         />
         <WordCountContainer>
-          <span style={{ color: "#a8a8a8" }}>
+          <span style={{ color: '#a8a8a8' }}>
             <strong>{descript.length} / 100</strong>
           </span>
         </WordCountContainer>
@@ -171,7 +163,7 @@ const BasicInfoIndex = styled.div`
 
 const Caption2 = styled.div`
   ${typo('caption2')};
-`
+`;
 
 const BasicInfoDescript = styled(Caption2)`
   text-align: left;
@@ -226,7 +218,7 @@ const DescriptInput = styled.input`
 
   &::placeholder {
     color: #a8a8a8;
-    ${typo("body2")}
+    ${typo('body2')}
     color: ${color('grayscale.500')};
   }
 `;
@@ -240,8 +232,7 @@ const WordCountContainer = styled(Caption2)`
 
 const Body1 = styled.div`
   ${typo('body1')};
-`
-
+`;
 
 const TimeSelect = styled.select`
   border: none;
@@ -252,9 +243,9 @@ const TimeSelect = styled.select`
   border-radius: 6px;
   border: 1px solid #efefef;
   background-color: #fafafb;
-  ${typo("body2")};
-  
-  color: ${(props) => (props.value === "" ? "#9a9a9a" : "#1f1f1f")};
+  ${typo('body2')};
+
+  color: ${props => (props.value === '' ? '#9a9a9a' : '#1f1f1f')};
 
   appearance: none;
   -webkit-appearance: none;

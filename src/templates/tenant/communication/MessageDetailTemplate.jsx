@@ -1,17 +1,20 @@
-import React, { useState } from "react";
-import TopBar from "../../../components/common/TopBar";
-import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from "../../../styles/layout";
-import styled from "styled-components";
-import {EXAMPLE_RECEIVED_MESSAGE_LIST, EXAMPLE_SENT_MESSAGE_LIST} from "../../../mocks/communication/message";
-import { TAG_ICONS } from "../../../constants/main/communication/tag";
-import PencilIcn from "../../../assets/communication/message/pencil-icon.svg?react"
-import {formatDateToYMD, getHHMMTime} from "../../../utils/dateFormat";
-import { color, typo } from "../../../styles/tokens";
-import MenuIcn from "../../../assets/common/icon-menu.svg?react"
-import ReportMenuIcon from "../../../components/communication/message/ReportMenuIcon";
-import ConfirmModal from "../../../components/common/ConfirmModal";
-import { TIME_OPTIONS } from "../../../constants/main/communication/message";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import TopBar from '../../../components/common/TopBar';
+import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../styles/layout';
+import styled from 'styled-components';
+import {
+  EXAMPLE_RECEIVED_MESSAGE_LIST,
+  EXAMPLE_SENT_MESSAGE_LIST,
+} from '../../../mocks/communication/message';
+import { TAG_ICONS } from '../../../constants/tenant/main/communication/tag';
+import PencilIcn from '../../../assets/communication/message/pencil-icon.svg?react';
+import { formatDateToYMD, getHHMMTime } from '../../../utils/dateFormat';
+import { color, typo } from '../../../styles/tokens';
+import MenuIcn from '../../../assets/common/icon-menu.svg?react';
+import ReportMenuIcon from '../../../components/communication/message/ReportMenuIcon';
+import ConfirmModal from '../../../components/common/ConfirmModal';
+import { TIME_OPTIONS } from '../../../constants/tenant/main/communication/message';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * MessageDetailTemplate component
@@ -19,16 +22,19 @@ import { useNavigate } from "react-router-dom";
  * @param {type} "receive" | "sent"
  * @param {object} message
  * @param {function} onReply
- * @returns 
+ * @returns
  */
-export default function MessageDetailTemplate({ id, type = "receive", message = {}, onReply }) {
+export default function MessageDetailTemplate({ id, type = 'receive', message = {}, onReply }) {
   const navigation = useNavigate();
   const [modal, setModal] = useState(false);
-  const messageDetail = (type === "receive" ? EXAMPLE_RECEIVED_MESSAGE_LIST : EXAMPLE_SENT_MESSAGE_LIST).find(msg => msg.id == id) || {};
+  const messageDetail =
+    (type === 'receive' ? EXAMPLE_RECEIVED_MESSAGE_LIST : EXAMPLE_SENT_MESSAGE_LIST).find(
+      msg => msg.id == id
+    ) || {};
   // todo: 탭에 따라 type 검토
 
   function handleReplyClick() {
-    if (typeof onReply === "function") onReply(message);
+    if (typeof onReply === 'function') onReply(message);
   }
 
   function handleReportClick() {
@@ -42,26 +48,29 @@ export default function MessageDetailTemplate({ id, type = "receive", message = 
   }
 
   const TagComponent = TAG_ICONS[messageDetail.tag];
-  
+
   return (
     <PageWithoutBottomBar>
-      <TopBar title={`${type === "sent" ? "보낸 쪽지" : "받은 쪽지"}`} rightComponent={<ReportMenuIcon onClick={() => handleReportClick()} />} />
-        <ConfirmModal
-          isOpen={modal}
-          title="쪽지 신고"
-          description="해당 쪽지를 신고하시겠어요?"
-          onClose={() => setModal(false)}
-          onConfirm={handleConfirmReport}
-          confirmText="확인"
-        />
+      <TopBar
+        title={`${type === 'sent' ? '보낸 쪽지' : '받은 쪽지'}`}
+        rightComponent={<ReportMenuIcon onClick={() => handleReportClick()} />}
+      />
+      <ConfirmModal
+        isOpen={modal}
+        title="쪽지 신고"
+        description="해당 쪽지를 신고하시겠어요?"
+        onClose={() => setModal(false)}
+        onConfirm={handleConfirmReport}
+        confirmText="확인"
+      />
       <ScrollableNoBottomBarContent>
         <ContentContainer>
           <IndexAndValue>
-            <Title>{type==='sent' ? '보낸' : '받은'} 이웃</Title>
+            <Title>{type === 'sent' ? '보낸' : '받은'} 이웃</Title>
             <Value>
-              {type === "receive"
+              {type === 'receive'
                 ? messageDetail.anonymity
-                  ? "익명"
+                  ? '익명'
                   : messageDetail.sender
                 : messageDetail.sender}
             </Value>
@@ -69,30 +78,30 @@ export default function MessageDetailTemplate({ id, type = "receive", message = 
 
           <IndexAndValue>
             <Title>날짜</Title>
-            <Value>{`${formatDateToYMD(messageDetail.createdAt)} / ${getHHMMTime(messageDetail.createdAt)}`}</Value>
+            <Value>{`${formatDateToYMD(messageDetail.createdAt)} / ${getHHMMTime(
+              messageDetail.createdAt
+            )}`}</Value>
           </IndexAndValue>
 
           <IndexAndValue>
             <Title>태그</Title>
             <TagArea>
-              <TagComponent/>
+              <TagComponent />
             </TagArea>
           </IndexAndValue>
 
-          <IndexAndValue
-            style={{ flexDirection: "column", alignItems: "flex-start", gap: 8 }}
-          >
+          <IndexAndValue style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
             <Title>내용</Title>
             <DescriptBox>
               <div>{messageDetail.content}</div>
             </DescriptBox>
           </IndexAndValue>
 
-          {type === "receive" && !messageDetail.anonymity ? (
+          {type === 'receive' && !messageDetail.anonymity ? (
             <ButtonWrapper>
               <SendButton onClick={handleReplyClick}>
-                <PencilIcn width={12} height={12}/>
-                  {messageDetail.senderId || messageDetail.receiverId}호에 답장하기
+                <PencilIcn width={12} height={12} />
+                {messageDetail.senderId || messageDetail.receiverId}호에 답장하기
               </SendButton>
             </ButtonWrapper>
           ) : null}
@@ -104,7 +113,7 @@ export default function MessageDetailTemplate({ id, type = "receive", message = 
 
 const ContentContainer = styled.div`
   padding: 30px 24px;
-  
+
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -122,8 +131,8 @@ const IndexAndValue = styled.div`
 `;
 
 const Title = styled.div`
-    ${typo('body2')};
-    color: ${color('grayscale.600')};
+  ${typo('body2')};
+  color: ${color('grayscale.600')};
 `;
 
 const Value = styled.div`
