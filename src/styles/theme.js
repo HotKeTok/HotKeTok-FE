@@ -19,10 +19,10 @@ export const theme = {
   },
   fonts: {
     h1: {
-      'font-family': 'Pretendard-Medium',
+      'font-family': 'Pretendard-Regular',
       'font-size': '26px',
       'line-height': '36px',
-      'font-weight': '500',
+      'font-weight': '400',
     },
     h2: {
       'font-family': 'Pretendard-Medium',
