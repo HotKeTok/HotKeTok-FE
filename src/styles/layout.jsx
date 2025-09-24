@@ -24,6 +24,7 @@ export const BOTTOM_BAR_HEIGHT = '74px';
 export const TOP_BAR_HEIGHT = '100px'; // 필요시 사용
 
 export const AppShell = styled.div`
+  --top-bar-h: ${TOP_BAR_HEIGHT};
   --inset-b: env(safe-area-inset-bottom, 0px);
   --bar-h: ${BOTTOM_BAR_HEIGHT};
   --bar-safe-h: calc(var(--bar-h) + var(--inset-b));
