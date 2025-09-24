@@ -11,9 +11,14 @@ import NoticeItem from '../../../components/main/notice/NoticeItem';
 import Button from '../../../components/common/Button';
 import { EXAMPLE_NOTICES } from '../../../mocks/main/notice';
 import { useNavigate } from 'react-router-dom';
+import ButtonFixed from '../../../components/common/ButtonFixed';
 
 export default function AdminNoticeTemplate() {
   const navigate = useNavigate();
+
+  const onClickWrite = () => {
+    navigate('/notice/write');
+  };
 
   return (
     <Page>
@@ -29,6 +34,7 @@ export default function AdminNoticeTemplate() {
           ))}
         </Content>
       </ScrollableNoBottomBarContent>
+      <ButtonFixed text="글쓰기" onClick={onClickWrite} />
     </Page>
   );
 }
