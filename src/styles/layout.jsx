@@ -16,6 +16,7 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/write-review',
   '/message',
   '/alarm',
+  '/admin',
 ];
 export const HIDE_HEADER_PATHS = [];
 
