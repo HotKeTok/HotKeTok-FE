@@ -25,6 +25,7 @@ import AdminNotice from './pages/landlord/admin/AdminNotice';
 import AdminNoticeDetail from './pages/landlord/admin/AdminNoticeDetail';
 import AdminNoticeWrite from './pages/landlord/admin/AdminNoticeWrite';
 import AdminTenantsInfo from './pages/landlord/admin/AdminTenantsInfo';
+import AdminTenantsDetail from './pages/landlord/admin/AdminTenantsDetail';
 import AdminCommonBills from './pages/landlord/admin/AdminCommonBills';
 
 // 채팅 관련
@@ -144,6 +145,7 @@ export default function AppRouter({ role }) {
               <Route path="/notice/:id" element={<AdminNoticeDetail />} />
               <Route path="/notice/write" element={<AdminNoticeWrite />} />
               <Route path="/admin/tenants" element={<AdminTenantsInfo />} />
+              <Route path="/admin/tenants/detail/:id" element={<AdminTenantsDetail />} />
               <Route path="/admin/common-bills" element={<AdminCommonBills />} />
 
               {/* 집주인 채팅 관련 */}

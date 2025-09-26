@@ -21,7 +21,7 @@ export default function ConfirmModal({
   description,
   onClose,
   onConfirm,
-  cancelText = '아니요',
+  cancelText = '아니오',
   confirmText = '확인',
 }) {
   if (!isOpen) {
@@ -89,7 +89,7 @@ const Dim = styled.div`
   align-items: center;
   justify-content: center;
   animation: ${fadeIn} 120ms ease;
-  z-index: 1000;
+  z-index: 1000000;
 `;
 
 const ModalBase = css`
