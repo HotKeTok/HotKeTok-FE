@@ -43,7 +43,7 @@ export const theme = {
       'font-weight': '700',
     },
     body1: {
-      'font-family': 'Pretendard-Medium',
+      'font-family': 'Pretendard-Regular',
       'font-size': '16px',
       'line-height': '22px',
       'font-weight': '400',
