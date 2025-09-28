@@ -63,7 +63,7 @@ export default function AdminCommonBillsTemplate({ billsList, year, month, setYe
       <TopBar title="공동 관리비 현황" />
 
       <ScrollableNoBottomBarContent
-        style={{ paddingLeft: 27, paddingRight: 27, paddingBottom: 20, paddingTop: 0 }}
+        style={{ paddingLeft: 27, paddingRight: 27, paddingBottom: 80, paddingTop: 0 }}
       >
         <FilterContainer>
           <Dropdown
