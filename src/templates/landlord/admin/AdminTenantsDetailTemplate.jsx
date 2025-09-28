@@ -1,4 +1,4 @@
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { typo, color } from '../../../styles/tokens';
 import styled from 'styled-components';
 import OptionsMenu from '../../../components/common/OptionsMenu';
