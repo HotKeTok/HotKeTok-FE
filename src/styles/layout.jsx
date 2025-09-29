@@ -4,9 +4,9 @@ import styled from 'styled-components';
 
 export const HIDE_BOTTOM_BAR_PATHS = [
   '/splash',
-  '/signIn',
-  '/signUp',
-  '/initprocess',
+  '/sign-in',
+  '/sign-up',
+  '/init-process',
   '/notice',
   '/notice/:id',
   '/request-repair',
