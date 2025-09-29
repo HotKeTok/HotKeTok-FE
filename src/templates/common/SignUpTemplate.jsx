@@ -122,8 +122,6 @@ export default function SignUpTemplate() {
                 inputMode="numeric"
                 // 하이픈 포함 최대 13자(010-1234-5678)
                 maxLength={13}
-                // 시각적 상태: 11자리면 success로 보여주고 싶다면 아래 주석 해제
-                state={isPhoneComplete ? 'success' : undefined}
               />
               <ButtonSmall
                 active={isPhoneComplete} // 2) 11자리면 활성화
@@ -140,7 +138,6 @@ export default function SignUpTemplate() {
                   onChange={onChangeVerifyCode} // ✅ 숫자만 필터
                   inputMode="numeric"
                   maxLength={6}
-                  state={verifyCode.length > 0 ? 'success' : undefined}
                 />
                 <ButtonSmall
                   active={verifyCode.length > 0} // ✅ 값이 있으면 활성화(원하면 길이 조건 넣어도 됨)
@@ -157,11 +154,22 @@ export default function SignUpTemplate() {
 
           <Column $gap={4}>
             <TextFieldTitle>아이디</TextFieldTitle>
-            <TextField
-              placeholder={'아이디 입력'}
-              value={userId}
-              onChange={e => setUserId(e.target.value)}
-            />
+            <Row $gap={6}>
+              <TextField
+                placeholder={'아이디 입력'}
+                value={userId}
+                onChange={e => setUserId(e.target.value)}
+              />
+              <ButtonSmall
+                active={verifyCode.length > 0} // ✅ 값이 있으면 활성화(원하면 길이 조건 넣어도 됨)
+                text="중복확인"
+                width={100}
+                onClick={() => {
+                  // TODO: 아이디 중복확인
+                  // ex) verifyCode 서버 전송 → 성공 시 다음 단계로
+                }}
+              />
+            </Row>
             <Infotext>6~20자 이내로 입력해 주세요.</Infotext>
           </Column>
 
