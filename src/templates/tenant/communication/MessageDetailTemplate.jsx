@@ -15,6 +15,7 @@ import ReportMenuIcon from '../../../components/communication/message/ReportMenu
 import ConfirmModal from '../../../components/common/ConfirmModal';
 import { TIME_OPTIONS } from '../../../constants/tenant/main/communication/message';
 import { useNavigate } from 'react-router-dom';
+import OptionsMenu from '../../../components/common/OptionsMenu';
 
 /**
  * MessageDetailTemplate component
@@ -49,11 +50,18 @@ export default function MessageDetailTemplate({ id, type = 'receive', message = 
 
   const TagComponent = TAG_ICONS[messageDetail.tag];
 
+  const menuOption = [
+    {
+      label: '신고하기',
+      onClick: handleReportClick,
+    },
+  ];
+
   return (
     <PageWithoutBottomBar>
       <TopBar
         title={`${type === 'sent' ? '보낸 쪽지' : '받은 쪽지'}`}
-        rightComponent={<ReportMenuIcon onClick={() => handleReportClick()} />}
+        rightComponent={<OptionsMenu options={menuOption} />}
       />
       <ConfirmModal
         isOpen={modal}

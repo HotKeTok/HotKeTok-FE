@@ -16,6 +16,7 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/write-review',
   '/message',
   '/alarm',
+  '/admin/',
 ];
 export const HIDE_HEADER_PATHS = [];
 
@@ -24,6 +25,7 @@ export const BOTTOM_BAR_HEIGHT = '74px';
 export const TOP_BAR_HEIGHT = '100px'; // 필요시 사용
 
 export const AppShell = styled.div`
+  --top-bar-h: ${TOP_BAR_HEIGHT};
   --inset-b: env(safe-area-inset-bottom, 0px);
   --bar-h: ${BOTTOM_BAR_HEIGHT};
   --bar-safe-h: calc(var(--bar-h) + var(--inset-b));
@@ -101,7 +103,6 @@ export const Page = styled.section`
 // 추가: 바텀바가 없는 페이지에 한해 사용
 export const PageWithoutBottomBar = styled.section`
   width: 100%;
-  padding-bottom: 0; // 바텀바 없는 페이지용
   background: #fff;
 `;
 

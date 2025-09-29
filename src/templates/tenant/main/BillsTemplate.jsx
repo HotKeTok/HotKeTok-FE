@@ -9,7 +9,7 @@ import ChartCostSplitBar from '../../../components/main/bills/ChartCostSplitBar'
 import ChartUsageLine from '../../../components/main/bills/ChartUsageLine';
 import { Column, Row } from '../../../styles/flex';
 import YearSelect from '../../../components/main/bills/YearSelect';
-import BillItem from '../../../components/main/bills/BillItem';
+import MonthBillsItem from '../../../components/main/bills/MonthBillsItem';
 import BottomSheet from '../../../components/common/BottomSheet';
 
 export default function BillsTemplate({ activeTab, setActiveTab }) {
@@ -90,7 +90,7 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
 
           <List>
             {currentList.map(item => (
-              <BillItem
+              <MonthBillsItem
                 key={`${year}-${item.month}`}
                 year={year}
                 item={item}

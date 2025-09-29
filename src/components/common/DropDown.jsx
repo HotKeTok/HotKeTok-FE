@@ -11,13 +11,22 @@ import ArrowUp from '../../assets/common/icon-arrow-up.svg?react';
  * @param {string} selected 컨테이너 텍스트
  * @param {(value: string) => void} setSelected 선택된 아이템 설정 함수
  * @param {string[]} items 버튼 list
- * @returns
+ * @param {object} buttonStyle - 드롭다운 버튼에 적용할 커스텀 스타일 객체
+ * @param {object} menuStyle - 드롭다운 메뉴에 적용할 커스텀 스타일 객체
  */
-const Dropdown = ({ isOpen, toggleDropdown, closeDropdown, selected, setSelected, items }) => {
+const Dropdown = ({
+  isOpen,
+  toggleDropdown,
+  closeDropdown,
+  selected,
+  setSelected,
+  items,
+  buttonStyle,
+  menuStyle,
+}) => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    // 외부 클릭 시 closeDropdown 함수 호출
     const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         closeDropdown();
@@ -34,19 +43,26 @@ const Dropdown = ({ isOpen, toggleDropdown, closeDropdown, selected, setSelected
   }, [isOpen, closeDropdown]);
 
   const handleItemClick = value => {
-    setSelected(value); // 부모의 상태 업데이트
+    // items 배열이 객체 형태({ label, value })일 경우를 대비하여 label을 전달합니다.
+    // 만약 items가 문자열 배열이라면 item을 그대로 사용하면 됩니다.
+    const selectedItem = items.find(item => item.label === value);
+    if (selectedItem) {
+      setSelected(selectedItem); // 부모의 상태 업데이트
+    }
     closeDropdown(); // 메뉴 닫기
   };
 
   return (
     <DropdownContainer ref={dropdownRef}>
-      <DropdownButton onClick={toggleDropdown}>
+      {/* 외부에서 받은 buttonStyle 객체를 inline style로 적용 */}
+      <DropdownButton onClick={toggleDropdown} style={buttonStyle}>
         <div>{selected}</div>
         <StyledArrowUp isOpen={isOpen} />
       </DropdownButton>
 
-      <Menu isOpen={isOpen}>
+      <Menu isOpen={isOpen} style={menuStyle}>
         {items.map((item, index) => (
+          // handleItemClick에 item.label을 전달합니다.
           <MenuItem key={index} onClick={() => handleItemClick(item.label)}>
             {item.label}
           </MenuItem>
@@ -58,6 +74,7 @@ const Dropdown = ({ isOpen, toggleDropdown, closeDropdown, selected, setSelected
 
 export default Dropdown;
 
+// --- Styled Components (기존과 동일) ---
 const DropdownContainer = styled.div`
   position: relative;
   display: inline-block;
@@ -68,16 +85,13 @@ const DropdownButton = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 5px;
-
   color: ${color('grayscale.600')};
   padding: 12px 3px;
-
   ${typo('button1')}
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
-
   &:hover {
     background-color: ${color('grayscale.200')};
   }
@@ -90,20 +104,20 @@ const StyledArrowUp = styled(ArrowUp)`
 `;
 
 const Menu = styled.div`
-  display: ${props => (props.isOpen ? 'block' : 'none')}; // isOpen prop에 따라 보임/숨김
+  display: ${props => (props.isOpen ? 'block' : 'none')};
   padding: 10px;
-
   position: absolute;
   background-color: ${color('grayscale.100')};
-  min-width: 200px;
+  min-width: 135px;
   max-width: 300px;
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.15);
   border-radius: 10px;
-  z-index: 1;
+  z-index: 100;
   overflow: hidden;
 `;
 
 const MenuItem = styled.a`
+  cursor: pointer;
   color: black;
   padding: 8px 12px;
   text-decoration: none;
@@ -112,7 +126,6 @@ const MenuItem = styled.a`
   border-radius: 10px;
   ${typo('body1')}
   word-break: keep-all;
-
   &:hover {
     background-color: ${color('grayscale.200')};
   }

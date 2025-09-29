@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Dropdown from '../../../components/common/DropDown';
 import { DASHBOARD_ITEMS } from '../../../constants/landlord/main';
+import { MAIN_DASHBOARD_ITEMS } from '../../../constants/landlord/main';
 
 export default function MainTemplate() {
   const navigate = useNavigate();
@@ -31,7 +32,9 @@ export default function MainTemplate() {
     navigate('/my-page');
   };
 
-  const items = Object.values(DASHBOARD_ITEMS);
+  const filteredItems = Object.values(DASHBOARD_ITEMS).filter(item =>
+    MAIN_DASHBOARD_ITEMS.includes(item.key)
+  );
 
   return (
     <Page>
@@ -71,8 +74,7 @@ export default function MainTemplate() {
 
         {/* 메인 컨텐츠 */}
         <DashboardContainer>
-          {items.map((item, index) => {
-            // SVG 컴포넌트를 변수에 할당 (가독성 증진)
+          {filteredItems.map((item, index) => {
             const IconComponent = item.image;
 
             return (

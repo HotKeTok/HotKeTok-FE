@@ -1,75 +1,59 @@
-import styled from "styled-components";
-import { color, typo } from "../../../styles/tokens";
-import { Column, Row } from "../../../styles/flex";
-import ArrowRight from "../../../assets/common/icon-arrow-right.svg?react"
+import { typo, color } from '../../../styles/tokens';
+import styled from 'styled-components';
+import { formatNumberWithCommas } from '../../../utils/number';
 
-export default function BillItem({year, item, monthsLabel, won, onClick}) {
-    return (
-      <ListItem key={`${year}-${item.month}`} $justify="space-between" $align="center" onClick={onClick}>
-        <Column $gap={2} style={{flex: 1}}>
-          <RowTop>
-              <Title>{`${year}년 ${monthsLabel(item.month)}`}</Title>
-              <Right>
-                <Amount>{won(item.value)}</Amount>
-              </Right>
-          </RowTop>
-          <Date>{item.paidAt}</Date>
-        </Column>
+/**
+ * @function BillItem
+ * @param {string} type ("income" | "expense") - 항목 유형
+ * @param {string} title - 항목 제목
+ * @param {string} date - 항목 날짜 (예: "2024.9.11")
+ * @param {number} amount - 항목 금액 (예: 130000)
+ * @param {number} id - 항목 고유 ID
+ * @returns
+ */
+export default function BillItem({ id, title, date, amount, type }) {
+  return (
+    <MainContainer key={id}>
+      <Container>
+        <Info>{title}</Info>
+        <Info>{formatNumberWithCommas(amount)}원</Info>
+      </Container>
 
-        <RightCol>
-                <ArrowRightStyled width={10} height={10} />
-              </RightCol>
-      </ListItem>
-  )
+      <Container>
+        <Date>{date}</Date>
+        <Type type={type}>{type === 'income' ? '입금' : '출금'}</Type>
+      </Container>
+    </MainContainer>
+  );
 }
 
-const ListItem = styled(Row)`
-  cursor: pointer
+const MainContainer = styled.div`
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 `;
 
-const RowTop = styled.div`
+const Container = styled.div`
+  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-`;
-
-const Title = styled.div`
-  ${typo("body1")};
-  color: black;
-`;
-
-const Right = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const Amount = styled.div`
-  ${typo("body1")};
-  color: #000;
-`;
-
-const RightCol = styled.div`
-  flex: 0 0 auto;
-  display: flex;
-  width: 40px;
-
-  justify-content: center;
   align-items: center;
 `;
 
-
-const ArrowRightStyled = styled(ArrowRight)`
-  width: 10px;
-  height: 10px;
-
-  path {
-    stroke: #000;
-  }
+const Info = styled.div`
+  ${typo('body1')}
+  color: ${color('grayscale.800')};
 `;
 
-const Date= styled.div`
-  ${typo("caption1")};
-  color: ${color("grayscale.400")};
+const Date = styled.div`
+  ${typo('caption1')}
+  color: ${color('grayscale.400')};
+`;
 
-  text-align: right;
-`
+const Type = styled.div`
+  ${typo('caption1')}
+  color: ${props => (props.type === 'income' ? '#FF3F3F' : '#3A84FF')};
+`;
