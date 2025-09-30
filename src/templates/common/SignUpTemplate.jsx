@@ -8,6 +8,7 @@ import ButtonSmall from '../../components/common/ButtonSmall';
 import Button from '../../components/common/Button';
 import CheckPasswordIcon from '../../assets/common/icon-check-password.svg';
 import HidePasswordIcon from '../../assets/common/icon-hide-password.svg';
+import ActionGuideModal from '../../components/common/ActionGuideModal';
 
 /** ---------------------------
  * 유틸: 휴대폰 번호 포맷터 (010-1234-5678)
@@ -51,6 +52,7 @@ export default function SignUpTemplate() {
 
   const [showVerify, setShowVerify] = useState(false);
   const [verifyCode, setVerifyCode] = useState('');
+  const [isVerifyGuideOpen, setIsVerifyGuideOpen] = useState(false);
 
   // 가시성 토글 상태
   const [showPw, setShowPw] = useState(false);
@@ -127,9 +129,31 @@ export default function SignUpTemplate() {
                 active={isPhoneComplete} // 2) 11자리면 활성화
                 text="인증하기"
                 width={100}
-                onClick={() => setShowVerify(true)} // ✅ 누르면 인증 UI 등장
+                onClick={() => {
+                  setShowVerify(true);
+                  setIsVerifyGuideOpen(true);
+                }} // ✅ 누르면 인증 UI 등장
               />
             </Row>
+            <ActionGuideModal
+              isOpen={isVerifyGuideOpen}
+              titleComponent={
+                <CustomTitle>{`${phone}으로 \n인증코드가 전송되었어요!`}</CustomTitle>
+              }
+              description={
+                <div style={{ textAlign: 'center' }}>
+                  인증코드를 확인하고 휴대폰 번호 인증을 완료해주세요.
+                </div>
+              }
+              onClose={() => setIsVerifyGuideOpen(false)}
+              onConfirm={() => {
+                // TODO: 인증번호 전송 API 호출
+                setIsVerifyGuideOpen(false); // 모달 닫기
+              }}
+              confirmText="닫기"
+              showClose={false} // X 버튼 숨기기
+            />
+
             {showVerify && (
               <Row $gap={6}>
                 <TextField
@@ -270,4 +294,10 @@ const HelperText = styled.div`
       : p.$status === 'success'
       ? color('brand.primary')
       : color('grayscale.400')};
+`;
+
+const CustomTitle = styled.div`
+  ${typo('body1')};
+  color: ${color('grayscale.800')};
+  white-space: pre-wrap; // 줄바꿈도 반영
 `;

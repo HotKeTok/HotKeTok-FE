@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { keyframes} from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { typo, color } from '../../styles/tokens';
 import Button from './Button';
 
@@ -11,7 +11,8 @@ import Button from './Button';
  * @param {string} description - 모달 설명
  * @param {function} onClose - 닫기 버튼 클릭 핸들러
  * @param {function} onConfirm - 확인 버튼 클릭 핸들러
- * @param {string} [confirmText='확인'] - 확인 버튼 텍스트
+ * @param {string} [confirmText='네, 보낼게요'] - 확인 버튼 텍스트
+ * @param {boolean} [showClose=true] - 우상단 X 버튼 표시 여부
  */
 export default function ActionGuideModal({
   isOpen,
@@ -19,24 +20,45 @@ export default function ActionGuideModal({
   description,
   onClose,
   onConfirm,
-  confirmText = '확인',
+  confirmText = '네, 보낼게요',
+  showClose = true,
 }) {
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
     <Dim onClick={onClose}>
-      <Modal role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-        <CloseButton onClick={onClose}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 6L6 18" stroke="#828282" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M6 6L18 18" stroke="#828282" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </CloseButton>
+      <Modal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+        {showClose && (
+          <CloseButton aria-label="닫기" onClick={onClose}>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6L6 18"
+                stroke="#828282"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M6 6L18 18"
+                stroke="#828282"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </CloseButton>
+        )}
+
         <TitleWrapper>{titleComponent}</TitleWrapper>
         <ModalDesc>{description}</ModalDesc>
-        <Button text="네, 보낼게요" onClick={onConfirm} >{confirmText}</Button>
+
+        <Button text={confirmText} onClick={onConfirm} />
       </Modal>
     </Dim>
   );
@@ -48,16 +70,9 @@ const fadeIn = keyframes`
 `;
 
 const pop = keyframes`
-  from {
-    transform: scale(0.9) translateY(10px);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
+  from { transform: scale(0.9) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
 `;
-
 
 const Dim = styled.div`
   position: fixed;
@@ -104,12 +119,12 @@ const TitleWrapper = styled.div`
   ${typo('subtitle1')}
   color: ${color('grayscale.800')};
   margin-top: 32px;
-
   text-align: center;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  white-space: pre-wrap;
 `;
 
 const ModalDesc = styled.div`
