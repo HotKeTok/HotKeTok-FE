@@ -113,8 +113,8 @@ const Layout = ({ currentRole }) => {
 };
 
 export default function AppRouter({ role }) {
-  const currentRole = 'landlord';
-  // const currentRole = 'tenant';
+  // const currentRole = 'landlord';
+  const currentRole = 'tenant';
 
   return (
     <BrowserRouter>

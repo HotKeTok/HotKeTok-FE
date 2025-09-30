@@ -20,7 +20,7 @@ export default function ActionGuideModal({
   description,
   onClose,
   onConfirm,
-  confirmText = '네, 보낼게요',
+  confirmText = '확인',
   showClose = true,
 }) {
   if (!isOpen) return null;
