@@ -22,9 +22,12 @@ import RepairHistoryLandlord from './pages/landlord/repair/RepairHistory';
 import AdminAuth from './pages/landlord/admin/AdminAuth';
 import AdminHome from './pages/landlord/admin/AdminHome';
 import AdminNotice from './pages/landlord/admin/AdminNotice';
+import AdminNoticeDetail from './pages/landlord/admin/AdminNoticeDetail';
 import AdminNoticeWrite from './pages/landlord/admin/AdminNoticeWrite';
 import AdminTenantsInfo from './pages/landlord/admin/AdminTenantsInfo';
+import AdminTenantsDetail from './pages/landlord/admin/AdminTenantsDetail';
 import AdminCommonBills from './pages/landlord/admin/AdminCommonBills';
+import AdminCommonBillsWrite from './pages/landlord/admin/AdminCommonBillsWrite';
 
 // 채팅 관련
 import ChatMainLandlord from './pages/landlord/communication/ChatMain';
@@ -139,10 +142,13 @@ export default function AppRouter({ role }) {
               {/* 집주인 어드민 관련 */}
               <Route path="/admin" element={<AdminHome />} />
               <Route path="/admin/auth" element={<AdminAuth />} />
-              <Route path="/admin/notice" element={<AdminNotice />} />
-              <Route path="/admin/notice/write" element={<AdminNoticeWrite />} />
+              <Route path="/notice" element={<AdminNotice />} />
+              <Route path="/notice/:id" element={<AdminNoticeDetail />} />
+              <Route path="/notice/write" element={<AdminNoticeWrite />} />
               <Route path="/admin/tenants" element={<AdminTenantsInfo />} />
+              <Route path="/admin/tenants/detail/:id" element={<AdminTenantsDetail />} />
               <Route path="/admin/common-bills" element={<AdminCommonBills />} />
+              <Route path="/admin/common-bills/write" element={<AdminCommonBillsWrite />} />
 
               {/* 집주인 채팅 관련 */}
               <Route path="/chat" element={<ChatMainLandlord />} />

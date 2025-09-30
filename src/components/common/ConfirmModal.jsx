@@ -1,6 +1,8 @@
 import React from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { typo, color } from '../../styles/tokens';
+import IcnClose from '../../assets/common/icon-close.svg?react';
+import Button from './Button';
 
 /**
  * 공통 확인 모달 컴포넌트
@@ -8,7 +10,7 @@ import { typo, color } from '../../styles/tokens';
  * @param {boolean} props.isOpen - 모달의 표시 여부
  * @param {string} props.title - 모달 제목
  * @param {string} props.description - 모달 설명
- * @param {function} props.onCancel - 취소 버튼 클릭 핸들러
+ * @param {function} props.onClose - 취소/닫기 버튼 클릭 핸들러
  * @param {function} props.onConfirm - 확인 버튼 클릭 핸들러
  * @param {string} [props.cancelText='아니요'] - 취소 버튼 텍스트
  * @param {string} [props.confirmText='확인'] - 확인 버튼 텍스트
@@ -17,9 +19,9 @@ export default function ConfirmModal({
   isOpen,
   title,
   description,
-  onCancel,
+  onClose,
   onConfirm,
-  cancelText = '아니요',
+  cancelText = '아니오',
   confirmText = '확인',
 }) {
   if (!isOpen) {
@@ -27,15 +29,17 @@ export default function ConfirmModal({
   }
 
   return (
-    <Dim onClick={onCancel}>
-      <Modal role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-        <ModalTitle>{title}</ModalTitle>
-        <ModalDesc>{description}</ModalDesc>
+    <Dim onClick={onClose}>
+      <Modal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+        <CloseIcon onClick={onClose} aria-label="Close modal" />
+        <div>
+          <ModalTitle>{title}</ModalTitle>
+          <ModalDesc>{description}</ModalDesc>
+        </div>
+
         <ButtonRow>
-          <ModalButton $variant="ghost" onClick={onCancel}>
-            {cancelText}
-          </ModalButton>
-          <ModalButton onClick={onConfirm}>{confirmText}</ModalButton>
+          <Button active={true} dismiss={true} text={cancelText} onClick={onClose} />
+          <Button text={confirmText} onClick={onConfirm} />
         </ButtonRow>
       </Modal>
     </Dim>
@@ -62,8 +66,16 @@ const pop = keyframes`
   }
 `;
 
-
 // --- Styled Components ---
+const CloseIcon = styled(IcnClose)`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+`;
+
 const Dim = styled.div`
   position: fixed;
   top: 0;
@@ -77,7 +89,7 @@ const Dim = styled.div`
   align-items: center;
   justify-content: center;
   animation: ${fadeIn} 120ms ease;
-  z-index: 1000;
+  z-index: 1000000;
 `;
 
 const ModalBase = css`
@@ -94,7 +106,9 @@ const Modal = styled.div`
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 30px;
+
+  position: relative;
 `;
 
 const ModalTitle = styled.div`

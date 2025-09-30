@@ -62,7 +62,6 @@ export default function NavBar({ currentRole }) {
   const isRepairActive = pathname.startsWith('/repair');
   const isAdminActive = pathname.startsWith('/admin');
   const isCommunicationActive = pathname.startsWith('/communication');
-  const isChatActive = pathname.startsWith('/chat');
   const isMyPageActive = pathname.startsWith('/my-page');
 
   return (
@@ -96,10 +95,7 @@ export default function NavBar({ currentRole }) {
           똑똑
         </NavItem>
       ) : (
-        <NavItem to="/chat" $active={isChatActive} $role={currentRole}>
-          {isChatActive ? <CommunicationIconActive /> : <CommunicationIcon />}
-          채팅
-        </NavItem>
+        <></>
       )}
 
       <NavItem to="/my-page" $active={isMyPageActive} $role={currentRole}>
