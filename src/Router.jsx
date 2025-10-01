@@ -86,10 +86,10 @@ const Layout = ({ currentRole }) => {
       '/init-process',
       '/address-admin', // startsWith 매칭
       '/address/add', // startsWith 매칭
+      '/repair-history',
     ],
     tenant: [
       '/request-repair',
-      '/repair-history',
       '/write-review',
       // 필요 시 추가...
     ],
