@@ -87,10 +87,10 @@ const Layout = ({ currentRole }) => {
       '/address-admin', // startsWith 매칭
       '/address/add', // startsWith 매칭
       '/repair-history',
+      '/write-review',
     ],
     tenant: [
       '/request-repair',
-      '/write-review',
       // 필요 시 추가...
     ],
     landlord: [
