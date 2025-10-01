@@ -1,3 +1,3 @@
-export default function WriteReviewTemplate(){
-    return (<div>write review template</div>)
+export default function L_WriteReviewTemplate() {
+  return <div>write review template</div>;
 }

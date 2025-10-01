@@ -1,3 +1,3 @@
-export default function RepairHistoryTemplate(){
-    return (<div>repair history template</div>)
+export default function L_RepairHistoryTemplate() {
+  return <div>repair history template</div>;
 }

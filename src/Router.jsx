@@ -84,17 +84,17 @@ const Layout = ({ currentRole }) => {
       '/sign-in',
       '/sign-up',
       '/init-process',
-      '/write-review',
       '/address-admin', // startsWith 매칭
       '/address/add', // startsWith 매칭
     ],
     tenant: [
       '/request-repair',
       '/repair-history',
+      '/write-review',
       // 필요 시 추가...
     ],
     landlord: [
-      '/repair', // ✅ 집주인 전용 화이트 배경
+      // ✅ 집주인 전용 화이트 배경
       // 필요 시 추가...
     ],
   };
