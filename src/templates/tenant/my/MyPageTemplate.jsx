@@ -20,7 +20,6 @@ import { useNavigate } from 'react-router-dom';
 export default function MyPageTemplate() {
   // 화면 표시용(상단 카드)
   const [name, setName] = useState('하케톡');
-  const [phone, setPhone] = useState('010-1234-1234');
   const [avatar, setAvatar] = useState(AvatarImg);
 
   // 시트 오픈 상태
@@ -28,12 +27,10 @@ export default function MyPageTemplate() {
 
   // 시트 내부 편집값 (저장 전까지 분리해서 보관)
   const [editName, setEditName] = useState(name);
-  const [editPhone, setEditPhone] = useState(phone);
   const [editAvatar, setEditAvatar] = useState(avatar);
 
   const openSheet = () => {
     setEditName(name);
-    setEditPhone(phone);
     setEditAvatar(avatar);
     setOpen(true);
   };
@@ -41,7 +38,6 @@ export default function MyPageTemplate() {
 
   const handleSave = () => {
     setName(editName);
-    setPhone(editPhone);
     setAvatar(editAvatar);
     setOpen(false);
   };
@@ -71,7 +67,7 @@ export default function MyPageTemplate() {
               </Row>
               <Row $justify="space-between">
                 <Label>휴대폰 번호</Label>
-                <Content>{phone}</Content>
+                <Content>010-1234-1234</Content>
               </Row>
               <Row $justify="space-between">
                 <Label>아이디</Label>
@@ -83,16 +79,13 @@ export default function MyPageTemplate() {
         </MiddleSection>
 
         <EndSection>
-          <Column $gap={10}>
+          <Column $gap={30}>
             <Row $justify="space-between">
               <Label>주소</Label>
               <MoveText onClick={moveAddressAdmin}>
                 주소관리 <img src={iconChevron} />
               </MoveText>
             </Row>
-            <CurrentAddress>서울특별시 강남구 영동대로 112길 46 304호</CurrentAddress>
-            <VerificationBadge status="pending" height={30} typoKey="button2" />
-            <div style={{ height: '30px' }} />
             <Row $justify="space-between">
               <Label>수리내역</Label>
               <MoveText>
@@ -144,17 +137,10 @@ export default function MyPageTemplate() {
               </Field>
 
               <Field>
-                <FieldLabel>휴대폰 번호</FieldLabel>
-                <InputBox>
-                  <Input
-                    value={editPhone}
-                    onChange={e => setEditPhone(e.target.value)}
-                    placeholder="휴대폰 번호"
-                  />
-                  <InlineIcon>
-                    <PencilIcon src={iconPencil} />
-                  </InlineIcon>
-                </InputBox>
+                <Row $justify="space-between">
+                  <FieldLabel>휴대폰 번호</FieldLabel>
+                  <IdValue>010-1234-1234</IdValue>
+                </Row>
               </Field>
 
               <Row $justify="space-between">
