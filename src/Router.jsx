@@ -90,11 +90,15 @@ const Layout = ({ currentRole }) => {
       '/write-review',
     ],
     tenant: [
+      // 입주민 전용 화이트 배경
       '/request-repair',
       // 필요 시 추가...
     ],
     landlord: [
-      // ✅ 집주인 전용 화이트 배경
+      // 집주인 전용 화이트 배경
+      '/repair',
+      '/admin',
+
       // 필요 시 추가...
     ],
   };

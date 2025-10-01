@@ -95,7 +95,7 @@ export default function L_RepairHomeTemplate() {
             )}
           </TopSurface>
 
-          {/* ===== 지난 수리 내역 ===== */}
+          {/* ===== 지난 수리 내역 ===== -> 일단 에비로 띄워둠. 디자인 확정되면 수정 예정 */}
           <HistoryWrap>
             <RowBetween>
               <HistoryHeading>지난 수리 내역</HistoryHeading>
