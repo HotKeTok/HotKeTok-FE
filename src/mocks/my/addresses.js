@@ -35,7 +35,7 @@ export const ADDRESS_LIST_MOCK = [
     placeType: 'WORK',
     placeTypeLabel: '회사',
     customPlaceName: '',
-    alias: '공유오피스',
+    alias: '회사',
     address1: '서울특별시 강남구 영동대로 112길 46',
     address2: '202호',
     lot: '지번임',
