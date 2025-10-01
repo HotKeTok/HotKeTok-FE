@@ -12,11 +12,11 @@ import AlarmLandlord from './pages/landlord/main/Alarm';
 import MainLandlord from './pages/landlord/main/Index';
 
 // 뚝딱 관련
-import RepairHomeLandlord from './pages/landlord/repair/RepairHome';
-import RepairProgressLandlord from './pages/landlord/repair/RepairProgress';
-import WriteReviewLandlord from './pages/landlord/repair/WriteReview';
-import ContractorProfileLandlord from './pages/landlord/repair/ContractorProfile';
-import RepairHistoryLandlord from './pages/landlord/repair/RepairHistory';
+import RepairHomeLandlord from './pages/landlord/repair/L_RepairHome';
+import RepairProgressLandlord from './pages/landlord/repair/L_RepairProgress';
+import WriteReviewLandlord from './pages/landlord/repair/L_WriteReview';
+import ContractorProfileLandlord from './pages/landlord/repair/L_ContractorProfile';
+import RepairHistoryLandlord from './pages/landlord/repair/L_RepairHistory';
 
 // 어드민 관련
 import AdminAuth from './pages/landlord/admin/AdminAuth';
@@ -113,8 +113,8 @@ const Layout = ({ currentRole }) => {
 };
 
 export default function AppRouter({ role }) {
-  // const currentRole = 'landlord';
-  const currentRole = 'tenant';
+  const currentRole = 'landlord';
+  // const currentRole = 'tenant';
 
   return (
     <BrowserRouter>
