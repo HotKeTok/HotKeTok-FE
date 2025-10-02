@@ -88,7 +88,7 @@ function ProgressBar({ value = 0, start, end }) {
 /* =========================================================
  * STEP 1: 주소 키워드 검색/선택
  * ======================================================= */
-function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
+function StepAddressKeyword({ defaultKeyword, onPick }) {
   const [keyword, setKeyword] = useState(defaultKeyword ?? '');
   const [results, setResults] = useState([]);
   const [showExamples, setShowExamples] = useState(true);
@@ -101,7 +101,7 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
 
   return (
     <PageWrap>
-      <TopBar title="주소 등록" onBack={onBack} />
+      <TopBar title="주소 등록" />
       <ProgressBar {...getProgressRange('AddressKeyword')} />
       <StepTitle>{'추가할 주소를\n등록해주세요.'}</StepTitle>
 

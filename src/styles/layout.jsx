@@ -102,7 +102,6 @@ export const Page = styled.section`
 // 추가: 바텀바가 없는 페이지에 한해 사용
 export const PageWithoutBottomBar = styled.section`
   width: 100%;
-  background: #fff;
 `;
 
 // 2-1. 바텀바 있는 페이지에서 스크롤 필요한 경우 사용
