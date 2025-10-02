@@ -9,6 +9,7 @@ import { Page } from '../../../styles/layout';
 import TopBar from '../../../components/common/TopBar';
 
 import iconPlus from '../../../assets/my/address-admin/icon-plus.svg';
+import iconMenu from '../../../assets/common/icon-menu.svg';
 import iconBuilding from '../../../assets/my/address-admin/icon-building.svg'; // 건물 아이콘 고정
 
 // ✅ 집주인 전용 목데이터
@@ -118,8 +119,8 @@ function LandlordAddressItem({ data, onClickCard, menuOpen, onToggleMenu, onDele
       <Row style={{ alignItems: 'center' }}>
         {/* ▶ 왼쪽 콘텐츠: 아이콘 + 주소 텍스트 */}
         <Row $gap={16} $align="center" style={{ minWidth: 0, flex: 1 }}>
-          <Icon src={iconBuilding} alt="" />
-          <Column $gap={8} style={{ minWidth: 0 }}>
+          <Icon src={iconBuilding} alt="건물아이콘" />
+          <Column $gap={8}>
             <AddrTitle title={roadAddress}>{roadAddress}</AddrTitle>
             {!!buildingName && <AddrSub>{buildingName}</AddrSub>}
             {isCurrent && <NowBadge>현재 설정된 주소</NowBadge>}
@@ -128,7 +129,7 @@ function LandlordAddressItem({ data, onClickCard, menuOpen, onToggleMenu, onDele
 
         {/* ▶ 오른쪽 ... 버튼 */}
         <MoreBtn aria-label="더보기" onClick={onToggleMenu} onMouseDown={e => e.stopPropagation()}>
-          ⋯
+          <img src={iconMenu} />
         </MoreBtn>
       </Row>
 
@@ -178,7 +179,7 @@ const AddButton = styled.div`
 
 const Card = styled.div`
   position: relative;
-  padding: 12px 16px;
+  padding: 12px 0px 12px 16px;
   background: ${color('grayscale.100')};
   border: 1px solid ${color('grayscale.200')};
   border-radius: 12px;
@@ -226,13 +227,14 @@ const AddrSub = styled.div`
 
 const MoreBtn = styled.button`
   margin-left: auto; /* ✅ 카드 안 우측으로 쏙 */
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border: none;
   background: transparent;
-  color: ${color('grayscale.500')};
-  font-size: 20px;
-  line-height: 1;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   flex: 0 0 auto;
 `;

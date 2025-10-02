@@ -1,6 +1,6 @@
 // src/templates/landlord/my/L_ExtraAddressRegisterTemplate.jsx
-import React, { useEffect, useState } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import React, { useState } from 'react';
+import styled, { keyframes } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -72,7 +72,7 @@ function StepAddressKeyword({ onPick, onBack, defaultKeyword }) {
 
   return (
     <PageWrap>
-      <TopBar title="주소 등록" onBack={onBack} />
+      <TopBar title="주소 등록" />
       <ProgressBar {...getProgressRange('AddressKeyword')} />
 
       <StepTitle>{'관리할 건물의\n주소를 등록해주세요'}</StepTitle>
