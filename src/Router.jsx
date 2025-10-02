@@ -34,9 +34,9 @@ import ChatMainLandlord from './pages/landlord/communication/ChatMain';
 import ChatRoomLandlord from './pages/landlord/communication/ChatRoom';
 
 // 마이 관련
-import MyPageLandlord from './pages/landlord/my/MyPage';
-import AddressAdminLandlord from './pages/landlord/my/AddressAdmin';
-import ExtraAddressRegisterLandlord from './pages/landlord/my/ExtraAddressRegister';
+import MyPageLandlord from './pages/landlord/my/L_MyPage';
+import AddressAdminLandlord from './pages/landlord/my/L_AddressAdmin';
+import ExtraAddressRegisterLandlord from './pages/landlord/my/L_ExtraAddressRegister';
 
 ///////////////////////////////// tenant(세입자) 관련 //////////////////////////////////
 // main 관련
@@ -137,8 +137,8 @@ const Layout = ({ currentRole }) => {
 };
 
 export default function AppRouter({ role }) {
-  // const currentRole = 'landlord';
-  const currentRole = 'tenant';
+  const currentRole = 'landlord';
+  // const currentRole = 'tenant';
 
   return (
     <BrowserRouter>
