@@ -54,7 +54,7 @@ export const MainContainer = styled.main`
   flex: 1 1 auto;
   width: 100%;
   height: 100vh; // 높이 고정
-  overflow: auto;
+  overflow: hidden;
 
   overscroll-behavior: contain;
 
