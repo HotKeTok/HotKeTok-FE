@@ -12,11 +12,11 @@ import AlarmLandlord from './pages/landlord/main/Alarm';
 import MainLandlord from './pages/landlord/main/Index';
 
 // 뚝딱 관련
-import RepairHomeLandlord from './pages/landlord/repair/RepairHome';
-import RepairProgressLandlord from './pages/landlord/repair/RepairProgress';
-import WriteReviewLandlord from './pages/landlord/repair/WriteReview';
-import ContractorProfileLandlord from './pages/landlord/repair/ContractorProfile';
-import RepairHistoryLandlord from './pages/landlord/repair/RepairHistory';
+import RepairHomeLandlord from './pages/landlord/repair/L_RepairHome';
+import RepairProgressLandlord from './pages/landlord/repair/L_RepairProgress';
+import WriteReviewLandlord from './pages/landlord/repair/L_WriteReview';
+import ContractorProfileLandlord from './pages/landlord/repair/L_ContractorProfile';
+import RepairHistoryLandlord from './pages/landlord/repair/L_RepairHistory';
 
 // 어드민 관련
 import AdminAuth from './pages/landlord/admin/AdminAuth';
@@ -77,25 +77,49 @@ import { AppShell, MainContainer, BottomBar } from './styles/layout';
 
 const Layout = ({ currentRole }) => {
   const { pathname } = useLocation();
+
+  // 1) 공통/역할별 화이트 배경 경로 세트
+  const WHITE_BG_ROUTES = {
+    common: [
+      '/sign-in',
+      '/sign-up',
+      '/init-process',
+      '/address-admin', // startsWith 매칭
+      '/address/add', // startsWith 매칭
+      '/repair-history',
+      '/write-review',
+    ],
+    tenant: [
+      // 입주민 전용 화이트 배경
+      '/request-repair',
+      // 필요 시 추가...
+    ],
+    landlord: [
+      // 집주인 전용 화이트 배경
+      '/repair',
+      '/admin',
+
+      // 필요 시 추가...
+    ],
+  };
+
+  // prefix 기준 매칭 유틸
+  const startsWithAny = patterns => patterns.some(p => pathname === p || pathname.startsWith(p));
+
+  // 2) 화이트 배경 여부: 공통 + 현재 역할용 경로만 적용
+  const isWhiteBg =
+    startsWithAny(WHITE_BG_ROUTES.common) || startsWithAny(WHITE_BG_ROUTES[currentRole] || []);
+
+  const bgColor = isWhiteBg ? '#ffffff' : '#f9f9f9';
+
+  // ==== 이하 동일 ====
   const hideBar =
     HIDE_BOTTOM_BAR_PATHS.map(path => pathname.startsWith(path)).includes(true) ||
     pathname.startsWith('/address-admin') ||
     pathname.startsWith('/address/add');
 
-  const isWhiteBg =
-    pathname === '/sign-in' ||
-    pathname === '/sign-up' ||
-    pathname === '/init-process' ||
-    pathname === '/request-repair' ||
-    pathname === '/repair-history' ||
-    pathname === '/write-review' ||
-    pathname.startsWith('/address-admin') ||
-    pathname.startsWith('/address/add');
-  const bgColor = isWhiteBg ? '#ffffff' : '#f9f9f9';
-
-  // 헤더 유무/높이는 각 페이지 성격에 맞게 결정
   const hasHeader = !HIDE_HEADER_PATHS.includes(pathname);
-  const headerHeight = 100; // 헤더 컴포넌트 높이(px)
+  const headerHeight = 100;
 
   return (
     <AppShell $bg={bgColor}>
@@ -113,8 +137,8 @@ const Layout = ({ currentRole }) => {
 };
 
 export default function AppRouter({ role }) {
-  // const currentRole = 'landlord';
-  const currentRole = 'tenant';
+  const currentRole = 'landlord';
+  // const currentRole = 'tenant';
 
   return (
     <BrowserRouter>
