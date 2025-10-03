@@ -7,6 +7,7 @@ import { color, typo } from '../../../styles/tokens';
 import { Page } from '../../../styles/layout';
 
 import TopBar from '../../../components/common/TopBar';
+import Toast from '../../../components/common/Toast';
 
 import iconPlus from '../../../assets/my/address-admin/icon-plus.svg';
 import iconMenu from '../../../assets/common/icon-menu.svg';
@@ -31,7 +32,6 @@ export default function L_AddressAdminTemplate({ addPath = '/address/add/:step' 
   const setCurrentAddress = id => {
     setItems(prev => prev.map(it => ({ ...it, isCurrent: it.id === id })));
     setToast('현재 설정된 주소를 변경했어요.');
-    setTimeout(() => setToast(''), 1600);
   };
 
   // 삭제
@@ -78,7 +78,6 @@ export default function L_AddressAdminTemplate({ addPath = '/address/add/:step' 
           주소 등록하기
         </AddButton>
       </ButtonWrapper>
-
       <Container>
         <Column $gap={10}>
           {items.map(addr => (
@@ -96,13 +95,7 @@ export default function L_AddressAdminTemplate({ addPath = '/address/add/:step' 
           ))}
         </Column>
       </Container>
-
-      {toast && (
-        <ToastWrap>
-          <ToastDot />
-          {toast}
-        </ToastWrap>
-      )}
+      <Toast message={toast} show={!!toast} onClose={() => setToast('')} />
     </Page>
   );
 }
@@ -283,15 +276,12 @@ const ToastWrap = styled.div`
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(32, 32, 32, 0.9);
+  border-radius: 30px;
+  background: rgba(0, 0, 0, 0.8);
   color: #fff;
-  ${typo('caption1')};
+  ${typo('body2')};
   animation: ${toastIn} 200ms ease both;
 `;
-const ToastDot = styled.span`
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: ${color('brand.primary')};
+const CheckIcon = styled.img`
+  width: 16px;
 `;

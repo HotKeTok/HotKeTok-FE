@@ -12,15 +12,16 @@ import Button from '../../../components/common/Button';
 import ButtonSmall from '../../../components/common/ButtonSmall';
 
 import iconCheck from '../../../assets/repair/request-repair/icon_big-check.png';
+import iconFolder from '../../../assets/common/icon-folder.svg';
 
 /* -------------------------------------------
  * (SignUp 흐름과 동일 톤) 진행바 구간
  * ----------------------------------------- */
 const PROGRESS_RANGE = {
-  AddressKeyword: [0, 25],
-  AddressConfirm: [25, 50],
-  HouseholdCount: [50, 70],
-  UploadDeed: [70, 100],
+  AddressKeyword: [0, 33],
+  AddressConfirm: [0, 33],
+  HouseholdCount: [33, 66],
+  UploadDeed: [66, 100],
 };
 
 function getProgressRange(step) {
@@ -57,7 +58,7 @@ function mockSearchAddresses(keyword) {
 
 /* =========================================================
  * STEP 1. 주소 검색
- *  - 타이틀/예시/결과 리스트 UI를 SignUp의 톤으로 맞춤
+ *  - 타이틀/예시/결과 리스트 UI를 InitProcess의 톤으로 맞춤
  * ======================================================= */
 function StepAddressKeyword({ onPick, onBack, defaultKeyword }) {
   const [keyword, setKeyword] = useState(defaultKeyword ?? '');
@@ -109,7 +110,7 @@ function StepAddressKeyword({ onPick, onBack, defaultKeyword }) {
         )}
 
         {!showExamples && results.length > 0 && (
-          <ListWrap style={{ marginTop: 16 }}>
+          <ListWrap style={{ marginTop: 30 }}>
             {results.map(a => (
               <AddressRow key={a.id} onClick={() => onPick(a)}>
                 <AddrMain title={a.road}>{a.road}</AddrMain>
@@ -137,6 +138,7 @@ function StepAddressKeyword({ onPick, onBack, defaultKeyword }) {
  * ======================================================= */
 function StepAddressConfirm({ baseAddress, onNext, onBack }) {
   const [refDetail, setRefDetail] = useState(''); // 참고항목/상세(선택)
+  const canNext = refDetail.trim().length > 0;
 
   return (
     <PageWrap>
@@ -158,18 +160,26 @@ function StepAddressConfirm({ baseAddress, onNext, onBack }) {
         </SelectedBox>
 
         <Column $gap={8}>
-          <Label>참고/상세 (선택)</Label>
+          <Label>상세주소</Label>
           <TextField
-            placeholder="예) 관리사무소 지하 1층 / 경비실 우편함 옆"
+            placeholder="예) 현대프라자"
             value={refDetail}
             onChange={e => setRefDetail(e.target.value)}
           />
+          <Label style={{ color: '#3C66FF' }}>* 건물명을 입력해주세요.</Label>
         </Column>
       </div>
 
       <Spacer />
       <div style={{ padding: '30px 24px' }}>
-        <Button text="다음" active onClick={() => onNext({ refDetail: refDetail.trim() })} />
+        <Button
+          text="다음"
+          active={canNext}
+          onClick={() => {
+            if (!canNext) return;
+            onNext({ refDetail: refDetail.trim() });
+          }}
+        />
       </div>
     </PageWrap>
   );
@@ -177,7 +187,7 @@ function StepAddressConfirm({ baseAddress, onNext, onBack }) {
 
 /* =========================================================
  * STEP 3. 총 가구 수 입력
- *  - SignUp 집주인 플로우 텍스트 그대로
+ *  - InitProcess 집주인 플로우 텍스트 그대로
  * ======================================================= */
 function StepHouseholdCount({ onNext, onBack }) {
   const [count, setCount] = useState('');
@@ -192,13 +202,19 @@ function StepHouseholdCount({ onNext, onBack }) {
       <StepTitle>{'이 건물에는\n총 몇 가구가 있나요?'}</StepTitle>
 
       <div style={{ padding: '0 24px' }}>
-        <TextField
-          placeholder="예) 1"
-          inputMode="numeric"
-          value={count}
-          onChange={e => setCount(onlyDigits(e.target.value))}
-          suffix="가구"
-        />
+        <Column $gap={4}>
+          <Label>가구 수</Label>
+          <Row $gap={10} $align="center">
+            <TextField
+              placeholder="예) 1"
+              inputMode="numeric"
+              value={count}
+              onChange={e => setCount(onlyDigits(e.target.value))}
+              suffix="가구"
+            />
+            <ExampleTitle>가구</ExampleTitle>
+          </Row>
+        </Column>
       </div>
 
       <Spacer />
@@ -211,38 +227,62 @@ function StepHouseholdCount({ onNext, onBack }) {
 
 /* =========================================================
  * STEP 4. 등기부등본 업로드
- *  - SignUp 집주인과 동일한 카드형 업로드 UI
+ *  - InitProcess 집주인과 동일한 카드형 업로드 UI
  * ======================================================= */
 function StepUploadDeed({ onNext, onBack }) {
   const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState('');
+  const inputId = 'deed-input';
+
+  const handlePick = e => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const ok = f.type === 'application/pdf' || f.type.startsWith('image/');
+    if (!ok) {
+      alert('PDF 또는 이미지 파일만 업로드할 수 있어요.');
+      e.target.value = '';
+      return;
+    }
+    setFile(f);
+    setFileName(f.name);
+  };
 
   return (
     <PageWrap>
       <TopBar title="주소 등록" onBack={onBack} />
       <ProgressBar {...getProgressRange('UploadDeed')} />
-
       <StepTitle>{'집주인 인증을 위해\n등기부등본을 업로드해주세요.'}</StepTitle>
 
-      <UploadCard as="label">
-        <input
-          type="file"
-          accept="image/*,.pdf"
-          style={{ display: 'none' }}
-          onChange={e => {
-            const f = e.target.files?.[0];
-            if (f) setFile(f);
-          }}
-        />
-        {file ? <UploadName>{file.name}</UploadName> : <UploadHint>파일 선택하기</UploadHint>}
-        <UploadNote>
-          • 등기부등본은 최근 발급본을 권장합니다.
-          <br />• 인증 완료 후 민감 정보는 안전하게 파기됩니다.
-        </UploadNote>
-      </UploadCard>
+      <div style={{ padding: '0 24px' }}>
+        <UploadBox onClick={() => document.getElementById(inputId).click()}>
+          <Column $gap={10} $align="center">
+            <UploadIcon src={iconFolder} alt="" />
+            <UploadTitle>{fileName || '파일 선택하기'}</UploadTitle>
+          </Column>
+          <input
+            id={inputId}
+            type="file"
+            accept="application/pdf,image/*"
+            style={{ display: 'none' }}
+            onChange={handlePick}
+          />
+        </UploadBox>
+
+        <div style={{ marginTop: 10 }}>
+          <SmallNotice style={{ color: '#3C66FF' }}>
+            * 등기부등본은 PDF나 이미지로 등록할 수 있어요.
+            <br />* 제출된 자료는 인증 외 다른 용도로 사용되지 않아요.
+          </SmallNotice>
+        </div>
+      </div>
 
       <Spacer />
       <div style={{ padding: '30px 24px' }}>
-        <Button text="다음" active={!!file} onClick={() => onNext(file)} />
+        <Button
+          text="다음"
+          active={!!file || !!fileName}
+          onClick={() => onNext({ fileName: fileName })}
+        />
       </div>
     </PageWrap>
   );
@@ -258,13 +298,12 @@ function StepDone({ payload }) {
   const finish = () => {
     const newItem = {
       id: String(Date.now()),
-      placeType: 'ETC', // 집주인 목록은 분류 자체가 단순 — 필요 시 변경
-      alias: payload?.bname || '관리 건물',
-      address1: [payload?.road, payload?.bname].filter(Boolean).join(' '),
-      address2: payload?.refDetail || '',
-      verified: false,
+      roadAddress: payload?.road || '',
+      // 상세주소(건물명): 사용자가 입력한 refDetail이 우선, 없으면 검색 결과의 bname
+      buildingName: payload?.refDetail || payload?.bname || '',
       isCurrent: false,
     };
+    // replace:true 로 돌아가면 state가 한 번만 반영되어 카드가 '한 개'만 추가됩니다.
     nav('/address-admin', { replace: true, state: { add: newItem } });
   };
 
@@ -322,7 +361,7 @@ export default function L_ExtraAddressRegisterTemplate() {
       UploadDeed={({ history, context }) => (
         <StepUploadDeed
           onBack={history.back}
-          onNext={file =>
+          onNext={({ fileName }) =>
             history.push('Done', {
               ...context,
               road: context.base.road,
@@ -330,7 +369,7 @@ export default function L_ExtraAddressRegisterTemplate() {
               bname: context.base.bname,
               refDetail: context.refDetail,
               count: context.count,
-              fileName: file?.name,
+              fileName,
             })
           }
         />
@@ -363,6 +402,7 @@ const Label = styled.div`
 const ExampleTitle = styled.div`
   ${typo('body2')};
   color: ${color('grayscale.600')};
+  white-space: nowrap;
 `;
 const ExampleDesc = styled.div`
   ${typo('caption1')};
@@ -375,6 +415,9 @@ const ListWrap = styled.div`
   gap: 10px;
 `;
 const AddressRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   width: 100%;
   padding-bottom: 12px;
   margin-bottom: 12px;
@@ -396,7 +439,7 @@ const SelectedBox = styled.div`
   border-radius: 10px;
   border: 1px solid #efefef;
   background: #fafafb;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 `;
 
 const AddrMain = styled.div`
@@ -426,27 +469,29 @@ const JibunAddr = styled.div`
   color: ${color('grayscale.600')};
 `;
 
-const UploadCard = styled.div`
-  margin: 0 24px;
-  padding: 36px 18px 18px;
-  border: 1.5px dashed ${color('grayscale.400')};
-  border-radius: 10px;
-  text-align: center;
+const SmallNotice = styled.div`
+  ${typo('caption1')};
+  color: ${color('grayscale.500')};
+`;
+
+const UploadBox = styled.div`
+  width: 100%;
+  height: 160px;
+  border: 1px dashed ${color('grayscale.300')};
+  border-radius: 6px;
+  background: #fafafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  background: ${color('grayscale.50')};
 `;
-const UploadHint = styled.div`
+
+const UploadIcon = styled.img`
+  width: 33px;
+`;
+
+const UploadTitle = styled.div`
   ${typo('body2')};
-  color: ${color('grayscale.600')};
-`;
-const UploadName = styled.div`
-  ${typo('body2')};
-  color: ${color('grayscale.800')};
-  margin-bottom: 8px;
-`;
-const UploadNote = styled.div`
-  margin-top: 10px;
-  ${typo('caption2')};
   color: ${color('grayscale.500')};
 `;
 
