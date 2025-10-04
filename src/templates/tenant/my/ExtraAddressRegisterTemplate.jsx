@@ -56,11 +56,30 @@ const PLACE_TYPES = [
   { key: 'ETC', label: '기타', icon: iconEtc },
 ];
 
-function ProgressBar({ value = 0 }) {
+// 원하는 비율로 자유롭게 수정 가능
+const PROGRESS_RANGE = {
+  AddressKeyword: [0, 50],
+  UnitAndType: [0, 50],
+  Review: [50, 100],
+};
+
+// 현재 스텝의 [start, end] 범위 반환
+function getProgressRange(step) {
+  const [start, end] = PROGRESS_RANGE[step] ?? [0, 100];
+  return { start, end };
+}
+
+function ProgressBar({ value = 0, start, end }) {
+  // start/end가 오면 오프셋형, 없으면 기존 value 사용(하위호환)
+  const hasRange = typeof start === 'number' && typeof end === 'number';
+  const s = hasRange ? Math.max(0, Math.min(100, start)) : 0;
+  const e = hasRange ? Math.max(0, Math.min(100, end)) : Math.max(0, Math.min(100, value));
+  const fill = hasRange ? Math.max(0, e - s) : e;
+
   return (
     <div>
       <ProgressTrack>
-        <ProgressFill $value={value} />
+        <ProgressFill $start={s} $width={fill} />
       </ProgressTrack>
     </div>
   );
@@ -69,7 +88,7 @@ function ProgressBar({ value = 0 }) {
 /* =========================================================
  * STEP 1: 주소 키워드 검색/선택
  * ======================================================= */
-function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
+function StepAddressKeyword({ defaultKeyword, onPick }) {
   const [keyword, setKeyword] = useState(defaultKeyword ?? '');
   const [results, setResults] = useState([]);
   const [showExamples, setShowExamples] = useState(true);
@@ -82,8 +101,8 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
 
   return (
     <PageWrap>
-      <TopBar title="주소 등록" onBack={onBack} />
-      <ProgressBar value={33} />
+      <TopBar title="주소 등록" />
+      <ProgressBar {...getProgressRange('AddressKeyword')} />
       <StepTitle>{'추가할 주소를\n등록해주세요.'}</StepTitle>
 
       <div style={{ padding: '0 27px' }}>
@@ -146,24 +165,39 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack }) {
 }
 
 /* =========================================================
- * STEP 2: 상세주소 입력 + 주소 분류(우리집/회사/기타) 선택 (한 화면)
- *  - 상세 화면에서 쓰던 Segment UI 그대로 사용
- *  - ‘우리집’이 이미 있는 경우 교체 모달
+ * STEP 2: 층/호 입력 + 주소 분류(우리집/회사/기타) 선택 (한 화면)
+ *  - 기존 상세주소(TextField) → 층/호 두 개 필드로 대체
+ *  - ‘우리집’이 이미 있는 경우 교체 모달 유지
  * ======================================================= */
 function StepUnitAndType({
   baseAddress,
-  defaultDetail,
+  defaultDetail, // ⚠️ 호환성 위해 남겨두지만 사용 안 함
   defaultType,
   onNext,
   onBack,
   hasHomeAlready,
 }) {
-  const [detail, setDetail] = useState(defaultDetail ?? '');
+  // 신규: 층/호 상태 (기본값 지원)
+  const [floor, setFloor] = useState(
+    typeof defaultDetail?.floor === 'number' ? String(defaultDetail.floor) : '' // 혹시 이전 컨텍스트를 넘겼다면 호환
+  );
+  const [ho, setHo] = useState(
+    typeof defaultDetail?.ho === 'number' ? String(defaultDetail.ho) : ''
+  );
+
   const [placeType, setPlaceType] = useState(defaultType ?? null);
   const [customPlaceName, setCustomPlaceName] = useState('');
   const [askReplace, setAskReplace] = useState(false);
 
-  const canSubmit = !!detail.trim() && !!placeType;
+  // 숫자 유효성
+  const floorNum = Number(floor);
+  const hoNum = Number(ho);
+  const isValidFloor = Number.isInteger(floorNum) && floorNum >= -5 && floorNum <= 200; // 지하층 허용
+  const isValidHo = Number.isInteger(hoNum) && hoNum > 0 && hoNum <= 9999;
+
+  const canSubmit = isValidFloor && isValidHo && !!placeType;
+
+  const onlyDigits = v => v.replace(/[^\d-]/g, ''); // 지하층(-) 허용
 
   useEffect(() => {
     if (placeType === 'HOME' && hasHomeAlready) {
@@ -174,7 +208,8 @@ function StepUnitAndType({
   const submit = (replaceHome = false) => {
     if (!canSubmit) return;
     onNext({
-      detail: detail.trim(),
+      floor: floorNum,
+      ho: hoNum,
       placeType,
       replaceHome,
       customPlaceName: placeType === 'ETC' ? customPlaceName.trim() : '',
@@ -184,8 +219,8 @@ function StepUnitAndType({
   return (
     <PageWrap>
       <TopBar title="주소 등록" onBack={onBack} />
-      <ProgressBar value={66} />
-      <StepTitle>{'상세 주소를 입력하고\n이 주소의 용도를 선택해주세요.'}</StepTitle>
+      <ProgressBar {...getProgressRange('UnitAndType')} />
+      <StepTitle>{'층/호수를 입력하고\n이 주소의 용도를 선택해주세요.'}</StepTitle>
 
       <div style={{ padding: '0 24px' }}>
         <SelectedBox>
@@ -200,16 +235,46 @@ function StepUnitAndType({
           </Row>
         </SelectedBox>
 
-        {/* 상세주소 */}
-        <Column $gap={4} style={{ marginBottom: 28 }}>
-          <Label>상세 주소</Label>
-          <TextField
-            placeholder="예) 101동 101호 (또는 호수/층/호실)"
-            value={detail}
-            onChange={e => setDetail(e.target.value)}
-          />
-          <Label style={{ color: '#3C66FF' }}>* 상세주소를 반드시 확인해 주세요.</Label>
-        </Column>
+        {/* 층/호 입력 */}
+        <Row $gap={24} style={{ marginBottom: 28 }}>
+          <Column style={{ flex: 1 }}>
+            <Label>층수</Label>
+            <Row $gap={10} $align="center">
+              <TextField
+                placeholder="예) 1"
+                inputMode="numeric"
+                value={floor}
+                onChange={e => setFloor(onlyDigits(e.target.value))}
+                suffix="층"
+              />
+              <ExampleTitle>층</ExampleTitle>
+            </Row>
+            {!isValidFloor && floor && (
+              <SmallNotice style={{ color: '#FF5A5A', marginTop: 6 }}>
+                -5 ~ 200 사이의 정수를 입력해 주세요.
+              </SmallNotice>
+            )}
+          </Column>
+
+          <Column style={{ flex: 1 }}>
+            <Label>호수</Label>
+            <Row $gap={10} $align="center">
+              <TextField
+                placeholder="예) 101"
+                inputMode="numeric"
+                value={ho}
+                onChange={e => setHo(onlyDigits(e.target.value))}
+                suffix="호"
+              />
+              <ExampleTitle>호</ExampleTitle>
+            </Row>
+            {!isValidHo && ho && (
+              <SmallNotice style={{ color: '#FF5A5A', marginTop: 6 }}>
+                1 ~ 9999 사이의 정수를 입력해 주세요.
+              </SmallNotice>
+            )}
+          </Column>
+        </Row>
 
         {/* 주소 분류 */}
         <Column $gap={6}>
@@ -273,7 +338,7 @@ function StepUnitAndType({
 /* =========================================================
  * STEP 3: 최종 확인/요청 → 완료
  * ======================================================= */
-function StepReview({ baseAddress, detail, placeType, replaceHome, customPlaceName }) {
+function StepReview({ baseAddress, floor, ho, placeType, replaceHome, customPlaceName }) {
   const [requested, setRequested] = useState(false);
   const [showDoneBtn, setShowDoneBtn] = useState(false);
   const navigate = useNavigate();
@@ -296,7 +361,7 @@ function StepReview({ baseAddress, detail, placeType, replaceHome, customPlaceNa
       address1: `${baseAddress.sido} ${baseAddress.sigungu} ${baseAddress.road} ${
         baseAddress.building ?? ''
       }`.trim(),
-      address2: detail,
+      address2: `${floor}층 ${ho}호`,
       verified: false,
       isCurrent: placeType === 'HOME', // HOME이면 현재 주소로
       neighborNotes: [],
@@ -313,7 +378,7 @@ function StepReview({ baseAddress, detail, placeType, replaceHome, customPlaceNa
     return (
       <PageWrap>
         <TopBar title="주소 등록" onBack={() => window.history.back()} />
-        <ProgressBar value={100} />
+        <ProgressBar {...getProgressRange('Review')} />
         <StepTitle>{'입주민 인증을 진행할게요'}</StepTitle>
 
         <div style={{ padding: '0px 28px' }}>
@@ -332,7 +397,8 @@ function StepReview({ baseAddress, detail, placeType, replaceHome, customPlaceNa
               <br />
               {baseAddress.building ? <span>{baseAddress.building}</span> : null}
               <br />
-              {detail}
+              {/* ⬇️ 여기만 교체 */}
+              {floor != null && ho != null ? `${floor}층 ${ho}호` : null}
             </Caption1Addr>
 
             <Row $gap={8} $align="center">
@@ -402,19 +468,28 @@ export default function ExtraAddressRegisterTemplate() {
       UnitAndType={({ history, context }) => (
         <StepUnitAndType
           baseAddress={context.baseAddress}
-          defaultDetail={context.detail}
+          // ⬇️ 변경: defaultDetail 대신 floor/ho를 묶어 전달(호환용으로 defaultDetail에 넣음)
+          defaultDetail={{ floor: context.floor, ho: context.ho }}
           defaultType={context.placeType}
           hasHomeAlready={hasHomeAlready}
           onBack={history.back}
-          onNext={({ detail, placeType, replaceHome, customPlaceName }) =>
-            history.push('Review', { ...context, detail, placeType, replaceHome, customPlaceName })
+          onNext={({ floor, ho, placeType, replaceHome, customPlaceName }) =>
+            history.push('Review', {
+              ...context,
+              floor,
+              ho,
+              placeType,
+              replaceHome,
+              customPlaceName,
+            })
           }
         />
       )}
       Review={({ context }) => (
         <StepReview
           baseAddress={context.baseAddress}
-          detail={context.detail}
+          floor={context.floor}
+          ho={context.ho}
           placeType={context.placeType}
           replaceHome={context.replaceHome}
           customPlaceName={context.customPlaceName}
@@ -576,16 +651,20 @@ const FadeInWrap = styled.div`
 
 /* 진행바 */
 const ProgressTrack = styled.div`
+  position: relative;
   height: 2px;
   width: 100%;
   background: ${color('grayscale.200')};
 `;
 
 const ProgressFill = styled.div`
-  height: 100%;
-  width: ${({ $value }) => `${Math.min(100, Math.max(0, $value))}%`};
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: ${({ $start = 0 }) => `${$start}%`};
+  width: ${({ $width = 0 }) => `${$width}%`};
   background: ${color('brand.primary')};
-  transition: width 220ms ease;
+  transition: left 220ms ease, width 220ms ease;
 `;
 
 /* 상세 화면의 Segment UI 그대로 이식 */

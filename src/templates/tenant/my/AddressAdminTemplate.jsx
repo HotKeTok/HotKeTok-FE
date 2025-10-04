@@ -266,7 +266,7 @@ const Badge = styled.div`
 
 const NowBadge = styled.div`
   ${typo('button3')}
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 4px;
   background: rgba(1, 210, 129, 0.15);
   color: ${color('brand.primary')};

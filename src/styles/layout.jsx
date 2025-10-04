@@ -54,7 +54,7 @@ export const MainContainer = styled.main`
   flex: 1 1 auto;
   width: 100%;
   height: 100vh; // 높이 고정
-  overflow: auto;
+  overflow: hidden;
 
   overscroll-behavior: contain;
 
@@ -102,7 +102,6 @@ export const Page = styled.section`
 // 추가: 바텀바가 없는 페이지에 한해 사용
 export const PageWithoutBottomBar = styled.section`
   width: 100%;
-  background: #fff;
 `;
 
 // 2-1. 바텀바 있는 페이지에서 스크롤 필요한 경우 사용

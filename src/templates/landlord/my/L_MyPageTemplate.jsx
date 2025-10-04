@@ -1,7 +1,7 @@
-// src/templates/tenant/my/MyPageTemplate.jsx
+// src/templates/landlord/my/L_MyPageTemplate.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Column, Row, Spacer } from '../../../styles/flex';
+import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import { Page } from '../../../styles/layout';
 
@@ -10,20 +10,25 @@ import iconPencil from '../../../assets/my/icon-pencil.svg';
 import iconPencilGreen from '../../../assets/my/icon-pencil-green.svg';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
 
-// ✅ 공통 바텀시트
+// 공통 컴포넌트
 import BottomSheet from '../../../components/common/BottomSheet';
 import Button from '../../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
 
-export default function MyPageTemplate() {
-  // 화면 표시용(상단 카드)
-  const [name, setName] = useState('하케톡');
+/**
+ * 집주인 마이페이지 템플릿
+ * @param {object} props
+ * @param {string} [props.addressManagePath='/landlord/address-admin'] - 주소관리 화면 라우팅 경로
+ */
+export default function L_MyPageTemplate({ addressManagePath = '/address-admin' }) {
+  // 표시용 상태
+  const [name, setName] = useState('집주인');
   const [avatar, setAvatar] = useState(AvatarImg);
 
-  // 시트 오픈 상태
+  // 바텀시트 상태
   const [open, setOpen] = useState(false);
 
-  // 시트 내부 편집값 (저장 전까지 분리해서 보관)
+  // 편집값 (저장 전 분리)
   const [editName, setEditName] = useState(name);
   const [editAvatar, setEditAvatar] = useState(avatar);
 
@@ -41,10 +46,7 @@ export default function MyPageTemplate() {
   };
 
   const nav = useNavigate();
-
-  const moveAddressAdmin = () => {
-    nav('/address-admin');
-  };
+  const moveAddressAdmin = () => nav(addressManagePath);
 
   return (
     <Page>
@@ -56,7 +58,7 @@ export default function MyPageTemplate() {
         </Header>
 
         <MiddleSection>
-          <Avatar src={avatar} />
+          <Avatar src={avatar} alt="프로필" />
           <Column $gap={20}>
             <Column $gap={24}>
               <Row $justify="space-between">
@@ -65,7 +67,7 @@ export default function MyPageTemplate() {
               </Row>
               <Row $justify="space-between">
                 <Label>휴대폰 번호</Label>
-                <Content>010-1234-1234</Content>
+                <Content>010-1234-5678</Content>
               </Row>
               <Row $justify="space-between">
                 <Label>아이디</Label>
@@ -76,29 +78,39 @@ export default function MyPageTemplate() {
           </Column>
         </MiddleSection>
 
+        <SectionDivider />
+
         <EndSection>
-          <Column $gap={30}>
-            <Row $justify="space-between">
+          <Column $gap={18}>
+            <Row $justify="space-between" $align="center">
               <Label>주소</Label>
               <MoveText onClick={moveAddressAdmin}>
-                주소관리 <img src={iconChevron} />
+                주소관리 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
-            <Row $justify="space-between">
+
+            {/* 현재 설정된 기본 주소 프리뷰 */}
+            <AddressPreview>
+              <Badge>현재 설정한 주소</Badge>
+              <CurrentAddress>서울특별시 강남구 영동대로 112길 46</CurrentAddress>
+              <Subline>현대프라자</Subline>
+            </AddressPreview>
+
+            <Row $justify="space-between" $align="center" style={{ marginTop: 12 }}>
               <Label>수리내역</Label>
               <MoveText>
-                조회하기 <img src={iconChevron} />
+                조회하기 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
           </Column>
         </EndSection>
+
         {/* ===== 프로필 편집 바텀시트 ===== */}
         <BottomSheet isOpen={open} onClose={closeSheet} height="100dvh">
           <SheetBody>
             <SheetHandle />
             <SheetTitle>프로필 편집</SheetTitle>
 
-            {/* 프로필 이미지 + 편집버튼 */}
             <AvatarWrap>
               <AvatarBig src={editAvatar} alt="프로필" />
               <EditBubble as="label">
@@ -113,11 +125,10 @@ export default function MyPageTemplate() {
                     }
                   }}
                 />
-                <PencilIconGreen src={iconPencilGreen} />
+                <PencilIconGreen src={iconPencilGreen} alt="편집" />
               </EditBubble>
             </AvatarWrap>
 
-            {/* 입력 폼 */}
             <Form>
               <Field>
                 <FieldLabel>이름</FieldLabel>
@@ -128,7 +139,7 @@ export default function MyPageTemplate() {
                     placeholder="이름 입력"
                   />
                   <InlineIcon>
-                    <PencilIcon src={iconPencil} />
+                    <PencilIcon src={iconPencil} alt="편집" />
                   </InlineIcon>
                 </InputBox>
               </Field>
@@ -136,7 +147,7 @@ export default function MyPageTemplate() {
               <Field>
                 <Row $justify="space-between">
                   <FieldLabel>휴대폰 번호</FieldLabel>
-                  <IdValue>010-1234-1234</IdValue>
+                  <IdValue>010-1234-5678</IdValue>
                 </Row>
               </Field>
 
@@ -151,7 +162,8 @@ export default function MyPageTemplate() {
             </FooterSticky>
           </SheetBody>
         </BottomSheet>
-        <div style={{ flex: '1', backgroundColor: '#fff' }} />
+
+        <div style={{ flex: 1, backgroundColor: '#fff' }} />
       </PageWrapper>
     </Page>
   );
@@ -162,16 +174,17 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+  background: ${color('grayscale.0')};
 `;
 
 const Header = styled.div`
   width: 100%;
   padding-top: 52px;
-  background-color: white;
+  background-color: #fff;
 `;
 
 const RowForTopBar = styled(Row)`
-  padding: 0px 6px 4.5px 6px;
+  padding: 0 6px 4.5px 6px;
 `;
 
 const Title = styled.div`
@@ -186,17 +199,16 @@ const MiddleSection = styled.div`
   gap: 34px;
   background: #fff;
   margin-top: 6px;
-  margin-bottom: 8px;
 `;
 
 const Avatar = styled.img`
-  display: flex;
   width: 100px;
   height: 100px;
   flex-shrink: 0;
   border-radius: 100px;
   border: 2.5px solid ${color('brand.primary')};
   align-self: center;
+  object-fit: cover;
 `;
 
 const Label = styled.div`
@@ -209,7 +221,7 @@ const Content = styled.div`
   color: ${color('grayscale.800')};
 `;
 
-const EditButton = styled.div`
+const EditButton = styled.button`
   display: flex;
   height: 42px;
   justify-content: center;
@@ -222,9 +234,14 @@ const EditButton = styled.div`
   cursor: pointer;
 `;
 
+const SectionDivider = styled.div`
+  height: 8px;
+  background: ${color('grayscale.100')};
+`;
+
 const EndSection = styled.div`
   display: flex;
-  padding: 24px 24px 0px 24px;
+  padding: 18px 24px 0 24px;
   background: #fff;
   flex-direction: column;
 `;
@@ -233,15 +250,40 @@ const MoveText = styled.div`
   ${typo('body2')};
   color: ${color('grayscale.700')};
   cursor: pointer;
-  display: inline-flex; // ✅ 텍스트 + 이미지 줄바꿈 방지
+  display: inline-flex;
   align-items: center;
-  gap: 4px; // ✅ 아이콘 간격 조정
-  white-space: nowrap; // ✅ 전체 줄바꿈 방지
+  gap: 4px;
+  white-space: nowrap;
+`;
+
+const AddressPreview = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 12px;
+  border-radius: 12px;
+  border: 1px solid ${color('grayscale.200')};
+  background: ${color('grayscale.50')};
+`;
+
+const Badge = styled.span`
+  align-self: flex-start;
+  ${typo('caption2')};
+  color: ${color('brand.primary')};
+  border: 1px solid ${color('brand.primary')};
+  background: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
 `;
 
 const CurrentAddress = styled.div`
   ${typo('subtitle1')};
   color: ${color('grayscale.800')};
+`;
+
+const Subline = styled.div`
+  ${typo('caption1')};
+  color: ${color('grayscale.600')};
 `;
 
 /* ===== 바텀시트 내부 ===== */
@@ -365,18 +407,7 @@ const IdValue = styled.div`
 `;
 
 const FooterSticky = styled.div`
-  margin-top: auto; // ✅ 남은 공간 밀어내기
+  margin-top: auto;
   background: #fff;
   padding-bottom: 30px;
-`;
-
-const SaveButton = styled.button`
-  width: 100%;
-  height: 56px;
-  border: none;
-  border-radius: 14px;
-  background: ${color('brand.primary')};
-  color: #fff;
-  ${typo('button1')};
-  cursor: pointer;
 `;
