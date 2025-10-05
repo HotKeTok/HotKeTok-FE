@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import BillItem from '../../../components/main/bills/BillItem';
 import { Column } from '../../../styles/flex';
 import BillSummary from '../../../components/main/bills/BillSummary';
-import Dropdown from '../../../components/common/Dropdown'; // DateDropdown 대신 Dropdown을 import
+import Dropdown from '../../../components/common/DropDown'; // DateDropdown 대신 Dropdown을 import
 
 export default function AdminCommonBillsTemplate({ billsList, year, month, setYear, setMonth }) {
   const navigate = useNavigate();
