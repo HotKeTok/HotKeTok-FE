@@ -185,7 +185,7 @@ export default function SignUpTemplate() {
                 onChange={e => setUserId(e.target.value)}
               />
               <ButtonSmall
-                active={verifyCode.length > 0} // ✅ 값이 있으면 활성화(원하면 길이 조건 넣어도 됨)
+                active={userId.length > 0} // ✅ 값이 있으면 활성화(원하면 길이 조건 넣어도 됨)
                 text="중복확인"
                 width={100}
                 onClick={() => {
@@ -204,7 +204,6 @@ export default function SignUpTemplate() {
               type={showPw ? 'text' : 'password'}
               value={password}
               onChange={onChangePassword}
-              state={password.length === 0 ? undefined : isPasswordValid ? 'success' : 'error'}
               maxLength={16}
               // 우측 아이콘 + 클릭으로 토글
               rightIcon={showPw ? HidePasswordIcon : CheckPasswordIcon}
@@ -225,9 +224,6 @@ export default function SignUpTemplate() {
               type={showPwRe ? 'text' : 'password'}
               value={passwordRe}
               onChange={onChangePasswordRe}
-              state={
-                passwordRe.length === 0 ? undefined : isPasswordReSuccess ? 'success' : 'error'
-              }
               maxLength={16}
               rightIcon={showPwRe ? HidePasswordIcon : CheckPasswordIcon}
               onRightIconClick={() => setShowPwRe(v => !v)}
