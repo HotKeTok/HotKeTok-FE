@@ -10,42 +10,42 @@ import CheckPasswordIcon from '../../assets/common/icon-check-password.svg';
 import HidePasswordIcon from '../../assets/common/icon-hide-password.svg';
 import ActionGuideModal from '../../components/common/ActionGuideModal';
 
-/** ---------------------------
- * 유틸: 휴대폰 번호 포맷터 (010-1234-5678)
- * - 숫자 외 제거 → 11자리까지 제한 → 하이픈 삽입
- * -------------------------- */
+/** --------------------------- 유틸 --------------------------- */
 function formatPhone(raw) {
-  const digits = raw.replace(/\D/g, '').slice(0, 11); // 숫자만 + 11자리 제한
+  const digits = raw.replace(/\D/g, '').slice(0, 11);
   if (digits.length <= 3) return digits;
   if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
 }
 const getPhoneDigits = formatted => formatted.replace(/\D/g, '');
 
-/** ---------------------------
- * 비밀번호 규칙
- * - 길이: 9~16
- * - 허용문자: 영문 대/소문자 + 숫자 + ~,@,$,^,*,(,),_,+
- * - 최소 하나의 영문자, 최소 하나의 특수문자 포함
- * -------------------------- */
 const ALLOWED_SPECIALS = '!,~,@,$,^,*,(,),_,+';
 const allowedSpecialsClass = ALLOWED_SPECIALS.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-// 전체 허용 문자 세트: 영문 + 숫자 + 특수문자
 const PW_ALLOWED_REGEX = new RegExp(`^[A-Za-z0-9${allowedSpecialsClass}]{9,16}$`);
 const PW_HAS_LETTER = /[A-Za-z]/;
 const PW_HAS_SPECIAL = new RegExp(`[${allowedSpecialsClass}]`);
-
 function validatePassword(pw) {
   if (!PW_ALLOWED_REGEX.test(pw)) return false;
   if (!PW_HAS_LETTER.test(pw)) return false;
   if (!PW_HAS_SPECIAL.test(pw)) return false;
   return true;
 }
-export default function SignUpTemplate() {
+
+/** --------------------------- 템플릿 --------------------------- */
+export default function SignUpTemplate({
+  // 페이지에서 내려주는 콜백들 (서버 통신 담당)
+  onRequestPhone = async () => {},
+  onVerifyCode = async () => {},
+  onCheckUserId = async () => {},
+  onSubmit = async () => {},
+  submitting = false, // 가입하기 버튼 로딩
+  requestingPhone = false, // 인증요청 로딩
+  verifyingCode = false, // 인증확인 로딩
+  verifyingUserId = false, // 중복확인 로딩
+}) {
   // 폼 상태
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState(''); // 화면에 보여줄 포맷된 값
+  const [phone, setPhone] = useState('');
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [passwordRe, setPasswordRe] = useState('');
@@ -54,28 +54,25 @@ export default function SignUpTemplate() {
   const [verifyCode, setVerifyCode] = useState('');
   const [isVerifyGuideOpen, setIsVerifyGuideOpen] = useState(false);
 
-  // 가시성 토글 상태
+  // 가시성 토글
   const [showPw, setShowPw] = useState(false);
   const [showPwRe, setShowPwRe] = useState(false);
 
   // 파생 상태
   const phoneDigits = useMemo(() => getPhoneDigits(phone), [phone]);
   const isPhoneComplete = phoneDigits.length === 11;
-
   const isPasswordValid = useMemo(() => validatePassword(password), [password]);
-  // 재확인 성공 기준: “위 비밀번호와 값이 일치” + (현실적으로 유효 비번과 일치해야 success가 의미 있어)
   const isPasswordReSuccess = useMemo(
     () => password.length > 0 && password === passwordRe && isPasswordValid,
     [password, passwordRe, isPasswordValid]
   );
 
-  // ✅ 인증번호 숫자만 입력
+  // 인증코드 숫자만
   const onChangeVerifyCode = e => {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 6); // 보통 6자리 제한 예시
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 6);
     setVerifyCode(digits);
   };
 
-  // ✅ 휴대폰 번호가 불완전해지면 인증 UI/값 리셋
   useEffect(() => {
     if (!isPhoneComplete) {
       setShowVerify(false);
@@ -83,23 +80,53 @@ export default function SignUpTemplate() {
     }
   }, [isPhoneComplete]);
 
-  // 핸들러
   const onChangePhone = e => {
-    const next = formatPhone(e.target.value);
-    setPhone(next);
+    setPhone(formatPhone(e.target.value));
+    console.log(phone);
   };
-
   const onChangePassword = e => {
-    const next = e.target.value;
-    const filtered = next.replace(new RegExp(`[^A-Za-z0-9${allowedSpecialsClass}]`, 'g'), '');
+    const filtered = e.target.value.replace(
+      new RegExp(`[^A-Za-z0-9${allowedSpecialsClass}]`, 'g'),
+      ''
+    );
     setPassword(filtered);
   };
-
   const onChangePasswordRe = e => {
-    const next = e.target.value;
-    const filtered = next.replace(new RegExp(`[^A-Za-z0-9${allowedSpecialsClass}]`, 'g'), '');
+    const filtered = e.target.value.replace(
+      new RegExp(`[^A-Za-z0-9${allowedSpecialsClass}]`, 'g'),
+      ''
+    );
     setPasswordRe(filtered);
   };
+
+  // 버튼 클릭 → 페이지 콜백 호출
+  const handleRequestPhone = async () => {
+    if (!isPhoneComplete) return;
+    await onRequestPhone({ phoneNumber: phoneDigits });
+    setShowVerify(true);
+    setIsVerifyGuideOpen(true);
+  };
+
+  const handleVerifyCode = async () => {
+    if (!verifyCode) return;
+    await onVerifyCode({ phoneNumber: phoneDigits, code: verifyCode });
+  };
+
+  const handleCheckUserId = async () => {
+    if (!userId) return;
+    await onCheckUserId({ logInId: userId });
+  };
+
+  const handleSubmit = async () => {
+    if (!name || !isPhoneComplete || !userId || !isPasswordValid || !isPasswordReSuccess) return;
+    await onSubmit({
+      name,
+      logInId: userId,
+      password,
+      phoneNumber: phoneDigits,
+    });
+  };
+
   return (
     <>
       <Container>
@@ -122,19 +149,17 @@ export default function SignUpTemplate() {
                 value={phone}
                 onChange={onChangePhone}
                 inputMode="numeric"
-                // 하이픈 포함 최대 13자(010-1234-5678)
                 maxLength={13}
               />
               <ButtonSmall
-                active={isPhoneComplete} // 2) 11자리면 활성화
-                text="인증하기"
+                active={isPhoneComplete}
+                text={requestingPhone ? '전송중...' : '인증하기'}
                 width={100}
-                onClick={() => {
-                  setShowVerify(true);
-                  setIsVerifyGuideOpen(true);
-                }} // ✅ 누르면 인증 UI 등장
+                onClick={handleRequestPhone}
+                disabled={requestingPhone}
               />
             </Row>
+
             <ActionGuideModal
               isOpen={isVerifyGuideOpen}
               titleComponent={
@@ -146,31 +171,26 @@ export default function SignUpTemplate() {
                 </div>
               }
               onClose={() => setIsVerifyGuideOpen(false)}
-              onConfirm={() => {
-                // TODO: 인증번호 전송 API 호출
-                setIsVerifyGuideOpen(false); // 모달 닫기
-              }}
+              onConfirm={() => setIsVerifyGuideOpen(false)}
               confirmText="닫기"
-              showClose={false} // X 버튼 숨기기
+              showClose={false}
             />
 
             {showVerify && (
               <Row $gap={6}>
                 <TextField
                   placeholder={'인증번호 입력'}
-                  value={verifyCode} // ✅ 별도 상태 사용
-                  onChange={onChangeVerifyCode} // ✅ 숫자만 필터
+                  value={verifyCode}
+                  onChange={onChangeVerifyCode}
                   inputMode="numeric"
                   maxLength={6}
                 />
                 <ButtonSmall
-                  active={verifyCode.length > 0} // ✅ 값이 있으면 활성화(원하면 길이 조건 넣어도 됨)
-                  text="확인"
+                  active={verifyCode.length > 0}
+                  text={verifyingCode ? '확인중...' : '확인'}
                   width={100}
-                  onClick={() => {
-                    // TODO: 인증번호 검증 로직
-                    // ex) verifyCode 서버 전송 → 성공 시 다음 단계로
-                  }}
+                  onClick={handleVerifyCode}
+                  disabled={verifyingCode}
                 />
               </Row>
             )}
@@ -185,13 +205,11 @@ export default function SignUpTemplate() {
                 onChange={e => setUserId(e.target.value)}
               />
               <ButtonSmall
-                active={userId.length > 0} // ✅ 값이 있으면 활성화(원하면 길이 조건 넣어도 됨)
-                text="중복확인"
+                active={userId.length > 0}
+                text={verifyingUserId ? '확인중...' : '중복확인'}
                 width={100}
-                onClick={() => {
-                  // TODO: 아이디 중복확인
-                  // ex) verifyCode 서버 전송 → 성공 시 다음 단계로
-                }}
+                onClick={handleCheckUserId}
+                disabled={verifyingUserId}
               />
             </Row>
             <Infotext>6~20자 이내로 입력해 주세요.</Infotext>
@@ -205,12 +223,10 @@ export default function SignUpTemplate() {
               value={password}
               onChange={onChangePassword}
               maxLength={16}
-              // 우측 아이콘 + 클릭으로 토글
               rightIcon={showPw ? HidePasswordIcon : CheckPasswordIcon}
               onRightIconClick={() => setShowPw(v => !v)}
               rightIconAriaLabel={showPw ? '비밀번호 숨기기' : '비밀번호 보기'}
             />
-            {/* ✅ helper 텍스트 */}
             {password.length > 0 &&
               (isPasswordValid ? (
                 <HelperText $status="success">사용 가능한 비밀번호예요.</HelperText>
@@ -235,11 +251,13 @@ export default function SignUpTemplate() {
               ) : (
                 <HelperText $status="error">비밀번호가 일치하지 않아요.</HelperText>
               ))}
-            <Infotext>
-              영문 대소문자와 특수문자를 조합하여 9~16자리까지 가능하며,
-              <br />
-              특수문자는 !,~,@,$,^,*,(,),_,+ 만 사용이 가능해요.
-            </Infotext>
+            {isPasswordValid ? null : (
+              <Infotext>
+                영문 대소문자와 특수문자를 조합하여 9~16자리까지 가능하며,
+                <br />
+                특수문자는 !,~,@,$,^,*,(,),_,+ 만 사용이 가능해요.
+              </Infotext>
+            )}
           </Column>
         </FormWrapper>
 
@@ -247,11 +265,9 @@ export default function SignUpTemplate() {
 
         <div style={{ padding: '30px 24px' }}>
           <Button
-            text="가입하기"
-            onClick={() => {
-              // 최종 제출 시 서버 검증과 함께 한 번 더 체크 권장
-              // console.log({ name, phoneDigits, userId, password });
-            }}
+            text={submitting ? '가입 중...' : '가입하기'}
+            onClick={handleSubmit}
+            disabled={submitting}
           />
         </div>
       </Container>
@@ -264,24 +280,20 @@ const Container = styled.div`
   flex-direction: column;
   height: 100vh;
 `;
-
 const FormWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 30px 24px;
   gap: 30px;
 `;
-
 const TextFieldTitle = styled.div`
   ${typo('caption1')};
   color: ${color('grayscale.600')};
 `;
-
 const Infotext = styled.div`
   ${typo('caption2')};
   color: ${color('grayscale.400')};
 `;
-
 const HelperText = styled.div`
   ${typo('caption2')};
   color: ${p =>
@@ -291,9 +303,8 @@ const HelperText = styled.div`
       ? color('brand.primary')
       : color('grayscale.400')};
 `;
-
 const CustomTitle = styled.div`
   ${typo('body1')};
   color: ${color('grayscale.800')};
-  white-space: pre-wrap; // 줄바꿈도 반영
+  white-space: pre-wrap;
 `;
