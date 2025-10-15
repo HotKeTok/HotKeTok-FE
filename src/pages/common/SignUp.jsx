@@ -22,6 +22,9 @@ export default function SignUp() {
   const [successOpen, setSuccessOpen] = useState(false);
   const [welcomeName, setWelcomeName] = useState('하케톡');
 
+  // 가입 실패 모달
+  const [signUpErrorOpen, setSignUpErrorOpen] = useState(false);
+
   const openToast = message => setToast({ open: true, message });
   const closeToast = () => setToast({ open: false, message: '' });
 
@@ -96,10 +99,10 @@ export default function SignUp() {
         setWelcomeName(res?.data?.name || '하케톡');
         setSuccessOpen(true);
       } else {
-        openToast('회원가입에 실패했어요.');
+        setSignUpErrorOpen(true);
       }
-    } catch (e) {
-      openToast(e?.response?.data?.message || e.message || '회원가입 중 오류가 발생했어요.');
+    } catch {
+      setSignUpErrorOpen(true);
     } finally {
       setSubmitting(false);
     }
@@ -132,10 +135,25 @@ export default function SignUp() {
           </div>
         }
         description={
-          <div style={{ textAlign: 'center' }}>{'회원가입 정보로 바로 로그인 하시겠어요?'}</div>
+          <div style={{ textAlign: 'center' }}>회원가입 정보로 바로 로그인 하시겠어요?</div>
         }
         onConfirm={goSignIn} // 버튼 클릭 시 로그인 화면으로
         confirmText="로그인"
+        showClose={false}
+      />
+
+      {/* 가입 실패 모달 */}
+      <ActionGuideModal
+        isOpen={signUpErrorOpen}
+        titleComponent={
+          <div style={{ whiteSpace: 'pre-wrap' }}>
+            <CustomTitle>{'동일한 전화번호로\n이미 가입한 계정이 있어요'}</CustomTitle>
+          </div>
+        }
+        description={<div style={{ textAlign: 'center' }}>다른 전화번호로 인증해 주세요</div>}
+        onClose={() => setSignUpErrorOpen(false)}
+        onConfirm={() => setSignUpErrorOpen(false)}
+        confirmText="닫기"
         showClose={false}
       />
 
