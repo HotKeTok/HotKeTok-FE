@@ -90,7 +90,7 @@ const Backdrop = styled.div`
 
   background: rgba(0, 0, 0, 0.2);
   opacity: 0;
-  transition: opacity 180ms ease;
+  transition: opacity 1s ease-in-out;
   z-index: ${Z_INDEX_BACKDROP};
   &.open {
     opacity: 1;

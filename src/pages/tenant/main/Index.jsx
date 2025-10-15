@@ -1,10 +1,15 @@
-import MainTemplate from "../../../templates/tenant/main/MainTemplate";
+import MainTemplate from '../../../templates/tenant/main/MainTemplate';
 
 export default function Index() {
   // TODO: 인증 상태 확인 후 미인증 상태시 인증전 페이지로 리다이렉트
-  
+
+  // todo: 사용자 address, 공동 관리비 api 연동 후 props로 전달
 
   return (
-    <MainTemplate />
+    <MainTemplate
+      address="서울특별시 강남구 영동대로 112길 46"
+      utilityBill={132000}
+      commonBill={130410}
+    />
   );
 }
