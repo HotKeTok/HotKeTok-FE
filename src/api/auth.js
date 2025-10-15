@@ -19,9 +19,7 @@ export async function apiSignUp({ name, logInId, password, phoneNumber }) {
 
 /**
  * [인증번호 요청]
- * POST /auth-service/phone/send
- * body: { phoneNumber }
- * resp: { success, status, data: { phoneNumber }, timestamp }
+ * 예: POST /auth-service/phone/send?phone=01050259737
  */
 export async function apiPhoneSend({ phoneNumber }) {
   // 1) 숫자만 남기기
@@ -42,25 +40,29 @@ export async function apiPhoneSend({ phoneNumber }) {
 
 /**
  * [인증번호 인증]
- * POST /auth-service/phone/verify
- * body: { phoneNumber, code }
- * resp: { success, status, data: { result }, timestamp }
+ * 예: POST /auth-service/phone/verify?phone=01050259737&code=270882
  */
 export async function apiPhoneVerify({ phoneNumber, code }) {
-  const { data } = await api.post('/auth-service/phone/verify', {
-    phoneNumber,
-    code,
-  });
+  const digits = String(phoneNumber || '')
+    .replace(/\D/g, '')
+    .slice(0, 11);
+  const codeStr = String(code || '').replace(/\D/g, '');
+  if (digits.length !== 11 || codeStr.length === 0) {
+    throw new Error('휴대폰 번호 또는 인증번호가 올바르지 않아요.');
+  }
+  const { data } = await api.post(`/auth-service/phone/verify?phone=${digits}&code=${codeStr}`, {});
   return data;
 }
 
 /**
- * [아이디 중복확인]
- * POST /auth-service/id/verify
- * body: { logInId }
- * resp: { success, status, data: { result }, timestamp }
+ * 아이디 중복확인
+ * 예: POST /auth-service/id/verify?logInId=jerrymin1221
  */
 export async function apiIdVerify({ logInId }) {
-  const { data } = await api.post('/auth-service/id/verify', { logInId });
+  const id = String(logInId || '').trim();
+  if (!id) {
+    throw new Error('아이디를 입력해주세요.');
+  }
+  const { data } = await api.post(`/auth-service/id/verify?logInId=${id}`, {});
   return data;
 }

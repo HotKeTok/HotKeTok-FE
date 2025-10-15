@@ -33,15 +33,14 @@ function validatePassword(pw) {
 
 /** --------------------------- 템플릿 --------------------------- */
 export default function SignUpTemplate({
-  // 페이지에서 내려주는 콜백들 (서버 통신 담당)
   onRequestPhone = async () => {},
   onVerifyCode = async () => {},
   onCheckUserId = async () => {},
   onSubmit = async () => {},
-  submitting = false, // 가입하기 버튼 로딩
-  requestingPhone = false, // 인증요청 로딩
-  verifyingCode = false, // 인증확인 로딩
-  verifyingUserId = false, // 중복확인 로딩
+  submitting = false,
+  requestingPhone = false,
+  verifyingCode = false,
+  verifyingUserId = false,
 }) {
   // 폼 상태
   const [name, setName] = useState('');
@@ -50,9 +49,16 @@ export default function SignUpTemplate({
   const [password, setPassword] = useState('');
   const [passwordRe, setPasswordRe] = useState('');
 
+  // 인증/중복확인 관련 UI 상태
+  const [isVerifyGuideOpen, setIsVerifyGuideOpen] = useState(false);
   const [showVerify, setShowVerify] = useState(false);
   const [verifyCode, setVerifyCode] = useState('');
-  const [isVerifyGuideOpen, setIsVerifyGuideOpen] = useState(false);
+
+  const [phoneRequested, setPhoneRequested] = useState(false); // 전송(재전송) 버튼 라벨 제어
+  const [phoneVerified, setPhoneVerified] = useState(null); // null | true | false
+  const [verifyMsg, setVerifyMsg] = useState(''); // 인증 성공/실패 문구
+
+  const [idCheckResult, setIdCheckResult] = useState(null); // null | true(가용) | false(중복)
 
   // 가시성 토글
   const [showPw, setShowPw] = useState(false);
@@ -73,17 +79,24 @@ export default function SignUpTemplate({
     setVerifyCode(digits);
   };
 
+  // 입력 변경 시 결과 초기화
   useEffect(() => {
+    // 휴대폰 번호 바뀌면 모든 인증 관련 초기화
+    setPhoneRequested(false);
+    setPhoneVerified(null);
+    setVerifyMsg('');
     if (!isPhoneComplete) {
       setShowVerify(false);
       setVerifyCode('');
     }
-  }, [isPhoneComplete]);
+  }, [phoneDigits, isPhoneComplete]);
 
-  const onChangePhone = e => {
-    setPhone(formatPhone(e.target.value));
-    console.log(phone);
-  };
+  useEffect(() => {
+    // 아이디 변경 시 중복확인 결과 초기화
+    setIdCheckResult(null);
+  }, [userId]);
+
+  const onChangePhone = e => setPhone(formatPhone(e.target.value));
   const onChangePassword = e => {
     const filtered = e.target.value.replace(
       new RegExp(`[^A-Za-z0-9${allowedSpecialsClass}]`, 'g'),
@@ -102,19 +115,32 @@ export default function SignUpTemplate({
   // 버튼 클릭 → 페이지 콜백 호출
   const handleRequestPhone = async () => {
     if (!isPhoneComplete) return;
+    // 인증 요청 성공/실패와 상관없이 UI는 인증창 열어주고 라벨은 '재전송'으로
     await onRequestPhone({ phoneNumber: phoneDigits });
+    setPhoneRequested(true);
     setShowVerify(true);
     setIsVerifyGuideOpen(true);
   };
 
   const handleVerifyCode = async () => {
     if (!verifyCode) return;
-    await onVerifyCode({ phoneNumber: phoneDigits, code: verifyCode });
+    const res = await onVerifyCode({ phoneNumber: phoneDigits, code: verifyCode });
+    // 페이지 콜백이 { success: boolean, message?: string } 리턴한다고 가정
+    if (res?.success) {
+      setPhoneVerified(true);
+      setVerifyMsg('인증번호가 일치해요.');
+    } else {
+      setPhoneVerified(false);
+      // 서버 예시 메시지: "인증번호가 일치하지 않아요"
+      setVerifyMsg(res?.message || '인증번호가 일치하지 않아요.');
+    }
   };
 
   const handleCheckUserId = async () => {
     if (!userId) return;
-    await onCheckUserId({ logInId: userId });
+    const res = await onCheckUserId({ logInId: userId });
+    if (res?.success) setIdCheckResult(true);
+    else setIdCheckResult(false);
   };
 
   const handleSubmit = async () => {
@@ -126,6 +152,10 @@ export default function SignUpTemplate({
       phoneNumber: phoneDigits,
     });
   };
+
+  // 휴대폰 버튼 라벨/비활성 계산
+  const phoneBtnText = phoneRequested ? '재전송' : '인증하기';
+  const phoneBtnDisabled = requestingPhone || phoneVerified === true; // 인증 완료되면 비활성
 
   return (
     <>
@@ -150,13 +180,14 @@ export default function SignUpTemplate({
                 onChange={onChangePhone}
                 inputMode="numeric"
                 maxLength={13}
+                disabled={phoneVerified === true} // 인증 성공 시 입력창 잠금
               />
               <ButtonSmall
-                active={isPhoneComplete}
-                text={requestingPhone ? '전송중...' : '인증하기'}
+                active={isPhoneComplete && !phoneBtnDisabled}
+                text={requestingPhone ? '전송중...' : phoneBtnText}
                 width={100}
                 onClick={handleRequestPhone}
-                disabled={requestingPhone}
+                disabled={phoneBtnDisabled}
               />
             </Row>
 
@@ -177,22 +208,35 @@ export default function SignUpTemplate({
             />
 
             {showVerify && (
-              <Row $gap={6}>
-                <TextField
-                  placeholder={'인증번호 입력'}
-                  value={verifyCode}
-                  onChange={onChangeVerifyCode}
-                  inputMode="numeric"
-                  maxLength={6}
-                />
-                <ButtonSmall
-                  active={verifyCode.length > 0}
-                  text={verifyingCode ? '확인중...' : '확인'}
-                  width={100}
-                  onClick={handleVerifyCode}
-                  disabled={verifyingCode}
-                />
-              </Row>
+              <>
+                <Row $gap={6}>
+                  <TextField
+                    placeholder={'인증번호 입력'}
+                    value={verifyCode}
+                    onChange={onChangeVerifyCode}
+                    inputMode="numeric"
+                    maxLength={6}
+                    disabled={phoneVerified === true} // 인증 성공 시 입력창 잠금 (선호에 따라 유지/해제)
+                  />
+                  <ButtonSmall
+                    active={verifyCode.length > 0 && phoneVerified !== true}
+                    text={verifyingCode ? '확인중...' : '확인'}
+                    width={100}
+                    onClick={handleVerifyCode}
+                    disabled={verifyingCode || phoneVerified === true} // 인증 성공 시 비활성화
+                  />
+                </Row>
+
+                {/* 인증 결과 메시지 */}
+                {phoneVerified === true && (
+                  <Infotext style={{ color: '#01D281' }}>인증번호가 일치해요.</Infotext>
+                )}
+                {phoneVerified === false && (
+                  <Infotext style={{ color: '#FF3F3F' }}>
+                    {verifyMsg || '인증번호가 일치하지 않아요.'}
+                  </Infotext>
+                )}
+              </>
             )}
           </Column>
 
@@ -205,14 +249,21 @@ export default function SignUpTemplate({
                 onChange={e => setUserId(e.target.value)}
               />
               <ButtonSmall
-                active={userId.length > 0}
+                active={userId.length > 0 && idCheckResult !== true}
                 text={verifyingUserId ? '확인중...' : '중복확인'}
                 width={100}
                 onClick={handleCheckUserId}
-                disabled={verifyingUserId}
+                disabled={verifyingUserId || idCheckResult === true} // 사용 가능으로 확정되면 비활성
               />
             </Row>
-            <Infotext>6~20자 이내로 입력해 주세요.</Infotext>
+            {/* 아이디 중복확인 결과 문구 */}
+            {idCheckResult === true && (
+              <Infotext style={{ color: '#01D281' }}>사용 가능한 아이디예요.</Infotext>
+            )}
+            {idCheckResult === false && (
+              <Infotext style={{ color: '#FF3F3F' }}>이미 존재하는 아이디예요.</Infotext>
+            )}
+            {idCheckResult === null && <Infotext>6~20자 이내로 입력해 주세요.</Infotext>}
           </Column>
 
           <Column $gap={4}>
@@ -268,6 +319,7 @@ export default function SignUpTemplate({
             text={submitting ? '가입 중...' : '가입하기'}
             onClick={handleSubmit}
             disabled={submitting}
+            active={name && phoneVerified && idCheckResult && isPasswordReSuccess}
           />
         </div>
       </Container>
