@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SignUpTemplate from '../../templates/common/SignUpTemplate';
-import Toast from '../../components/common/Toast';
 import ActionGuideModal from '../../components/common/ActionGuideModal';
 import styled from 'styled-components';
 import { color, typo } from '../../styles/tokens';
@@ -10,7 +9,6 @@ import { apiSignUp, apiPhoneSend, apiPhoneVerify, apiIdVerify } from '../../api/
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const [toast, setToast] = useState({ open: false, message: '' });
 
   // 로딩 상태
   const [submitting, setSubmitting] = useState(false);
@@ -25,19 +23,13 @@ export default function SignUp() {
   // 가입 실패 모달
   const [signUpErrorOpen, setSignUpErrorOpen] = useState(false);
 
-  const openToast = message => setToast({ open: true, message });
-  const closeToast = () => setToast({ open: false, message: '' });
-
   // 휴대폰 인증번호 전송
   const onRequestPhone = async ({ phoneNumber }) => {
     try {
       setRequestingPhone(true);
       const res = await apiPhoneSend({ phoneNumber });
-      if (res?.success) openToast('인증번호를 전송했어요.');
-      else openToast('인증번호 전송에 실패했어요.');
       return { success: !!res?.success };
     } catch (e) {
-      openToast(e?.response?.data?.message || e.message || '인증번호 전송 중 오류가 발생했어요.');
       return { success: false, message: e?.response?.data?.message };
     } finally {
       setRequestingPhone(false);
@@ -50,15 +42,11 @@ export default function SignUp() {
       setVerifyingCode(true);
       const res = await apiPhoneVerify({ phoneNumber, code });
       if (res?.success) {
-        openToast(res?.data?.result || '인증이 완료되었어요.');
         return { success: true, message: res?.data?.result };
-      } else {
-        openToast('인증번호가 일치하지 않아요.');
-        return { success: false, message: '인증번호가 일치하지 않아요.' };
       }
+      return { success: false, message: '인증번호가 일치하지 않아요.' };
     } catch (e) {
       const msg = e?.response?.data?.data?.message || e?.response?.data?.message || e.message;
-      openToast(msg || '인증 확인 중 오류가 발생했어요.');
       return { success: false, message: msg };
     } finally {
       setVerifyingCode(false);
@@ -70,19 +58,8 @@ export default function SignUp() {
     try {
       setVerifyingUserId(true);
       const res = await apiIdVerify({ logInId });
-      if (res?.success) {
-        openToast('사용 가능한 아이디예요.');
-        return { success: true };
-      } else {
-        openToast('이미 존재하는 아이디예요.');
-        return { success: false };
-      }
-    } catch (e) {
-      const msg =
-        e?.response?.data?.data?.message ||
-        e?.response?.data?.message ||
-        '이미 존재하는 아이디예요.';
-      openToast(msg);
+      return { success: !!res?.success };
+    } catch {
       return { success: false };
     } finally {
       setVerifyingUserId(false);
@@ -95,7 +72,6 @@ export default function SignUp() {
       setSubmitting(true);
       const res = await apiSignUp({ name, logInId, password, phoneNumber });
       if (res?.success) {
-        // 토스트 대신 축하 모달로
         setWelcomeName(res?.data?.name || '하케톡');
         setSuccessOpen(true);
       } else {
@@ -137,7 +113,7 @@ export default function SignUp() {
         description={
           <div style={{ textAlign: 'center' }}>회원가입 정보로 바로 로그인 하시겠어요?</div>
         }
-        onConfirm={goSignIn} // 버튼 클릭 시 로그인 화면으로
+        onConfirm={goSignIn}
         confirmText="로그인"
         showClose={false}
       />
@@ -156,8 +132,6 @@ export default function SignUp() {
         confirmText="닫기"
         showClose={false}
       />
-
-      <Toast isOpen={toast.open} onClose={closeToast} message={toast.message} duration={2000} />
     </>
   );
 }
