@@ -1,5 +1,6 @@
 // src/api/auth.js
 import api from './client';
+import { getRefreshToken } from '../utils/auth';
 
 /**
  * [회원가입]
@@ -64,5 +65,15 @@ export async function apiIdVerify({ logInId }) {
     throw new Error('아이디를 입력해주세요.');
   }
   const { data } = await api.post(`/auth-service/id/verify?logInId=${id}`, {});
+  return data;
+}
+
+/** 리프레시 토큰으로 토큰 재발급 */
+export async function apiRefreshToken() {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) throw new Error('No refresh token');
+
+  const { data } = await api.post('/auth-service/refresh', { refreshToken });
+  // data: { success, status, data: { accessToken, refreshToken } }
   return data;
 }
