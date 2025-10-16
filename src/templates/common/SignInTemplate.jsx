@@ -92,6 +92,7 @@ export default function SignInTemplate({ onSubmit = () => {}, loading = false })
               text={loading ? '로그인 중...' : '로그인'}
               onClick={handleSubmit}
               disabled={!canSubmit}
+              active={role && userId && password}
             />
             <SignUpButtonText onClick={moveSignUp}>회원가입</SignUpButtonText>
           </Column>

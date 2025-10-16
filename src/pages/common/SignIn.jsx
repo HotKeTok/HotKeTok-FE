@@ -5,15 +5,14 @@ import SignInTemplate from '../../templates/common/SignInTemplate';
 import Toast from '../../components/common/Toast';
 import { apiLogin } from '../../api/auth';
 import { setTokens, setRole } from '../../utils/auth';
-import iconWarning from '../../assets/common/icon-warning.svg';
 
 export default function SignIn() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState({ open: false, message: '', icon: iconWarning });
+  const [toast, setToast] = useState({ open: false, message: '' });
 
-  const openToast = (message, icon = iconWarning) => setToast({ open: true, message, icon });
-  const closeToast = () => setToast({ open: false, message: '', icon: iconWarning });
+  const openToast = message => setToast({ open: true, message });
+  const closeToast = () => setToast({ open: false, message: '' });
 
   const handleSubmit = async ({ logInId, password, role }) => {
     try {
@@ -41,17 +40,17 @@ export default function SignIn() {
           else navigate('/init-process');
           break;
         default:
-          openToast('알 수 없는 사용자 유형이에요.', iconWarning);
+          openToast('알 수 없는 사용자 유형이에요.');
           break;
       }
     } catch (e) {
       const status = e?.response?.status;
       if (status === 404) {
-        openToast('존재하지 않는 계정이에요.', iconWarning);
+        openToast('존재하지 않는 계정이에요.');
       } else if (status === 400) {
-        openToast('비밀번호가 일치하지 않아요.', iconWarning);
+        openToast('비밀번호가 일치하지 않아요.');
       } else {
-        openToast('로그인에 실패했어요.', iconWarning);
+        openToast('로그인에 실패했어요.');
       }
     } finally {
       setLoading(false);
@@ -65,8 +64,8 @@ export default function SignIn() {
         show={toast.open}
         onClose={closeToast}
         message={toast.message}
-        icon={toast.icon} // ✅ 아이콘 전달
-        duration={2000}
+        icon={'warning'} // ✅ 아이콘 전달
+        duration={1000}
       />
     </>
   );
