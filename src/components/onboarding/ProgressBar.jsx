@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProgressTrack, ProgressFill } from './OnboardingStyles';
+import { ProgressTrack, ProgressFill } from './InitProcessStyles';
 
 export default function ProgressBar({ value = 0, start, end }) {
   const hasRange = typeof start === 'number' && typeof end === 'number';

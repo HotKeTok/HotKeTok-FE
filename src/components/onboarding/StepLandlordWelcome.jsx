@@ -9,7 +9,7 @@ import {
   SuccessTitle,
   SuccessSub,
   FadeInWrap,
-} from './OnboardingStyles';
+} from './InitProcessStyles';
 
 export default function StepLandlordWelcome() {
   const navigate = useNavigate();

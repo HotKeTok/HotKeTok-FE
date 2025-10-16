@@ -5,7 +5,7 @@ import Button from '../common/Button';
 import { Column, Row, Spacer } from '../../styles/flex';
 import { getProgressRange } from './progress';
 import ProgressBar from './ProgressBar';
-import { PageWrap, StepTitle, Label, ExampleTitle } from './OnboardingStyles';
+import { PageWrap, StepTitle, Label, ExampleTitle } from './InitProcessStyles';
 
 export default function StepLandlordHouseholdCount({ defaultCount = '', onNext, onBack }) {
   const [count, setCount] = useState(String(defaultCount ?? ''));

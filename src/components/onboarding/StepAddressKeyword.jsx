@@ -16,7 +16,7 @@ import {
   Addr,
   Jibun,
   JibunAddr,
-} from './OnboardingStyles';
+} from './InitProcessStyles';
 
 export default function StepAddressKeyword({
   defaultKeyword,

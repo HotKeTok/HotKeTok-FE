@@ -14,7 +14,7 @@ import {
   JibunAddr,
   ExampleTitle,
   ExampleDesc,
-} from './OnboardingStyles';
+} from './InitProcessStyles';
 
 export default function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
   const [floor, setFloor] = useState(defaultUnit?.floor != null ? String(defaultUnit.floor) : '');

@@ -12,7 +12,7 @@ import {
   UploadIcon,
   UploadTitle,
   SmallNotice,
-} from './OnboardingStyles';
+} from './InitProcessStyles';
 
 export default function StepLandlordDeedUpload({
   defaultFileName = '',

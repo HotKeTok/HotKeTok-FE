@@ -20,7 +20,7 @@ import {
   SuccessTitle,
   SuccessSub,
   FadeInWrap,
-} from './OnboardingStyles';
+} from './InitProcessStyles';
 
 export default function StepReview({ baseAddress, floor, ho, requesting, onRequestTenant }) {
   const [requested, setRequested] = useState(false);

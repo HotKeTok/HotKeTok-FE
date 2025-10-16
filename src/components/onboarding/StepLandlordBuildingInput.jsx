@@ -14,7 +14,7 @@ import {
   JibunAddr,
   Label,
   ExampleTitle,
-} from './OnboardingStyles';
+} from './InitProcessStyles';
 
 export default function StepLandlordBuildingInput({
   baseAddress,

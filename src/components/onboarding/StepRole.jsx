@@ -5,7 +5,7 @@ import ModeItem from '../common/ModeItem';
 import { Column, Spacer } from '../../styles/flex';
 import { getProgressRange } from './progress';
 import ProgressBar from './ProgressBar';
-import { PageWrap, StepTitle, CardTitle, CardDesc } from './OnboardingStyles';
+import { PageWrap, StepTitle, CardTitle, CardDesc } from './InitProcessStyles';
 
 export default function StepRole({ onNext }) {
   const [selectedRole, setSelectedRole] = useState(null); // 'tenant' | 'landlord'
