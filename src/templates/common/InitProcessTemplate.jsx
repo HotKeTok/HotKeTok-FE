@@ -1,12 +1,9 @@
-// src/pages/InitProcess.jsx
-// ============================================================================
-// 🔹 InitProcess: 회원 등록/인증 퍼널(입주민/집주인 분기)
-//  - 아래 PROGRESS_RANGE 값만 바꾸면 0~25~50~70~100 같은 불균등 진행률을 쉽게 조정 가능합니다.
-// ============================================================================
-
-import React, { useEffect, useState } from 'react';
+// src/templates/common/InitProcessTemplate.jsx
+// ✅ UI/라우팅 전담 템플릿: API 호출은 상위 pages/common/InitProcess.jsx가 수행
+import React, { useEffect, useMemo, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import TopBar from '../../components/common/TopBar';
 import { color, typo } from '../../styles/tokens';
@@ -15,17 +12,14 @@ import TextField from '../../components/common/TextField';
 import Button from '../../components/common/Button';
 import ButtonSmall from '../../components/common/ButtonSmall';
 import ModeItem from '../../components/common/ModeItem';
-import { useNavigate } from 'react-router-dom';
+import Toast from '../../components/common/Toast';
 
 import iconCheck from '../../assets/repair/request-repair/icon_big-check.png';
 import iconFolder from '../../assets/common/icon-folder.svg';
 
 /* ============================================================================
- * 스텝별 커스텀 진행률 매핑
- *   - 원하는 비율로 자유롭게 수정
- *   - 예시: 0 → 25 → 50 → 70 → (중간 단계가 더 있으면 85) → 100
+ * 진행률 매핑
  * ========================================================================== */
-// ✅ 스텝별 [start, end] (%)
 const PROGRESS_RANGE = {
   Role: [0, 33],
   AddressKeyword: [33, 66],
@@ -33,61 +27,33 @@ const PROGRESS_RANGE = {
   Review: [66, 100],
 
   L_AddressKeyword: [33, 66],
-  L_UnitInput: [33, 66],
-  L_HouseholdCount: [33, 66],
-  L_OwnerDocUpload: [66, 100],
+  L_UnitInput: [33, 66], // 집주인: 건물명 입력
+  L_HouseholdCount: [33, 66], // 집주인: 가구 수
+  L_OwnerDocUpload: [66, 100], // 집주인: 등기부 업로드/제출
 };
-
-// ✅ 현재 스텝의 구간 반환
 function getProgressRange(step) {
   const [start, end] = PROGRESS_RANGE[step] ?? [0, 100];
   return { start, end };
 }
 
 /* ============================================================================
- * 0) 모의 주소 검색 (실서비스에서는 API로 대체)
+ * 공통 토스트 훅
  * ========================================================================== */
-function mockSearchAddresses(keyword) {
-  const seed = (keyword || '').trim();
-  if (!seed) return [];
-  return [
-    {
-      id: '1',
-      sido: '서울특별시',
-      sigungu: '강남구',
-      road: `${seed} 112길 46`,
-      building: '(삼OO 더샵 오브제 나무A동)',
-      jibun: '역삼동 102-1',
-    },
-    {
-      id: '2',
-      sido: '서울특별시',
-      sigungu: '강남구',
-      road: `${seed} 101로 12`,
-      building: '(역삼 자이 101동)',
-      jibun: '역삼동 10-21',
-    },
-    {
-      id: '3',
-      sido: '서울특별시',
-      sigungu: '강남구',
-      road: `${seed} 45길 23`,
-      building: '(역삼 래미안 203동)',
-      jibun: '역삼동 23-5',
-    },
-  ];
+function useToast() {
+  const [toast, setToast] = useState({ open: false, message: '', icon: 'warning' });
+  const open = (message, icon = 'warning') => setToast({ open: true, message, icon });
+  const close = () => setToast({ open: false, message: '', icon: 'warning' });
+  return { toast, open, close };
 }
 
 /* ============================================================================
- * 1) 공통: 진행바 컴포넌트
+ * 진행바
  * ========================================================================== */
 function ProgressBar({ value = 0, start, end }) {
-  // 호환성: start/end가 없으면 기존처럼 value만 사용
   const hasRange = typeof start === 'number' && typeof end === 'number';
   const s = hasRange ? Math.max(0, Math.min(100, start)) : 0;
   const e = hasRange ? Math.max(0, Math.min(100, end)) : Math.max(0, Math.min(100, value));
   const fill = hasRange ? Math.max(0, e - s) : e;
-
   return (
     <div>
       <ProgressTrack>
@@ -98,20 +64,17 @@ function ProgressBar({ value = 0, start, end }) {
 }
 
 /* ============================================================================
- * 2) STEP 컴포넌트
+ * STEP: 모드 선택
  * ========================================================================== */
-
-/* 2-1) 모드 선택 */
 function StepRole({ onNext }) {
-  const [selectedRole, setSelectedRole] = useState(null); // 'tenant' | 'landlord' | null
-
+  const [selectedRole, setSelectedRole] = useState(null); // 'tenant' | 'landlord'
   return (
     <PageWrap>
       <TopBar title="회원 등록" />
       <ProgressBar {...getProgressRange('Role')} />
       <StepTitle>{'핫케톡 이용모드를\n선택해 주세요'}</StepTitle>
 
-      <Column $gap={10} style={{ padding: '0px 20px' }}>
+      <Column $gap={10} style={{ padding: '0 20px' }}>
         <ModeItem selected={selectedRole === 'tenant'} onClick={() => setSelectedRole('tenant')}>
           <Column $gap={10}>
             <CardTitle>입주민</CardTitle>
@@ -146,25 +109,44 @@ function StepRole({ onNext }) {
   );
 }
 
-/* 2-2) 입주민 A: 주소 키워드 입력 + 검색/선택 */
-function StepAddressKeyword({ defaultKeyword, onPick, onBack, titleText }) {
+/* ============================================================================
+ * STEP: 주소 검색 (공용 UI / 상위 콜백 onSearchAddress 사용)
+ * ========================================================================== */
+function StepAddressKeyword({
+  defaultKeyword,
+  onPick,
+  onBack,
+  titleText,
+  onSearchAddress,
+  loading,
+}) {
   const [keyword, setKeyword] = useState(defaultKeyword ?? '');
   const [results, setResults] = useState([]);
   const [showExamples, setShowExamples] = useState(true);
+  const { open: openToast } = useToast(); // 로컬 미사용 예시용 (필요시 사용)
 
-  const handleSearch = () => {
-    const list = mockSearchAddresses(keyword);
-    setResults(list);
-    setShowExamples(false);
+  const handleSearch = async () => {
+    if (!keyword.trim()) return;
+    const res = await onSearchAddress({ keyword: keyword.trim(), page: 0, pageSize: 5 });
+    if (res?.success) {
+      setResults(res.items || []);
+      setShowExamples(false);
+    } else {
+      setResults([]);
+      setShowExamples(false);
+      // 상위에서 토스트를 띄우지 않으니, 필요시 여기서 띄우고 싶다면:
+      // openToast(res?.message || '주소 검색에 실패했어요.');
+    }
   };
 
   return (
     <PageWrap>
       <TopBar title="회원 등록" onBack={onBack} />
       <ProgressBar {...getProgressRange('AddressKeyword')} />
-      <StepTitle>{titleText || '내 거주지의 \n주소를 등록해주세요'}</StepTitle>
-      <div style={{ padding: '0px 27px' }}>
-        <Column $gap={2} style={{ marginBottom: '30px' }}>
+      <StepTitle>{titleText || '주소를 등록해주세요'}</StepTitle>
+
+      <div style={{ padding: '0 27px' }}>
+        <Column $gap={2} style={{ marginBottom: 30 }}>
           <Label>주소 검색</Label>
           <Row $gap={6}>
             <TextField
@@ -172,12 +154,18 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack, titleText }) {
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
             />
-            <ButtonSmall text="검색" width="30%" active={!!keyword.trim()} onClick={handleSearch} />
+            <ButtonSmall
+              text={loading?.searchingAddress ? '검색중...' : '검색'}
+              width="30%"
+              active={!!keyword.trim() && !loading?.searchingAddress}
+              onClick={handleSearch}
+              disabled={loading?.searchingAddress}
+            />
           </Row>
         </Column>
 
         {showExamples && (
-          <Column $gap={10} style={{ marginTop: '30px' }}>
+          <Column $gap={10} style={{ marginTop: 30 }}>
             <Row $gap={10}>
               <ExampleTitle>도로명</ExampleTitle>
               <ExampleDesc>예) 판교역로 235, 도산대로 8길 23</ExampleDesc>
@@ -195,16 +183,13 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack, titleText }) {
 
         {!showExamples && results.length > 0 && (
           <ListWrap style={{ marginTop: 16 }}>
-            {results.map(a => (
-              <AddressCard key={a.id} onClick={() => onPick(a)}>
+            {results.map((a, i) => (
+              <AddressCard key={i} onClick={() => onPick(a)}>
                 <Column $gap={10}>
-                  <Addr>
-                    {a.sido} {a.sigungu} {a.road} <br />
-                    {a.building ? `${a.building}` : null}
-                  </Addr>
+                  <Addr>{a.roadAddr}</Addr>
                   <Row $gap={8} $align="center">
                     <Jibun>지번</Jibun>
-                    <JibunAddr>{a.jibun ? `${a.jibun}` : null}</JibunAddr>
+                    <JibunAddr>{a.jibunAddr || ''}</JibunAddr>
                   </Row>
                 </Column>
               </AddressCard>
@@ -212,7 +197,7 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack, titleText }) {
           </ListWrap>
         )}
 
-        {!showExamples && results.length === 0 && (
+        {!showExamples && results.length === 0 && !loading?.searchingAddress && (
           <div style={{ marginTop: 16, color: '#767676', fontSize: 14 }}>
             검색 결과가 없습니다. 키워드를 다시 입력해주세요.
           </div>
@@ -222,18 +207,20 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack, titleText }) {
   );
 }
 
-/* 2-2) 입주민 B: 층/호 입력 */
+/* ============================================================================
+ * STEP: 입주민 — 층/호 입력
+ * ========================================================================== */
 function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
   const [floor, setFloor] = useState(defaultUnit?.floor != null ? String(defaultUnit.floor) : '');
   const [ho, setHo] = useState(defaultUnit?.ho != null ? String(defaultUnit.ho) : '');
 
   const floorNum = Number(floor);
   const hoNum = Number(ho);
-  const isValidFloor = Number.isInteger(floorNum) && floorNum >= -5 && floorNum <= 200; // 지하층 고려
+  const isValidFloor = Number.isInteger(floorNum) && floorNum >= -5 && floorNum <= 200;
   const isValidHo = Number.isInteger(hoNum) && hoNum > 0 && hoNum <= 9999;
   const canSubmit = isValidFloor && isValidHo;
 
-  const onlyDigits = v => v.replace(/[^\d-]/g, ''); // 지하층(-) 허용
+  const onlyDigits = v => v.replace(/[^\d-]/g, '');
 
   return (
     <PageWrap>
@@ -241,16 +228,12 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
       <ProgressBar {...getProgressRange('UnitInput')} />
       <StepTitle>{'내 거주지의 \n주소를 등록해주세요'}</StepTitle>
 
-      <div style={{ padding: '0px 24px' }}>
+      <div style={{ padding: '0 24px' }}>
         <SelectedBox>
-          <Addr>
-            {baseAddress.sido} {baseAddress.sigungu} {baseAddress.road}
-            <br />
-            {baseAddress.building ? <span>{baseAddress.building}</span> : null}
-          </Addr>
+          <Addr>{baseAddress.roadAddr}</Addr>
           <Row $gap={8} $align="center">
             <Jibun>지번</Jibun>
-            <JibunAddr>{baseAddress.jibun ? ` ${baseAddress.jibun}` : null}</JibunAddr>
+            <JibunAddr>{baseAddress.jibunAddr || ''}</JibunAddr>
           </Row>
         </SelectedBox>
 
@@ -292,10 +275,7 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
           active={canSubmit}
           onClick={() => {
             if (!canSubmit) return;
-            onNext?.({
-              floor: floorNum,
-              ho: hoNum,
-            });
+            onNext?.({ floor: floorNum, ho: hoNum });
           }}
         />
       </div>
@@ -303,8 +283,10 @@ function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
   );
 }
 
-/* 2-2) 입주민 C: 최종 확인/요청 → 완료 */
-function StepReview({ baseAddress, floor, ho, detail }) {
+/* ============================================================================
+ * STEP: 입주민 — 검토 & 요청하기 → 완료
+ * ========================================================================== */
+function StepReview({ baseAddress, floor, ho, requesting, onRequestTenant }) {
   const [requested, setRequested] = useState(false);
   const [showDoneBtn, setShowDoneBtn] = useState(false);
   const navigate = useNavigate();
@@ -319,33 +301,29 @@ function StepReview({ baseAddress, floor, ho, detail }) {
     return (
       <PageWrap>
         <TopBar title="회원 등록" onBack={() => window.history.back()} />
-        {/* 요청 전에는 70% (PROGRESS_MAP.Review) */}
         <ProgressBar {...getProgressRange('Review')} />
-        <StepTitle>{'입주민 인증을 진행할게요'} </StepTitle>
+        <StepTitle>{'입주민 인증을 진행할게요'}</StepTitle>
 
-        <div style={{ padding: '0px 28px' }}>
+        <div style={{ padding: '0 28px' }}>
           <Column
             $gap={10}
             style={{
               borderBottom: '1px solid #EFEFEF',
-              paddingBottom: '20px',
-              marginBottom: '20px',
+              paddingBottom: 20,
+              marginBottom: 20,
             }}
           >
             <InfoKey>정확한 주소가 맞나요?</InfoKey>
 
             <Caption1Addr>
-              {baseAddress.sido} {baseAddress.sigungu} {baseAddress.road}
+              {baseAddress.roadAddr}
               <br />
-              {baseAddress.building ? <span>{baseAddress.building}</span> : null}
-              <br />
-              {floor != null && ho ? `${floor}층 ${ho}호` : null}
-              {detail ? ` ${detail}` : null}
+              {floor != null && ho != null ? `${floor}층 ${ho}호` : null}
             </Caption1Addr>
 
             <Row $gap={8} $align="center">
               <Jibun>지번</Jibun>
-              <JibunAddr>{baseAddress.jibun ? ` ${baseAddress.jibun}` : null}</JibunAddr>
+              <JibunAddr>{baseAddress.jibunAddr || ''}</JibunAddr>
             </Row>
           </Column>
 
@@ -360,13 +338,20 @@ function StepReview({ baseAddress, floor, ho, detail }) {
         <Spacer />
 
         <div style={{ padding: '30px 24px' }}>
-          <Button text="요청하기" active onClick={() => setRequested(true)} />
+          <Button
+            text={requesting ? '요청 중...' : '요청하기'}
+            active={!requesting}
+            onClick={async () => {
+              const ok = await onRequestTenant?.();
+              if (ok) setRequested(true);
+            }}
+            disabled={requesting}
+          />
         </div>
       </PageWrap>
     );
   }
 
-  // 요청 후 완료 화면 (진행바 없음 — 기존 UI 유지)
   return (
     <PageWrap>
       <ContentWrapCentered>
@@ -384,7 +369,9 @@ function StepReview({ baseAddress, floor, ho, detail }) {
   );
 }
 
-/* 2-3) 집주인 A: 건물명 입력 */
+/* ============================================================================
+ * STEP: 집주인 — 건물명 입력
+ * ========================================================================== */
 function StepOwnerBuildingInput({ baseAddress, defaultValue = '', onNext, onBack }) {
   const [buildingName, setBuildingName] = useState(defaultValue);
   const canSubmit = !!buildingName.trim();
@@ -395,21 +382,17 @@ function StepOwnerBuildingInput({ baseAddress, defaultValue = '', onNext, onBack
       <ProgressBar {...getProgressRange('L_UnitInput')} />
       <StepTitle>{'관리할 건물의\n주소를 등록해주세요'}</StepTitle>
 
-      <div style={{ padding: '0px 24px' }}>
+      <div style={{ padding: '0 24px' }}>
         <SelectedBox>
-          <Addr>
-            {baseAddress.sido} {baseAddress.sigungu} {baseAddress.road}
-            <br />
-            {baseAddress.building ? <span>{baseAddress.building}</span> : null}
-          </Addr>
+          <Addr>{baseAddress.roadAddr}</Addr>
           <Row $gap={8} $align="center">
             <Jibun>지번</Jibun>
-            <JibunAddr>{baseAddress.jibun ? ` ${baseAddress.jibun}` : null}</JibunAddr>
+            <JibunAddr>{baseAddress.jibunAddr || ''}</JibunAddr>
           </Row>
         </SelectedBox>
 
         <Column $gap={4}>
-          <Label>상세 주소</Label>
+          <Label>상세 주소(건물명)</Label>
           <TextField
             placeholder="예) 현대프라자"
             value={buildingName}
@@ -431,7 +414,9 @@ function StepOwnerBuildingInput({ baseAddress, defaultValue = '', onNext, onBack
   );
 }
 
-/* 2-3) 집주인 B: 가구수 입력 */
+/* ============================================================================
+ * STEP: 집주인 — 가구수 입력
+ * ========================================================================== */
 function StepOwnerHouseholdCount({ defaultCount = '', onNext, onBack }) {
   const [count, setCount] = useState(String(defaultCount ?? ''));
   const n = Number(count);
@@ -443,7 +428,7 @@ function StepOwnerHouseholdCount({ defaultCount = '', onNext, onBack }) {
       <ProgressBar {...getProgressRange('L_HouseholdCount')} />
       <StepTitle>{'이 건물에는\n총 몇 가구가 있나요?'}</StepTitle>
 
-      <div style={{ padding: '0px 24px' }}>
+      <div style={{ padding: '0 24px' }}>
         <Column $gap={4}>
           <Label>가구 수</Label>
           <Row $gap={10} $align="center">
@@ -451,10 +436,7 @@ function StepOwnerHouseholdCount({ defaultCount = '', onNext, onBack }) {
               placeholder="예) 1"
               inputMode="numeric"
               value={count}
-              onChange={e => {
-                const v = e.target.value.replace(/[^\d]/g, '');
-                setCount(v);
-              }}
+              onChange={e => setCount(e.target.value.replace(/[^\d]/g, ''))}
               suffix="가구"
             />
             <ExampleTitle>가구</ExampleTitle>
@@ -470,8 +452,10 @@ function StepOwnerHouseholdCount({ defaultCount = '', onNext, onBack }) {
   );
 }
 
-/* 2-3) 집주인 C: 등기부등본 업로드 */
-function StepOwnerDeedUpload({ defaultFileName = '', onNext, onBack }) {
+/* ============================================================================
+ * STEP: 집주인 — 등기부 업로드 + 제출 (상위 onSubmitOwner 사용)
+ * ========================================================================== */
+function StepOwnerDeedUpload({ defaultFileName = '', onSubmitOwner, submitting, onBack }) {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState(defaultFileName || '');
   const inputId = 'deed-input';
@@ -495,7 +479,7 @@ function StepOwnerDeedUpload({ defaultFileName = '', onNext, onBack }) {
       <ProgressBar {...getProgressRange('L_OwnerDocUpload')} />
       <StepTitle>{'집주인 인증을 위해\n등기부등본을 업로드해주세요.'}</StepTitle>
 
-      <div style={{ padding: '0px 24px' }}>
+      <div style={{ padding: '0 24px' }}>
         <UploadBox onClick={() => document.getElementById(inputId).click()}>
           <div style={{ textAlign: 'center' }}>
             <Column $gap={10} $align="center">
@@ -523,25 +507,26 @@ function StepOwnerDeedUpload({ defaultFileName = '', onNext, onBack }) {
       <Spacer />
       <div style={{ padding: '30px 24px' }}>
         <Button
-          text="다음"
-          active={!!file || !!fileName}
-          onClick={() => onNext({ deedFileName: fileName })}
+          text={submitting ? '제출 중...' : '등록 완료'}
+          active={!!file && !submitting}
+          onClick={() => onSubmitOwner?.(file)}
+          disabled={!file || submitting}
         />
       </div>
     </PageWrap>
   );
 }
 
-/* 2-3) 집주인 D: 환영 화면 */
+/* ============================================================================
+ * STEP: 집주인 — 환영
+ * ========================================================================== */
 function StepOwnerWelcome() {
   const navigate = useNavigate();
   const [showBtn, setShowBtn] = useState(false);
-
   useEffect(() => {
     const t = setTimeout(() => setShowBtn(true), 600);
     return () => clearTimeout(t);
   }, []);
-
   return (
     <PageWrap>
       <ContentWrapCentered>
@@ -549,7 +534,6 @@ function StepOwnerWelcome() {
         <SuccessTitle>환영합니다!</SuccessTitle>
         <SuccessSub>등록이 완료되었어요.</SuccessSub>
       </ContentWrapCentered>
-
       <div style={{ padding: '30px 24px' }}>
         <FadeInWrap>
           <Button text="시작하기" active={showBtn} onClick={() => navigate('/')} />
@@ -560,105 +544,143 @@ function StepOwnerWelcome() {
 }
 
 /* ============================================================================
- * 3) 메인: InitProcess (변경 없음, 렌더 구조 그대로)
+ * 메인 템플릿: 퍼널 라우팅 & 상위 콜백 연결
  * ========================================================================== */
-export default function InitProcess() {
+export default function InitProcessTemplate({
+  loading,
+  onSearchAddress,
+  onSubmitTenant,
+  onSubmitOwner,
+}) {
+  const { toast, open: openToast, close: closeToast } = useToast();
+
   const Funnel = useFunnel({
     id: 'init-process',
     initial: { step: 'Role', context: {} },
     steps: {},
-    routes: step => `/init/${step}`,
+    routes: step => `/init/${step}`, // URL 반영(선호에 따라 제거 가능)
   });
 
   return (
-    <Funnel.Render
-      Role={({ history }) => (
-        <StepRole
-          onNext={({ step, role }) => {
-            history.push(step, { role });
-          }}
-        />
-      )}
-      /* ================= 입주민 플로우 ================ */
-      AddressKeyword={({ history, context }) => (
-        <StepAddressKeyword
-          titleText={'내 거주지의 \n주소를 등록해주세요'}
-          defaultKeyword={context.addressKeyword}
-          onBack={history.back}
-          onPick={baseAddress => {
-            history.push('UnitInput', { ...context, baseAddress, role: 'tenant' });
-          }}
-        />
-      )}
-      UnitInput={({ history, context }) => (
-        <StepUnitInput
-          baseAddress={context.baseAddress}
-          defaultUnit={{
-            floor: context.floor,
-            ho: context.ho,
-          }}
-          onNext={({ floor, ho }) => {
-            history.push('Review', { ...context, floor, ho, role: 'tenant' });
-          }}
-        />
-      )}
-      Review={({ context }) => (
-        <StepReview
-          baseAddress={context.baseAddress}
-          floor={context.floor}
-          ho={context.ho}
-          detail={context.detail}
-        />
-      )}
-      /* ================= 집주인 플로우 ================ */
-      L_AddressKeyword={({ history, context }) => (
-        <StepAddressKeyword
-          titleText={'관리할 건물의 \n주소를 등록해주세요'}
-          defaultKeyword={context.addressKeyword}
-          onBack={history.back}
-          onPick={baseAddress => {
-            history.push('L_UnitInput', { ...context, baseAddress, role: 'landlord' });
-          }}
-        />
-      )}
-      L_UnitInput={({ history, context }) => (
-        <StepOwnerBuildingInput
-          baseAddress={context.baseAddress}
-          defaultValue={context.detail}
-          onBack={history.back}
-          onNext={({ detail }) => {
-            history.push('L_HouseholdCount', { ...context, detail, role: 'landlord' });
-          }}
-        />
-      )}
-      L_HouseholdCount={({ history, context }) => (
-        <StepOwnerHouseholdCount
-          defaultCount={context.totalHouseholds}
-          onBack={history.back}
-          onNext={totalHouseholds => {
-            history.push('L_OwnerDocUpload', { ...context, totalHouseholds });
-          }}
-        />
-      )}
-      L_OwnerDocUpload={({ history, context }) => (
-        <StepOwnerDeedUpload
-          defaultFileName={context.deedFileName}
-          onBack={history.back}
-          onNext={({ deedFileName }) => {
-            history.push('L_Welcome', {
-              ...context,
-              deedFileName,
-            });
-          }}
-        />
-      )}
-      L_Welcome={() => <StepOwnerWelcome />}
-    />
+    <>
+      <Funnel.Render
+        Role={({ history }) => (
+          <StepRole
+            onNext={({ step, role }) => {
+              history.push(step, { role });
+            }}
+          />
+        )}
+        /* ------------------- 입주민 플로우 ------------------- */
+        AddressKeyword={({ history, context }) => (
+          <StepAddressKeyword
+            titleText={'내 거주지의 \n주소를 등록해주세요'}
+            defaultKeyword={context.addressKeyword}
+            onBack={history.back}
+            loading={loading}
+            onSearchAddress={onSearchAddress}
+            onPick={baseAddress => {
+              history.push('UnitInput', { ...context, baseAddress, role: 'tenant' });
+            }}
+          />
+        )}
+        UnitInput={({ history, context }) => (
+          <StepUnitInput
+            baseAddress={context.baseAddress}
+            defaultUnit={{ floor: context.floor, ho: context.ho }}
+            onNext={({ floor, ho }) => {
+              history.push('Review', { ...context, floor, ho, role: 'tenant' });
+            }}
+          />
+        )}
+        Review={({ history, context }) => (
+          <StepReview
+            baseAddress={context.baseAddress}
+            floor={context.floor}
+            ho={context.ho}
+            requesting={loading?.submittingTenant}
+            onRequestTenant={async () => {
+              const res = await onSubmitTenant?.({
+                address: context.baseAddress.roadAddr,
+                floor: `${context.floor}층`,
+                number: `${context.ho}호`,
+                alias: '우리집',
+                houseType: 'HOME',
+              });
+              if (res?.success) return true;
+              openToast(res?.message || '요청 처리에 실패했어요.');
+              return false;
+            }}
+          />
+        )}
+        /* ------------------- 집주인 플로우 ------------------- */
+        L_AddressKeyword={({ history, context }) => (
+          <StepAddressKeyword
+            titleText={'관리할 건물의 \n주소를 등록해주세요'}
+            defaultKeyword={context.addressKeyword}
+            onBack={history.back}
+            loading={loading}
+            onSearchAddress={onSearchAddress}
+            onPick={baseAddress => {
+              history.push('L_UnitInput', { ...context, baseAddress, role: 'landlord' });
+            }}
+          />
+        )}
+        L_UnitInput={({ history, context }) => (
+          <StepOwnerBuildingInput
+            baseAddress={context.baseAddress}
+            defaultValue={context.detail}
+            onBack={history.back}
+            onNext={({ detail }) => {
+              history.push('L_HouseholdCount', { ...context, detail, role: 'landlord' });
+            }}
+          />
+        )}
+        L_HouseholdCount={({ history, context }) => (
+          <StepOwnerHouseholdCount
+            defaultCount={context.totalHouseholds}
+            onBack={history.back}
+            onNext={totalHouseholds => {
+              history.push('L_OwnerDocUpload', { ...context, totalHouseholds });
+            }}
+          />
+        )}
+        L_OwnerDocUpload={({ history, context }) => (
+          <StepOwnerDeedUpload
+            defaultFileName={context.deedFileName}
+            onBack={history.back}
+            submitting={loading?.submittingOwner}
+            onSubmitOwner={async file => {
+              const res = await onSubmitOwner?.({
+                address: context.baseAddress.roadAddr,
+                detailAddress: context.detail, // 건물명
+                count: context.totalHouseholds, // 가구 수
+                file,
+              });
+              if (res?.success) {
+                history.push('L_Welcome', { ...context });
+                return;
+              }
+              openToast(res?.message || '등록 처리에 실패했어요.');
+            }}
+          />
+        )}
+        L_Welcome={() => <StepOwnerWelcome />}
+      />
+
+      <Toast
+        show={toast.open}
+        onClose={closeToast}
+        message={toast.message}
+        icon={toast.icon}
+        duration={1200}
+      />
+    </>
   );
 }
 
 /* ============================================================================
- * 4) 스타일 (변경 없음)
+ * 스타일
  * ========================================================================== */
 const PageWrap = styled.div`
   display: flex;
@@ -683,7 +705,7 @@ const StepTitle = styled.div`
   ${typo('h2')};
   color: ${color('grayscale.800')};
   white-space: pre-line;
-  margin: 30px 0px 40px 28px;
+  margin: 30px 0 40px 28px;
 `;
 
 const Desc = styled.div`
@@ -791,13 +813,6 @@ const SmallNoticeGreen = styled.div`
   color: ${color('brand.primary')};
 `;
 
-const PlaceholderSquare = styled.div`
-  width: 72px;
-  height: 72px;
-  border-radius: 12px;
-  background: ${color('grayscale.200')};
-`;
-
 const fadeUp = keyframes`
   from { transform: translateY(8px); opacity: 0; }
   to   { transform: translateY(0);   opacity: 1; }
@@ -819,8 +834,6 @@ const SubmitIcon = styled.img`
 const SuccessTitle = styled.div`
   ${typo('h2')};
   color: ${color('grayscale.800')};
-  animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  will-change: transform, opacity;
   animation: ${fadeUp} 360ms ease 80ms both;
   margin-bottom: 6px;
 `;
@@ -838,20 +851,20 @@ const FadeInWrap = styled.div`
 `;
 
 const ProgressTrack = styled.div`
-  position: relative; /* ← 오프셋 배치를 위해 추가 */
+  position: relative;
   height: 2px;
   width: 100%;
   background: ${color('grayscale.200')};
 `;
 
 const ProgressFill = styled.div`
-  position: absolute; /* ← 오프셋 배치 */
+  position: absolute;
   top: 0;
   bottom: 0;
-  left: ${({ $start = 0 }) => `${$start}%`}; /* 시작점 */
-  width: ${({ $width = 0 }) => `${$width}%`}; /* 구간 길이 */
+  left: ${({ $start = 0 }) => `${$start}%`};
+  width: ${({ $width = 0 }) => `${$width}%`};
   background: ${color('brand.primary')};
-  transition: left 220ms ease, width 220ms ease; /* 부드럽게 */
+  transition: left 220ms ease, width 220ms ease;
 `;
 
 const UploadBox = styled.div`

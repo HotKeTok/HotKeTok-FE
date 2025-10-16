@@ -2,7 +2,6 @@
 import api from './client';
 import { getRefreshToken } from '../utils/auth';
 
-/* ------------------ 온보딩 ------------------*/
 // 로그인
 export async function apiLogin({ logInId, password, role }) {
   const { data } = await api.post('/auth-service/login', {

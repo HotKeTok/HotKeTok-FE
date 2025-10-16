@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-
 // 공통 onboard 관련
 import SignIn from './pages/common/SignIn';
 import SignUp from './pages/common/SignUp';
-import InitProcess from './templates/common/InitProcessTemplate';
+import InitProcess from './pages/common/InitProcess';
 
 ///////////////////////////////// landlord(집주인) 관련 //////////////////////////////////
 // main 관련
@@ -137,8 +137,8 @@ const Layout = ({ currentRole }) => {
 };
 
 export default function AppRouter({ role }) {
-  const currentRole = 'landlord';
-  // const currentRole = 'tenant';
+  // const currentRole = 'landlord';
+  const currentRole = 'tenant';
 
   return (
     <BrowserRouter>

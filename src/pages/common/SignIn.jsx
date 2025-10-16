@@ -18,7 +18,7 @@ export default function SignIn() {
     try {
       setLoading(true);
       const res = await apiLogin({ logInId, password, role });
-      const { jwtToken, role: serverRole, onBoardingStage } = res.data;
+      const { jwtToken, role: serverRole, onBoardingStageFlag } = res.data;
 
       setTokens({
         accessToken: jwtToken.accessToken,
@@ -36,8 +36,9 @@ export default function SignIn() {
           break;
         case 'NONE':
           setRole('tenant');
-          if (onBoardingStage) navigate('/welcome'); // onBoardingStage가 true면 초기등록 한 상태
-          else navigate('/init-process'); // onBoardingStage가 false면 초기등록 안 한 상태
+          if (onBoardingStageFlag)
+            navigate('/welcome'); // onBoardingStageFlag가 true면 초기등록 한 상태
+          else navigate('/init-process'); // onBoardingStageFlag가 false면 초기등록 안 한 상태
           break;
         default:
           openToast('알 수 없는 사용자 유형이에요.');
