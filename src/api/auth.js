@@ -2,12 +2,28 @@
 import api from './client';
 import { getRefreshToken } from '../utils/auth';
 
-/**
- * [회원가입]
- * POST /auth-service/signup
- * body: { name, logInId, password, phoneNumber }
- * resp: { success, status, data: { name }, timestamp }
- */
+/* ------------------ 온보딩 ------------------*/
+// 로그인
+export async function apiLogin({ logInId, password, role }) {
+  const { data } = await api.post('/auth-service/login', {
+    logInId,
+    password,
+    role, // 'OWNER' | 'TENANT'
+  });
+  return data;
+}
+
+// 리프레시 토큰으로 토큰 재발급
+export async function apiRefreshToken() {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) throw new Error('No refresh token');
+
+  const { data } = await api.post('/auth-service/refresh', { refreshToken });
+  // data: { success, status, data: { accessToken, refreshToken } }
+  return data;
+}
+
+// 회원가입
 export async function apiSignUp({ name, logInId, password, phoneNumber }) {
   const { data } = await api.post('/auth-service/signup', {
     name,
@@ -18,12 +34,9 @@ export async function apiSignUp({ name, logInId, password, phoneNumber }) {
   return data;
 }
 
-/**
- * [인증번호 요청]
- * 예: POST /auth-service/phone/send?phone=01050259737
- */
+// 인증번호 요청
 export async function apiPhoneSend({ phoneNumber }) {
-  // 1) 숫자만 남기기
+  // 숫자만 남기기
   const digits = String(phoneNumber || '')
     .replace(/\D/g, '')
     .slice(0, 11);
@@ -34,15 +47,12 @@ export async function apiPhoneSend({ phoneNumber }) {
     throw err;
   }
 
-  // 2) 쿼리스트링으로 요청 보내기 (Body 없음)
+  // 쿼리스트링으로 요청 보내기 (Body 없음)
   const { data } = await api.post(`/auth-service/phone/send?phone=${digits}`, {});
   return data;
 }
 
-/**
- * [인증번호 인증]
- * 예: POST /auth-service/phone/verify?phone=01050259737&code=270882
- */
+// 인증번호 인증
 export async function apiPhoneVerify({ phoneNumber, code }) {
   const digits = String(phoneNumber || '')
     .replace(/\D/g, '')
@@ -55,35 +65,12 @@ export async function apiPhoneVerify({ phoneNumber, code }) {
   return data;
 }
 
-/**
- * 아이디 중복확인
- * 예: POST /auth-service/id/verify?logInId=jerrymin1221
- */
+// 아이디 중복확인
 export async function apiIdVerify({ logInId }) {
   const id = String(logInId || '').trim();
   if (!id) {
     throw new Error('아이디를 입력해주세요.');
   }
   const { data } = await api.post(`/auth-service/id/verify?logInId=${id}`, {});
-  return data;
-}
-
-// 로그인
-export async function apiLogin({ logInId, password, role }) {
-  const { data } = await api.post('/auth-service/login', {
-    logInId,
-    password,
-    role, // 'OWNER' | 'TENANT'
-  });
-  return data;
-}
-
-/** 리프레시 토큰으로 토큰 재발급 */
-export async function apiRefreshToken() {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) throw new Error('No refresh token');
-
-  const { data } = await api.post('/auth-service/refresh', { refreshToken });
-  // data: { success, status, data: { accessToken, refreshToken } }
   return data;
 }

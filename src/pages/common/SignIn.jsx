@@ -36,8 +36,8 @@ export default function SignIn() {
           break;
         case 'NONE':
           setRole('tenant');
-          if (onBoardingStage) navigate('/welcome');
-          else navigate('/init-process');
+          if (onBoardingStage) navigate('/welcome'); // onBoardingStage가 true면 초기등록 한 상태
+          else navigate('/init-process'); // onBoardingStage가 false면 초기등록 안 한 상태
           break;
         default:
           openToast('알 수 없는 사용자 유형이에요.');
