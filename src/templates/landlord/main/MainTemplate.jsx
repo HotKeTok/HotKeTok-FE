@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Logo from '../../../assets/common/BrandLogo.png';
+import Logo from '../../../assets/common/BrandLogo.svg';
 import PageHeader from '../../../components/common/PageHeader';
 import { Column, Row } from '../../../styles/flex';
 import { Page } from '../../../styles/layout';

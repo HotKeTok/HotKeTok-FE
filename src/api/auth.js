@@ -68,6 +68,16 @@ export async function apiIdVerify({ logInId }) {
   return data;
 }
 
+// 로그인
+export async function apiLogin({ logInId, password, role }) {
+  const { data } = await api.post('/auth-service/login', {
+    logInId,
+    password,
+    role, // 'OWNER' | 'TENANT'
+  });
+  return data;
+}
+
 /** 리프레시 토큰으로 토큰 재발급 */
 export async function apiRefreshToken() {
   const refreshToken = getRefreshToken();
