@@ -4,7 +4,8 @@ import { color, typo } from '../../styles/tokens';
 export const PageWrap = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
 `;
 
 export const ContentWrap = styled.div`
@@ -57,7 +58,23 @@ export const ListWrap = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 12px;
+  max-height: 500px;
+  overflow-y: auto; /* ✅ 실제 스크롤 주체 */
+  flex: 1; /* ✅ 남은 영역을 차지해서 스크롤 공간 확보 */
+`;
+
+export const ContentArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* ✅ 남은 높이를 다 차지 */
+  min-height: 0; /* ✅ 자식 스크롤 허용 핵심! */
+  padding: 0 27px;
+`;
+
+export const EmptyText = styled.div`
+  margin-top: 16px;
+  color: #767676;
+  font-size: 14px;
 `;
 
 export const AddressCard = styled.div`

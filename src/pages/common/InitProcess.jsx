@@ -27,7 +27,7 @@ export default function InitProcess() {
   const [submittingOwner, setSubmittingOwner] = useState(false);
 
   /** 주소 검색 */
-  const onSearchAddress = async ({ keyword, page = 0, pageSize = 5 }) => {
+  const onSearchAddress = async ({ keyword, page, pageSize }) => {
     try {
       setSearchingAddress(true);
       const res = await apiSearchRoadAddress({

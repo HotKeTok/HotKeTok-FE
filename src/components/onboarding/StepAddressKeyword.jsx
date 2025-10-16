@@ -16,6 +16,8 @@ import {
   Addr,
   Jibun,
   JibunAddr,
+  ContentArea,
+  EmptyText,
 } from './InitProcessStyles';
 
 export default function StepAddressKeyword({
@@ -32,7 +34,7 @@ export default function StepAddressKeyword({
 
   const handleSearch = async () => {
     if (!keyword.trim()) return;
-    const res = await onSearchAddress({ keyword: keyword.trim(), page: 0, pageSize: 5 });
+    const res = await onSearchAddress({ keyword: keyword.trim(), page: 0, pageSize: 10 });
     if (res?.success) {
       setResults(res.items || []);
       setShowExamples(false);
@@ -48,7 +50,7 @@ export default function StepAddressKeyword({
       <ProgressBar {...getProgressRange('AddressKeyword')} />
       <StepTitle>{titleText || '주소를 등록해주세요'}</StepTitle>
 
-      <div style={{ padding: '0 27px' }}>
+      <ContentArea>
         <Column $gap={2} style={{ marginBottom: 30 }}>
           <Label>주소 검색</Label>
           <Row $gap={6}>
@@ -68,7 +70,7 @@ export default function StepAddressKeyword({
         </Column>
 
         {showExamples && (
-          <Column $gap={10} style={{ marginTop: 30 }}>
+          <Column $gap={10}>
             <Row $gap={10}>
               <ExampleTitle>도로명</ExampleTitle>
               <ExampleDesc>예) 판교역로 235, 도산대로 8길 23</ExampleDesc>
@@ -85,7 +87,7 @@ export default function StepAddressKeyword({
         )}
 
         {!showExamples && results.length > 0 && (
-          <ListWrap style={{ marginTop: 16 }}>
+          <ListWrap>
             {results.map((a, i) => (
               <AddressCard key={i} onClick={() => onPick(a)}>
                 <Column $gap={10}>
@@ -101,11 +103,9 @@ export default function StepAddressKeyword({
         )}
 
         {!showExamples && results.length === 0 && !loading?.searchingAddress && (
-          <div style={{ marginTop: 16, color: '#767676', fontSize: 14 }}>
-            검색 결과가 없습니다. 키워드를 다시 입력해주세요.
-          </div>
+          <EmptyText>검색 결과가 없습니다. 키워드를 다시 입력해주세요.</EmptyText>
         )}
-      </div>
+      </ContentArea>
     </PageWrap>
   );
 }

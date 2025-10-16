@@ -25,7 +25,7 @@ export default function InitProcessTemplate({
   loading,
   onSearchAddress,
   onSubmitTenant,
-  onSubmitOwner,
+  onSubmitLandlord,
 }) {
   const { toast, open: openToast, close: closeToast } = useToast();
 
@@ -116,17 +116,17 @@ export default function InitProcessTemplate({
             defaultCount={context.totalHouseholds}
             onBack={history.back}
             onNext={totalHouseholds => {
-              history.push('L_OwnerDocUpload', { ...context, totalHouseholds });
+              history.push('L_LandlordDocUpload', { ...context, totalHouseholds });
             }}
           />
         )}
-        L_OwnerDocUpload={({ history, context }) => (
+        L_LandlordDocUpload={({ history, context }) => (
           <StepLandlordDeedUpload
             defaultFileName={context.deedFileName}
             onBack={history.back}
-            submitting={loading?.submittingOwner}
-            onSubmitOwner={async file => {
-              const res = await onSubmitOwner?.({
+            submitting={loading?.submittingLandlord}
+            onSubmitLandlord={async file => {
+              const res = await onSubmitLandlord?.({
                 address: context.baseAddress.roadAddr,
                 detailAddress: context.detail,
                 count: context.totalHouseholds,
