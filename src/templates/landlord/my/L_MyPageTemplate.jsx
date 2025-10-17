@@ -27,25 +27,21 @@ export default function L_MyPageTemplate({
   user = { name: '', phoneNumber: '', logInId: '', address: '' },
   loading = false,
   error = null,
-  saving = false, // ✅ 추가
-  onSaveProfile, // ✅ 추가
-  onChangeCurrentAddress, // ✅ (선택) 추후 주소관리 연동용
+  saving = false,
+  onSaveProfile,
+  onChangeCurrentAddress,
   addressManagePath = '/address-admin',
 }) {
   const nav = useNavigate();
 
-  // 표시용 상태
   const [name, setName] = useState(user?.name || '집주인');
   const [avatar, setAvatar] = useState(AvatarImg);
-
-  // 바텀시트 상태
   const [open, setOpen] = useState(false);
 
-  // 편집값 (저장 전 분리)
   const [editName, setEditName] = useState(name);
   const [editAvatar, setEditAvatar] = useState(avatar);
+  const [editAvatarFile, setEditAvatarFile] = useState(null); // ✅ 추가
 
-  // 서버에서 내려온 user가 바뀌면 화면 표시값 동기화
   useEffect(() => {
     setName(user?.name || '집주인');
   }, [user?.name]);
@@ -53,6 +49,7 @@ export default function L_MyPageTemplate({
   const openSheet = () => {
     setEditName(name);
     setEditAvatar(avatar);
+    setEditAvatarFile(null);
     setOpen(true);
   };
   const closeSheet = () => setOpen(false);
@@ -60,18 +57,17 @@ export default function L_MyPageTemplate({
   const handleSave = async () => {
     // 표시 반영
     setName(editName);
-    setAvatar(editAvatar);
+    if (editAvatarFile) setAvatar(editAvatar); // 새 이미지 선택 시 미리보기 고정
 
-    // ✅ 서버 반영 (이름)
+    // 서버 반영 (이름 + 이미지 파일)
     if (typeof onSaveProfile === 'function') {
-      await onSaveProfile(editName);
+      await onSaveProfile(editName, editAvatarFile);
     }
     setOpen(false);
   };
 
   const moveAddressAdmin = () => nav(addressManagePath);
 
-  // 로딩/에러 표시 (필요 시 스켈레톤 UI로 교체 가능)
   if (loading) {
     return (
       <Page>
@@ -147,11 +143,9 @@ export default function L_MyPageTemplate({
               </MoveText>
             </Row>
 
-            {/* 현재 설정된 기본 주소 프리뷰 */}
             <AddressPreview>
               <Badge>현재 설정한 주소</Badge>
               <CurrentAddress>{user?.address || '등록된 기본 주소가 없습니다'}</CurrentAddress>
-              {/* 필요 시 동(건물명) 분리 필드가 생기면 Subline에 표시 */}
               {!!user?.address ? <Subline /> : <Subline>주소관리에서 등록해 주세요</Subline>}
             </AddressPreview>
 
@@ -179,8 +173,9 @@ export default function L_MyPageTemplate({
                   onChange={e => {
                     const file = e.target.files?.[0];
                     if (file) {
+                      setEditAvatarFile(file); // ✅ 파일 보관
                       const url = URL.createObjectURL(file);
-                      setEditAvatar(url);
+                      setEditAvatar(url); // 미리보기
                     }
                   }}
                 />

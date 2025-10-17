@@ -9,7 +9,6 @@ import {
   changeCurrentAddress,
 } from '../../../api/myPage';
 
-// 전화번호 하이픈
 function formatPhone(p) {
   if (!p) return '';
   const only = String(p).replace(/\D/g, '');
@@ -32,10 +31,8 @@ export default function MyPage() {
     address: '',
   });
 
-  // 최초/토큰 변경 시 데이터 조회
   useEffect(() => {
     let mounted = true;
-
     async function load() {
       if (!accessToken) {
         setLoading(false);
@@ -43,32 +40,22 @@ export default function MyPage() {
       }
       setLoading(true);
       setError(null);
-
       try {
-        // 1) 기본 정보
         const infoRes = await fetchMyInfo(accessToken);
         const info = infoRes?.data?.data || {};
         const nextUser = {
           name: info.name || '',
           phoneNumber: formatPhone(info.phoneNumber || ''),
           logInId: info.logInId || '',
-          address: info.address || '', // 비어 있을 수 있음
+          address: info.address || '',
         };
-
-        // 2) 현재 주소/세대번호 (명세상 POST body 존재 → 기본은 빈 객체)
         try {
           const addrRes = await fetchCurrentAddress(accessToken, {});
           const addr = addrRes?.data?.result || addrRes?.data?.data || {};
-          // 서버 응답 구조가 명확치 않아 안전하게 처리
-          // 대표 주소 문자열 후보: addr.address || addr.fullAddress || addr.addressName ...
           const displayAddress =
             addr.address || addr.fullAddress || addr.addressName || nextUser.address || '';
-
-          if (mounted) {
-            setUser({ ...nextUser, address: displayAddress });
-          }
+          if (mounted) setUser({ ...nextUser, address: displayAddress });
         } catch {
-          // 주소 조회 실패해도 마이페이지는 표시 가능해야 하므로 단순 병합
           if (mounted) setUser(nextUser);
         }
       } catch (err) {
@@ -77,21 +64,25 @@ export default function MyPage() {
         if (mounted) setLoading(false);
       }
     }
-
     load();
     return () => {
       mounted = false;
     };
   }, [accessToken]);
 
-  // 이름 저장
+  // ✅ 이름/이미지 저장
   const handleSaveProfile = useCallback(
-    async nextName => {
+    async (nextName, imageFile) => {
       if (!accessToken) return;
       setSaving(true);
       try {
-        await updateMyInfo(accessToken, { name: nextName });
+        await updateMyInfo(accessToken, { name: nextName }, imageFile);
+        // 성공 시 로컬 상태 반영
         setUser(prev => ({ ...prev, name: nextName }));
+        // (선택) 서버 재조회로 확정 반영
+        // const infoRes = await fetchMyInfo(accessToken);
+        // const info = infoRes?.data?.data || {};
+        // setUser(prev => ({ ...prev, name: info.name || nextName }));
       } catch (e) {
         setError(e);
       } finally {
@@ -101,20 +92,16 @@ export default function MyPage() {
     [accessToken]
   );
 
-  // (선택) 현재 주소 변경 — 주소관리 화면에서 주소 선택 후 여기 핸들러 호출하면 됨
   const handleChangeCurrentAddress = useCallback(
-    async (payload /* 예: { addressId: 123 } */) => {
+    async payload => {
       if (!accessToken) return;
       await changeCurrentAddress(accessToken, payload);
-      // 성공 후 현재 주소 재조회
       try {
         const addrRes = await fetchCurrentAddress(accessToken, {});
         const addr = addrRes?.data?.result || addrRes?.data?.data || {};
         const displayAddress = addr.address || addr.fullAddress || addr.addressName || '';
         setUser(prev => ({ ...prev, address: displayAddress }));
-      } catch {
-        // 실패해도 조용히 넘어감 (필요시 토스트 처리)
-      }
+      } catch {}
     },
     [accessToken]
   );
@@ -126,7 +113,6 @@ export default function MyPage() {
       error={error}
       saving={saving}
       onSaveProfile={handleSaveProfile}
-      // 아래는 당장 UI에 연결하진 않지만, 주소관리에서 사용 가능하도록 props로 내려둠
       onChangeCurrentAddress={handleChangeCurrentAddress}
       addressManagePath="/address-admin"
     />
