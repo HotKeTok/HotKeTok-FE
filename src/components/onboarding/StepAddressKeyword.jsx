@@ -44,6 +44,11 @@ export default function StepAddressKeyword({
     }
   };
 
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (loading?.searchingAddress) return;
+    handleSearch();
+  };
   return (
     <PageWrap>
       <TopBar title="회원 등록" onBack={onBack} />
@@ -53,7 +58,7 @@ export default function StepAddressKeyword({
       <ContentArea>
         <Column $gap={2} style={{ marginBottom: 30 }}>
           <Label>주소 검색</Label>
-          <Row $gap={6}>
+          <Row as="form" $gap={6} onSubmit={handleSubmit}>
             <TextField
               placeholder="예) 판교역로 235, 도산대로 33"
               value={keyword}
@@ -65,6 +70,7 @@ export default function StepAddressKeyword({
               active={!!keyword.trim() && !loading?.searchingAddress}
               onClick={handleSearch}
               disabled={loading?.searchingAddress}
+              type="submit"
             />
           </Row>
         </Column>
@@ -88,17 +94,32 @@ export default function StepAddressKeyword({
 
         {!showExamples && results.length > 0 && (
           <ListWrap>
-            {results.map((a, i) => (
-              <AddressCard key={i} onClick={() => onPick(a)}>
-                <Column $gap={10}>
-                  <Addr>{a.roadAddr}</Addr>
-                  <Row $gap={8} $align="center">
-                    <Jibun>지번</Jibun>
-                    <JibunAddr>{a.jibunAddr || ''}</JibunAddr>
-                  </Row>
-                </Column>
-              </AddressCard>
-            ))}
+            {results.map((a, i) => {
+              // 괄호 안쪽 주소 분리
+              const match = (a.roadAddr || '').match(/^(.*?)\s*(\(.*\))$/);
+              const mainAddr = match ? match[1] : a.roadAddr;
+              const subAddr = match ? match[2] : '';
+
+              return (
+                <AddressCard key={i} onClick={() => onPick(a)}>
+                  <Column $gap={10}>
+                    <Addr>
+                      {mainAddr}
+                      {subAddr && (
+                        <>
+                          <br />
+                          <div>{subAddr}</div>
+                        </>
+                      )}
+                    </Addr>
+                    <Row $gap={8} $align="center">
+                      <Jibun>지번</Jibun>
+                      <JibunAddr>{a.jibunAddr || ''}</JibunAddr>
+                    </Row>
+                  </Column>
+                </AddressCard>
+              );
+            })}
           </ListWrap>
         )}
 

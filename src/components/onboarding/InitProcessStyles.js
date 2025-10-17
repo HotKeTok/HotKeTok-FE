@@ -61,6 +61,14 @@ export const ListWrap = styled.div`
   max-height: 500px;
   overflow-y: auto; /* ✅ 실제 스크롤 주체 */
   flex: 1; /* ✅ 남은 영역을 차지해서 스크롤 공간 확보 */
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.15);
+  }
 `;
 
 export const ContentArea = styled.div`

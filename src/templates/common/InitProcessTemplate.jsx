@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useFunnel } from '@use-funnel/react-router-dom';
 import Toast from '../../components/common/Toast';
-
 // 분리된 스텝 컴포넌트
 import StepRole from '../../components/onboarding/StepRole';
 import StepAddressKeyword from '../../components/onboarding/StepAddressKeyword';

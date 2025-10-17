@@ -52,9 +52,24 @@ export default function StepReview({ baseAddress, floor, ho, requesting, onReque
             <InfoKey>정확한 주소가 맞나요?</InfoKey>
 
             <Caption1Addr>
-              {baseAddress.roadAddr}
-              <br />
-              {floor != null && ho != null ? `${floor}층 ${ho}호` : null}
+              {(() => {
+                const match = (baseAddress.roadAddr || '').match(/^(.*?)\s*(\(.*\))$/);
+                const mainAddr = match ? match[1] : baseAddress.roadAddr || '';
+                const subAddr = match ? match[2] : '';
+                return (
+                  <>
+                    {mainAddr}
+                    {subAddr && (
+                      <>
+                        <br />
+                        <div>{subAddr}</div>
+                      </>
+                    )}
+                    <br />
+                    {floor != null && ho != null ? `${floor}층 ${ho}호` : null}
+                  </>
+                );
+              })()}
             </Caption1Addr>
 
             <Row $gap={8} $align="center">

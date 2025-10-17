@@ -22,15 +22,18 @@ export async function apiTenantRequest(payload) {
 
 //집주인 초기정보등록(등기부등본 업로드 포함)
 
-export async function apiOwnerRegister({ address, detailAddress, count, file }) {
+export async function apiLandlordRegister({ address, detailAddress, count, file }) {
   const form = new FormData();
-  form.append('address', address);
-  form.append('detailAddress', detailAddress);
-  form.append('count', String(count));
+
+  // JSON 부분을 Blob으로 감싸기
+  const payload = { address, detailAddress, count: String(count) };
+  form.append('data', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+
+  // 파일 추가
   if (file) form.append('file', file);
 
-  const { data } = await api.post('/house-service/register', form, {
+  // 전송
+  await api.post('/house-service/register', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
-  return data;
 }

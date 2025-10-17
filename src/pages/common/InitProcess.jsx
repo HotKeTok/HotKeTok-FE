@@ -2,7 +2,7 @@
 // ✅ 이 파일은 API 연동/상태/콜백만 담당합니다. (UI는 템플릿에 위임)
 import React, { useMemo, useState } from 'react';
 import InitProcessTemplate from '../../templates/common/InitProcessTemplate';
-import { apiSearchRoadAddress, apiTenantRequest, apiOwnerRegister } from '../../api/initProcess';
+import { apiSearchRoadAddress, apiTenantRequest, apiLandlordRegister } from '../../api/initProcess';
 
 /** roadAddr 문자열을 템플릿에서 쓰기 좋게 보조 파싱 (UI 아님: 데이터 정규화 용도) */
 function parseRoadAddr(roadAddrStr = '') {
@@ -24,7 +24,7 @@ export default function InitProcess() {
   // 로딩/요청 진행 상태 (템플릿에 내려 UI 제어)
   const [searchingAddress, setSearchingAddress] = useState(false);
   const [submittingTenant, setSubmittingTenant] = useState(false);
-  const [submittingOwner, setSubmittingOwner] = useState(false);
+  const [submittingLandlord, setSubmittingLandlord] = useState(false);
 
   /** 주소 검색 */
   const onSearchAddress = async ({ keyword, page, pageSize }) => {
@@ -102,10 +102,10 @@ export default function InitProcess() {
   };
 
   /** 집주인 초기정보 등록(파일 업로드 포함) */
-  const onSubmitOwner = async ({ address, detailAddress, count, file }) => {
+  const onSubmitLandlord = async ({ address, detailAddress, count, file }) => {
     try {
-      setSubmittingOwner(true);
-      const res = await apiOwnerRegister({ address, detailAddress, count, file });
+      setSubmittingLandlord(true);
+      const res = await apiLandlordRegister({ address, detailAddress, count, file });
 
       if (res?.success) {
         return { success: true, data: res?.data }; // data.houseId 배열 등
@@ -124,7 +124,7 @@ export default function InitProcess() {
           '등록 처리 중 오류가 발생했어요.',
       };
     } finally {
-      setSubmittingOwner(false);
+      setSubmittingLandlord(false);
     }
   };
 
@@ -135,14 +135,14 @@ export default function InitProcess() {
       loading: {
         searchingAddress,
         submittingTenant,
-        submittingOwner,
+        submittingLandlord,
       },
       // 콜백
       onSearchAddress, // ({ keyword, page?, pageSize? }) => { success, items, message? }
       onSubmitTenant, // ({ address, floor, number, alias?, houseType? }) => { success, data?, message? }
-      onSubmitOwner, // ({ address, detailAddress, count, file }) => { success, data?, message? }
+      onSubmitLandlord, // ({ address, detailAddress, count, file }) => { success, data?, message? }
     }),
-    [searchingAddress, submittingTenant, submittingOwner]
+    [searchingAddress, submittingTenant, submittingLandlord]
   );
 
   return <InitProcessTemplate {...templateProps} />;

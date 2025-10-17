@@ -25,11 +25,15 @@ export default function StepLandlordWelcome() {
       <ContentWrapCentered>
         <SubmitIcon src={iconCheck} />
         <SuccessTitle>환영합니다!</SuccessTitle>
-        <SuccessSub>등록이 완료되었어요.</SuccessSub>
+        <SuccessSub>
+          집주인 인증이 완료되면
+          <br />
+          알림을 보내드릴게요.
+        </SuccessSub>
       </ContentWrapCentered>
       <div style={{ padding: '30px 24px' }}>
         <FadeInWrap>
-          <Button text="시작하기" active={showBtn} onClick={() => navigate('/')} />
+          <Button text="시작하기" active={showBtn} onClick={() => navigate('/welcome')} />
         </FadeInWrap>
       </div>
     </PageWrap>

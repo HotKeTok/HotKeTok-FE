@@ -36,7 +36,22 @@ export default function StepUnitInput({ baseAddress, defaultUnit, onNext }) {
 
       <div style={{ padding: '0 24px' }}>
         <SelectedBox>
-          <Addr>{baseAddress.roadAddr}</Addr>
+          {(() => {
+            const match = (baseAddress.roadAddr || '').match(/^(.*?)\s*(\(.*\))$/);
+            const mainAddr = match ? match[1] : baseAddress.roadAddr || '';
+            const subAddr = match ? match[2] : '';
+            return (
+              <Addr>
+                {mainAddr}
+                {subAddr && (
+                  <>
+                    <br />
+                    <div>{subAddr}</div>
+                  </>
+                )}
+              </Addr>
+            );
+          })()}
           <Row $gap={8} $align="center">
             <Jibun>지번</Jibun>
             <JibunAddr>{baseAddress.jibunAddr || ''}</JibunAddr>

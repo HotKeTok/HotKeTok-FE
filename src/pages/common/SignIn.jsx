@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import SignInTemplate from '../../templates/common/SignInTemplate';
 import Toast from '../../components/common/Toast';
 import { apiLogin } from '../../api/auth';
-import { setTokens, setRole } from '../../utils/auth';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const setRole = useAuthStore(s => s.setRole);
+  const setTokens = useAuthStore(s => s.setTokens);
+
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ open: false, message: '' });
 
@@ -25,34 +28,29 @@ export default function SignIn() {
         refreshToken: jwtToken.refreshToken,
       });
 
-      switch (serverRole) {
-        case 'OWNER':
-          setRole('landlord');
-          navigate('/');
-          break;
-        case 'TENANT':
-          setRole('tenant');
-          navigate('/');
-          break;
-        case 'NONE':
-          setRole('tenant');
-          if (onBoardingStageFlag)
-            navigate('/welcome'); // onBoardingStageFlag가 true면 초기등록 한 상태
-          else navigate('/init-process'); // onBoardingStageFlag가 false면 초기등록 안 한 상태
-          break;
-        default:
-          openToast('알 수 없는 사용자 유형이에요.');
-          break;
+      if (serverRole === 'OWNER') {
+        setRole('landlord');
+        navigate('/', { replace: true }); // ✅ 경로 그대로 사용
+        return;
       }
+      if (serverRole === 'TENANT') {
+        setRole('tenant');
+        navigate('/', { replace: true }); // ✅ 경로 그대로 사용
+        return;
+      }
+      if (serverRole === 'NONE') {
+        setRole('tenant');
+        if (onBoardingStageFlag) navigate('/welcome', { replace: true }); // ✅ 기존 '/welcome' 유지
+        else navigate('/init-process', { replace: true });
+        return;
+      }
+
+      openToast('알 수 없는 사용자 유형이에요.');
     } catch (e) {
       const status = e?.response?.status;
-      if (status === 404) {
-        openToast('존재하지 않는 계정이에요.');
-      } else if (status === 400) {
-        openToast('비밀번호가 일치하지 않아요.');
-      } else {
-        openToast('로그인에 실패했어요.');
-      }
+      if (status === 404) openToast('존재하지 않는 계정이에요.');
+      else if (status === 400) openToast('비밀번호가 일치하지 않아요.');
+      else openToast('로그인에 실패했어요.');
     } finally {
       setLoading(false);
     }
@@ -65,7 +63,7 @@ export default function SignIn() {
         show={toast.open}
         onClose={closeToast}
         message={toast.message}
-        icon={'warning'} // ✅ 아이콘 전달
+        icon="warning"
         duration={1000}
       />
     </>

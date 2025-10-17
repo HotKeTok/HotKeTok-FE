@@ -6,13 +6,20 @@ import { Column, Spacer } from '../../styles/flex';
 import { getProgressRange } from './progress';
 import ProgressBar from './ProgressBar';
 import { PageWrap, StepTitle, CardTitle, CardDesc } from './InitProcessStyles';
+import { useNavigate } from 'react-router-dom';
 
 export default function StepRole({ onNext }) {
   const [selectedRole, setSelectedRole] = useState(null); // 'tenant' | 'landlord'
 
+  const nav = useNavigate();
+
+  const goSignIn = () => {
+    nav('/sign-in');
+  };
+
   return (
     <PageWrap>
-      <TopBar title="회원 등록" />
+      <TopBar title="회원 등록" onBack={goSignIn} />
       <ProgressBar {...getProgressRange('Role')} />
       <StepTitle>{'핫케톡 이용모드를\n선택해 주세요'}</StepTitle>
 

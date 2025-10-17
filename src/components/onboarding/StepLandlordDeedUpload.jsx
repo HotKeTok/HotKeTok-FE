@@ -16,7 +16,7 @@ import {
 
 export default function StepLandlordDeedUpload({
   defaultFileName = '',
-  onSubmitOwner,
+  onSubmitLandlord,
   submitting,
   onBack,
 }) {
@@ -40,7 +40,7 @@ export default function StepLandlordDeedUpload({
   return (
     <PageWrap>
       <TopBar title="회원 등록" onBack={onBack} />
-      <ProgressBar {...getProgressRange('L_OwnerDocUpload')} />
+      <ProgressBar {...getProgressRange('L_LandlordDocUpload')} />
       <StepTitle>{'집주인 인증을 위해\n등기부등본을 업로드해주세요.'}</StepTitle>
 
       <div style={{ padding: '0 24px' }}>
@@ -73,7 +73,7 @@ export default function StepLandlordDeedUpload({
         <Button
           text={submitting ? '제출 중...' : '등록 완료'}
           active={!!file && !submitting}
-          onClick={() => onSubmitOwner?.(file)}
+          onClick={() => onSubmitLandlord?.(file)}
           disabled={!file || submitting}
         />
       </div>
