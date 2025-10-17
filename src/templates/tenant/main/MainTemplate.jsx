@@ -1,15 +1,16 @@
-import PageHeader from "../../../components/common/PageHeader";
-import styled from "styled-components";
-import SelectHome from "../../../components/main/index/SelectHome";
-import { Page } from "../../../styles/layout";
-import { typo } from "../../../styles/tokens";
-import { Column, Row } from "../../../styles/flex";
-import ArrowRight from "../../../assets/common/icon-arrow-right.svg?react"
-import { useNavigate } from "react-router-dom";
-import NoticeBanner from "../../../components/main/index/NoticeBanner";
-import { BOTTOM_BAR_HEIGHT } from "../../../styles/layout";
-import RepairBanner from "../../../components/repair/repair-home/RequestBanner"
-import CompanyCard from "../../../components/repair/repair-home/ContractorAd";
+import PageHeader from '../../../components/common/PageHeader';
+import styled from 'styled-components';
+import SelectHome from '../../../components/main/index/SelectHome';
+import { Page } from '../../../styles/layout';
+import { typo } from '../../../styles/tokens';
+import { Column, Row } from '../../../styles/flex';
+import ArrowRight from '../../../assets/common/icon-arrow-right.svg?react';
+import { useNavigate } from 'react-router-dom';
+import NoticeBanner from '../../../components/main/index/NoticeBanner';
+import { BOTTOM_BAR_HEIGHT } from '../../../styles/layout';
+import RepairBanner from '../../../components/repair/repair-home/RequestBanner';
+import CompanyCard from '../../../components/repair/repair-home/ContractorAd';
+import { formatNumberWithCommas } from '../../../utils/number';
 
 /**
  * @function MainTemplate
@@ -27,7 +28,6 @@ export default function MainTemplate({ address, utilityBill, commonBill }) {
 
   return (
     <Page>
-
       <ColorBackground>
         <PageHeader
           isLightVersion={true}
@@ -45,20 +45,20 @@ export default function MainTemplate({ address, utilityBill, commonBill }) {
 
           <Row $justify={'space-between'}>
             <Subtitle1 style={{ color: '#fff' }}>공과금</Subtitle1>
-            <H3 style={{ color: '#fff' }}>{utilityBill}원</H3>
+            <H3 style={{ color: '#fff' }}>{formatNumberWithCommas(utilityBill)}원</H3>
           </Row>
 
           <Row $justify={'space-between'}>
-            <Subtitle1 style={{ color: '#fff' }}>공과금</Subtitle1>
-            <H3 style={{ color: '#fff' }}>{commonBill}원</H3>
+            <Subtitle1 style={{ color: '#fff' }}>공동 관리비</Subtitle1>
+            <H3 style={{ color: '#fff' }}>{formatNumberWithCommas(commonBill)}원</H3>
           </Row>
         </Content>
       </ColorBackground>
 
-     <BottomContent $overlap={24} $gap={24}>
-        <NoticeBanner/>
-        <RepairBanner/>
-        <CompanyCard/>
+      <BottomContent $overlap={24} $gap={24}>
+        <NoticeBanner />
+        <RepairBanner />
+        <CompanyCard />
       </BottomContent>
     </Page>
   );
@@ -79,15 +79,15 @@ const BottomContent = styled(Column)`
 
   position: relative;
   z-index: 1; /* 위로 */
-  margin-top: calc(-1 * var(--ov));         
-  padding: calc(var(--ov) + 16px) 16px 0px 16px;  
+  margin-top: calc(-1 * var(--ov));
+  padding: calc(var(--ov) + 16px) 16px 0px 16px;
 
   border-radius: 30px 30px 0 0;
   background: #fff;
 
   height: 70vh; // 높이를 정확히 명시
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 바텀바 높이만큼 하단 패딩
-  overflow-y: scroll; // scroll 
+  overflow-y: scroll; // scroll
 `;
 
 const H3 = styled.div`
