@@ -4,21 +4,22 @@ import { getRefreshToken } from '../utils/auth';
 
 // 로그인
 export async function apiLogin({ logInId, password, role }) {
-  const { data } = await api.post('/auth-service/login', {
-    logInId,
-    password,
-    role, // 'OWNER' | 'TENANT'
-  });
+  const { data } = await api.post(
+    '/auth-service/login',
+    { logInId, password, role },
+    { headers: { Authorization: undefined } } // ✅ 혹시 모를 잔여 헤더 제거
+  );
   return data;
 }
 
 // 리프레시 토큰으로 토큰 재발급
 export async function apiRefreshToken() {
   const refreshToken = getRefreshToken();
-  if (!refreshToken) throw new Error('No refresh token');
-
-  const { data } = await api.post('/auth-service/refresh', { refreshToken });
-  // data: { success, status, data: { accessToken, refreshToken } }
+  const { data } = await api.post(
+    '/auth-service/refresh',
+    { refreshToken },
+    { headers: { Authorization: undefined } } // ✅ RT 갱신도 토큰 금지
+  );
   return data;
 }
 

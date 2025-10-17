@@ -65,7 +65,6 @@ export default function StepReview({ baseAddress, floor, ho, requesting, onReque
                         <div>{subAddr}</div>
                       </>
                     )}
-                    <br />
                     {floor != null && ho != null ? `${floor}층 ${ho}호` : null}
                   </>
                 );
@@ -113,7 +112,7 @@ export default function StepReview({ baseAddress, floor, ho, requesting, onReque
 
       <div style={{ padding: '30px 24px' }}>
         <FadeInWrap $show={showDoneBtn}>
-          <Button text="완료하기" active={showDoneBtn} onClick={() => navigate('/')} />
+          <Button text="완료하기" active={showDoneBtn} onClick={() => navigate('/welcome')} />
         </FadeInWrap>
       </div>
     </PageWrap>

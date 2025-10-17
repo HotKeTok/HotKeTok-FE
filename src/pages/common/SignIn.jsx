@@ -5,11 +5,17 @@ import SignInTemplate from '../../templates/common/SignInTemplate';
 import Toast from '../../components/common/Toast';
 import { apiLogin } from '../../api/auth';
 import { useAuthStore } from '../../store/useAuthStore';
+import { clearAuth } from '../../utils/auth';
+import { setTokens as setLegacyTokens } from '../../utils/auth';
 
 export default function SignIn() {
+  // 선택: 페이지 진입 시 기존 세션 정리
+  React.useEffect(() => {
+    clearAuth(); // access/refresh/role 모두 제거
+  }, []);
   const navigate = useNavigate();
   const setRole = useAuthStore(s => s.setRole);
-  const setTokens = useAuthStore(s => s.setTokens);
+  const setStoreTokens = useAuthStore(s => s.setTokens);
 
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ open: false, message: '' });
@@ -23,10 +29,13 @@ export default function SignIn() {
       const res = await apiLogin({ logInId, password, role });
       const { jwtToken, role: serverRole, onBoardingStageFlag } = res.data;
 
-      setTokens({
+      const tokens = {
         accessToken: jwtToken.accessToken,
         refreshToken: jwtToken.refreshToken,
-      });
+      };
+
+      setStoreTokens(tokens); // ✅ Zustand
+      setLegacyTokens(tokens); // ✅ utils/auth (HK_ACCESS_TOKEN/REFRESH_TOKEN 동기화)
 
       if (serverRole === 'OWNER') {
         setRole('landlord');
