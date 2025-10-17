@@ -1,62 +1,59 @@
-// pages/BillsTemplate.jsx
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ScrollableContent } from '../../../styles/layout';
 import TopBar from '../../../components/common/TopBar';
 import { typo, color } from '../../../styles/tokens';
 import TabBar from '../../../components/common/TabBar';
-import ChartCostSplitBar from '../../../components/main/bills/ChartCostSplitBar';
-import ChartUsageLine from '../../../components/main/bills/ChartUsageLine';
 import { Column, Row } from '../../../styles/flex';
 import YearSelect from '../../../components/main/bills/YearSelect';
 import MonthBillsItem from '../../../components/main/bills/MonthBillsItem';
 import BottomSheet from '../../../components/common/BottomSheet';
+import { MOCK_UTILITY_BILLS } from '../../../mocks/main/bills';
+import { Page } from '../../../styles/layout';
+import { TOP_BAR_HEIGHT } from '../../../styles/layout';
+import GraphUtilityBills from '../../../components/main/bills/GraphUtilityBills';
+import ModalBillDetail from '../../../components/main/bills/ModalBillDetail';
+const TabBarText = [
+  { id: 1, text: '공과금' },
+  { id: 2, text: '공동 관리비' },
+];
 
 export default function BillsTemplate({ activeTab, setActiveTab }) {
+  const scrollRef = useRef(null);
+
   const [modal, setModal] = useState(false);
-  const [year, setYear] = useState(2024);
+  const [year, setYear] = useState(2025);
+  const [selectedBills, setSelectedBills] = useState(null); // 선택된 공과금 내역
 
   // 유저 보유 연도 (목데이터)
-  const userYears = [2024, 2023, 2022];
-
-  // 연도별 월 내역 (목데이터) — 최신월이 위로 오도록 month desc.
-  const billsByYear = {
-    2024: [
-      { month: 10, value: 130410, paidAt: '2024.10.11' },
-      { month: 9, value: 132100, paidAt: '2024.9.11' },
-      { month: 8, value: 141020, paidAt: '2024.8.11' },
-      { month: 7, value: 140410, paidAt: '2024.7.11' },
-      { month: 6, value: 135210, paidAt: '2024.6.11' },
-    ],
-    2023: [
-      { month: 12, value: 124000, paidAt: '2023.12.10' },
-      { month: 11, value: 118400, paidAt: '2023.11.10' },
-      { month: 10, value: 133200, paidAt: '2023.10.10' },
-    ],
-    2022: [
-      { month: 12, value: 99000, paidAt: '2022.12.10' },
-      { month: 11, value: 102300, paidAt: '2022.11.10' },
-    ],
-  };
+  const userYears = [2025, 2024, 2023, 2022];
 
   const monthsLabel = m => `${m}월`;
   const won = n => `${n.toLocaleString()}원`;
 
-  const currentList = billsByYear[year] ?? [];
+  const currentList = useMemo(() => MOCK_UTILITY_BILLS[year] ?? [], [year]);
   const latest = useMemo(() => (currentList.length ? currentList[0] : null), [currentList]);
 
-  const LATEST_DATE = latest ? `${year}년 ${latest.month}월` : '';
+  const LATEST_DATE = latest ? `${year}년 ${latest.month}월분` : '';
   const LATEST_COST = latest ? latest.value : 0;
 
-  const TabBarText = [
-    { id: 1, text: '공과금' },
-    { id: 2, text: '공동 관리비' },
-  ];
+  // 탭이 바뀔 때마다 스크롤 위로
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activeTab]);
+
+  const handleOpenDetailModal = (year, month) => {
+    const bill = currentList.find(item => item.month === month);
+    setSelectedBills(bill);
+    setModal(true);
+  };
 
   return (
     <Wrapper>
+      <TopBar title="내역 보기" />
       <div style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'white' }}>
-        <TopBar title="내역 보기" />
         <TabBar
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -64,29 +61,41 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
         />
       </div>
 
-      {
-        <BottomSheet isOpen={modal} onClose={() => setModal(false)} height={'90%'}>
-          <div>Modal Content</div>
-        </BottomSheet>
-      }
+      {/* 공통 바텀시트 */}
+      <BottomSheet isOpen={modal} onClose={() => setModal(false)} height={'90%'}>
+        <ModalBillDetail
+          year={year}
+          billData={selectedBills}
+          onClose={() => setModal(false)}
+          tab={activeTab}
+        />
+      </BottomSheet>
 
-      <ScrollableContent>
+      <ScrollableContent
+        ref={scrollRef}
+        style={{ height: `calc(100vh - ${TOP_BAR_HEIGHT} - 40px)` }}
+      >
         <Content>
-          <Column $gap={4} $align="flex-start" style={{ marginBottom: 10 }}>
-            <Date>{LATEST_DATE}</Date>
-            <MainCost>{won(LATEST_COST)}</MainCost>
-          </Column>
+          <Row $align="flex-end" $justify="space-between" style={{ marginBottom: 20 }}>
+            <Column $gap={4} $align="flex-start" style={{ marginBottom: 10 }}>
+              <Date>{LATEST_DATE}</Date>
+              <MainCost>{won(LATEST_COST)}</MainCost>
+            </Column>
+            {activeTab === '공동 관리비' && (
+              <ListHeader>
+                <YearSelect value={year} onChange={setYear} years={userYears} />
+              </ListHeader>
+            )}
+          </Row>
 
           {activeTab === '공과금' && (
-            <ChartUsageLine
-              year={year}
-              // monthly={lineMonthly.map(({ month, value }) => ({ month, value }))}
-            />
+            <>
+              <GraphUtilityBills year={year} />
+              <ListHeader>
+                <YearSelect value={year} onChange={setYear} years={userYears} />
+              </ListHeader>
+            </>
           )}
-
-          <ListHeader>
-            <YearSelect value={year} onChange={setYear} years={userYears} />
-          </ListHeader>
 
           <List>
             {currentList.map(item => (
@@ -96,7 +105,7 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
                 item={item}
                 monthsLabel={monthsLabel}
                 won={won}
-                onClick={() => setModal(true)}
+                onClick={() => handleOpenDetailModal(year, item.month)}
               />
             ))}
           </List>
@@ -106,7 +115,7 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
   );
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled(Page)`
   background-color: #fff;
   position: relative;
 `;
