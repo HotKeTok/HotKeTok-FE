@@ -44,6 +44,15 @@ export default function AdminAuthTemplate({
     setModal(true);
   };
 
+  // 전화번호 하이픈 포맷 함수
+  function formatPhone(p) {
+    if (!p) return '';
+    const only = String(p).replace(/\D/g, '');
+    if (only.length === 11) return `${only.slice(0, 3)}-${only.slice(3, 7)}-${only.slice(7)}`;
+    if (only.length === 10) return `${only.slice(0, 3)}-${only.slice(3, 6)}-${only.slice(6)}`;
+    return p;
+  }
+
   return (
     <PageWithoutBottomBar>
       {modal && (
@@ -83,7 +92,7 @@ export default function AdminAuthTemplate({
                   key={item.houseId}
                   name={item.name}
                   address={item.houseNumber}
-                  phone={item.phoneNumber}
+                  phone={formatPhone(item.phoneNumber)}
                   onConfirm={() =>
                     openModal(MODAL_STATE[0], item.houseId, item.name, item.houseNumber)
                   }
