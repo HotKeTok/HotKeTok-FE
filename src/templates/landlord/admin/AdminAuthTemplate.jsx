@@ -1,4 +1,4 @@
-import { Page, PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../styles/layout';
+import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../styles/layout';
 import AuthEmpty from '../../../assets/landlord/admin/Empty_Auth.svg?react';
 import { EXAMPLE_AUTH_REQUEST } from '../../../mocks/landlord/AdminAuth';
 import Topbar from '../../../components/common/TopBar';
@@ -10,70 +10,69 @@ import { useState } from 'react';
 import ConfirmModal from '../../../components/common/ConfirmModal';
 
 /**
- *
- * @param {Function} onConfirm 입주민 승인 요청 확인 핸들러
- * @param {Function} onDelete 입주민 승인 요청 삭제(거절) 핸들러
+ * @param {Array}    items   - 입주민 요청 목록 [{houseId,name,phoneNumber,houseNumber,profileImageUrl}]
+ * @param {boolean}  loading - 로딩 여부
+ * @param {Function} onConfirm - 승인 요청 핸들러 (houseId) => void
+ * @param {Function} onDelete  - 거절 요청 핸들러 (houseId) => void
+ * @param {Function} onRefresh - (선택) 새로고침
  */
-export default function AdminAuthTemplate({ onConfirm, onDelete }) {
-  const [modal, setModal] = useState(false); // 모달 상태 관리
-  const [modalContent, setModalContent] = useState({}); // 모달 상태 종류(승인 | 거절)과 클릭된 아이템의 값
+export default function AdminAuthTemplate({
+  items = [],
+  loading = false,
+  onConfirm,
+  onDelete,
+  onRefresh,
+}) {
+  const [modal, setModal] = useState(false);
+  const [modalContent, setModalContent] = useState({}); // {state:'confirm'|'delete', key, name, address, label}
 
   const MODAL_STATE = [
-    {
-      state: 'confirm',
-      label: '승인',
-      onClick: onConfirm,
-    },
-    {
-      state: 'delete',
-      label: '삭제',
-      onClick: onDelete,
-    },
+    { state: 'confirm', label: '승인', onClick: onConfirm, confirmText: '승인하기' },
+    { state: 'delete', label: '거절', onClick: onDelete, confirmText: '거절하기' },
   ];
 
-  // 승인 혹은 거절 버튼을 눌렀을 때
-  // key: 승인 요청 id
   const onConfirmBtnClick = key => {
     if (modalContent.state === 'confirm') {
-      onConfirm(key); // key 값 전달하여 api 호출
-      setModal(false);
+      onConfirm?.(key);
     } else if (modalContent.state === 'delete') {
-      onDelete(key); // key 값 전달하여 api 호출
-      setModal(false);
-    } else {
-      return null;
+      onDelete?.(key);
     }
+    setModal(false);
   };
 
-  // (승인/삭제) state 값에 따라 모달 open
-  const openModal = (modalContent, key, name, address) => {
-    if (modalContent.state === 'confirm') {
-      setModalContent({ ...modalContent, key: key, name: name, address: address });
-      setModal(true);
-    } else if (modalContent.state === 'delete') {
-      setModalContent({ ...modalContent, key: key, name: name, address: address });
-      setModal(true);
-    } else {
-      return null;
-    }
+  const openModal = (modalState, key, name, address) => {
+    setModalContent({ ...modalState, key, name, address });
+    setModal(true);
   };
+
+  // 데이터 소스: props.items 우선, 비어있으면 기존 mock fallback
+  const data = Array.isArray(items) && items.length > 0 ? items : EXAMPLE_AUTH_REQUEST;
 
   return (
     <PageWithoutBottomBar>
       {modal && (
         <ConfirmModal
           isOpen={modal}
-          title={`${modalContent.name} - ${modalContent.address} 님의`}
-          description={`입주민 요청을 ${modalContent.label}하시겠어요?`}
+          title={`${modalContent?.name} - ${modalContent?.address} 님의`}
+          description={`입주민 요청을 ${modalContent?.label}하시겠어요?`}
           onClose={() => setModal(false)}
-          onConfirm={onConfirmBtnClick}
+          onConfirm={() => onConfirmBtnClick(modalContent?.key)}
           cancelText="아니요"
-          confirmText="승인하기"
+          confirmText={modalContent?.confirmText || '확인'}
         />
       )}
-      <Topbar title="입주민 인증" />
+
+      <Topbar
+        title="입주민 인증"
+        right={onRefresh ? { text: '새로고침', onClick: onRefresh } : undefined}
+      />
+
       <ScrollableNoBottomBarContent style={{ backgroundColor: '#f5f6f6' }}>
-        {EXAMPLE_AUTH_REQUEST.length == 0 ? (
+        {loading ? (
+          <Column $justify="center" $align="center" style={{ height: '100%' }}>
+            <Body1>불러오는 중...</Body1>
+          </Column>
+        ) : data.length === 0 ? (
           <Column $justify="center" $align="center" style={{ height: '100%' }}>
             <AuthEmpty />
             <H2 style={{ marginTop: 16 }}>입주민 승인 요청</H2>
@@ -83,14 +82,28 @@ export default function AdminAuthTemplate({ onConfirm, onDelete }) {
           <div style={{ padding: '30px 20px' }}>
             <Title>입주민 승인 요청</Title>
             <Column $justify="flex-start" $align="center" style={{ gap: 6, marginTop: 20 }}>
-              {EXAMPLE_AUTH_REQUEST.map(item => (
+              {data.map(item => (
                 <AuthItem
-                  key={item.id}
+                  key={item.houseId ?? item.id}
                   name={item.name}
-                  address={item.address}
-                  phone={item.phone}
-                  onConfirm={() => openModal(MODAL_STATE[0], item.id, item.name, item.address)}
-                  onDelete={() => openModal(MODAL_STATE[1], item.id, item.name, item.address)}
+                  address={item.houseNumber ?? item.address}
+                  phone={item.phoneNumber ?? item.phone}
+                  onConfirm={() =>
+                    openModal(
+                      MODAL_STATE[0],
+                      item.houseId ?? item.id,
+                      item.name,
+                      item.houseNumber ?? item.address
+                    )
+                  }
+                  onDelete={() =>
+                    openModal(
+                      MODAL_STATE[1],
+                      item.houseId ?? item.id,
+                      item.name,
+                      item.houseNumber ?? item.address
+                    )
+                  }
                 />
               ))}
             </Column>
@@ -104,13 +117,11 @@ export default function AdminAuthTemplate({ onConfirm, onDelete }) {
 const Title = styled.div`
   ${typo('h2')}
 `;
-
 const H2 = styled.div`
-  ${typo('h2')}
+  ${typo('h2')};
   color: ${color('grayscale.600')};
 `;
-
 const Body1 = styled.div`
-  ${typo('body1')}
+  ${typo('body1')};
   color: ${color('grayscale.600')};
 `;
