@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import MainLogo from '../../../assets/common/BrandLogo.png';
+import MainLogo from '../../../assets/common/BrandLogo.svg';
 import WhiteMainLogo from '../../../assets/common/BrandLogoWhite.png';
 import ArrowDown from '../../../assets/common/icon-arrow-down.svg?react';
 import { Row } from '../../../styles/flex';

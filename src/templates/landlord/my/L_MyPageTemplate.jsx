@@ -1,5 +1,5 @@
 // src/templates/landlord/my/L_MyPageTemplate.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
@@ -16,37 +16,90 @@ import Button from '../../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
 
 /**
- * 집주인 마이페이지 템플릿
+ * 집주인 마이페이지 템플릿 (표시 전용)
  * @param {object} props
- * @param {string} [props.addressManagePath='/landlord/address-admin'] - 주소관리 화면 라우팅 경로
+ * @param {{name:string, phoneNumber:string, logInId:string, address:string}} props.user
+ * @param {boolean} props.loading
+ * @param {any} props.error
+ * @param {string} [props.addressManagePath='/address-admin'] - 주소관리 화면 라우팅 경로
  */
-export default function L_MyPageTemplate({ addressManagePath = '/address-admin' }) {
-  // 표시용 상태
-  const [name, setName] = useState('집주인');
-  const [avatar, setAvatar] = useState(AvatarImg);
+export default function L_MyPageTemplate({
+  user = { name: '', phoneNumber: '', logInId: '', address: '' },
+  loading = false,
+  error = null,
+  saving = false,
+  onSaveProfile,
+  addressManagePath = '/address-admin',
+}) {
+  const nav = useNavigate();
 
-  // 바텀시트 상태
+  const [name, setName] = useState(user?.name || '집주인');
+  const [avatar, setAvatar] = useState(AvatarImg);
   const [open, setOpen] = useState(false);
 
-  // 편집값 (저장 전 분리)
   const [editName, setEditName] = useState(name);
   const [editAvatar, setEditAvatar] = useState(avatar);
+  const [editAvatarFile, setEditAvatarFile] = useState(null); // ✅ 추가
+
+  useEffect(() => {
+    setName(user?.name || '집주인');
+  }, [user?.name]);
 
   const openSheet = () => {
     setEditName(name);
     setEditAvatar(avatar);
+    setEditAvatarFile(null);
     setOpen(true);
   };
   const closeSheet = () => setOpen(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    // 표시 반영
     setName(editName);
-    setAvatar(editAvatar);
+    if (editAvatarFile) setAvatar(editAvatar); // 새 이미지 선택 시 미리보기 고정
+
+    // 서버 반영 (이름 + 이미지 파일)
+    if (typeof onSaveProfile === 'function') {
+      await onSaveProfile(editName, editAvatarFile);
+    }
     setOpen(false);
   };
 
-  const nav = useNavigate();
   const moveAddressAdmin = () => nav(addressManagePath);
+
+  if (loading) {
+    return (
+      <Page>
+        <PageWrapper>
+          <Header>
+            <RowForTopBar $justify="center" $align="center">
+              <Title>마이페이지</Title>
+            </RowForTopBar>
+          </Header>
+          <MiddleSection>
+            <div>불러오는 중...</div>
+          </MiddleSection>
+        </PageWrapper>
+      </Page>
+    );
+  }
+
+  if (error) {
+    return (
+      <Page>
+        <PageWrapper>
+          <Header>
+            <RowForTopBar $justify="center" $align="center">
+              <Title>마이페이지</Title>
+            </RowForTopBar>
+          </Header>
+          <MiddleSection>
+            <div style={{ color: 'red' }}>정보를 불러오지 못했어요.</div>
+          </MiddleSection>
+        </PageWrapper>
+      </Page>
+    );
+  }
 
   return (
     <Page>
@@ -63,15 +116,15 @@ export default function L_MyPageTemplate({ addressManagePath = '/address-admin' 
             <Column $gap={24}>
               <Row $justify="space-between">
                 <Label>이름</Label>
-                <Content>{name}</Content>
+                <Content>{name || '-'}</Content>
               </Row>
               <Row $justify="space-between">
                 <Label>휴대폰 번호</Label>
-                <Content>010-1234-5678</Content>
+                <Content>{user?.phoneNumber || '-'}</Content>
               </Row>
               <Row $justify="space-between">
                 <Label>아이디</Label>
-                <Content>soongsil123</Content>
+                <Content>{user?.logInId || '-'}</Content>
               </Row>
             </Column>
             <EditButton onClick={openSheet}>프로필 편집</EditButton>
@@ -89,12 +142,7 @@ export default function L_MyPageTemplate({ addressManagePath = '/address-admin' 
               </MoveText>
             </Row>
 
-            {/* 현재 설정된 기본 주소 프리뷰 */}
-            <AddressPreview>
-              <Badge>현재 설정한 주소</Badge>
-              <CurrentAddress>서울특별시 강남구 영동대로 112길 46</CurrentAddress>
-              <Subline>현대프라자</Subline>
-            </AddressPreview>
+            <CurrentAddress>{user?.address || '등록된 기본 주소가 없습니다'}</CurrentAddress>
 
             <Row $justify="space-between" $align="center" style={{ marginTop: 12 }}>
               <Label>수리내역</Label>
@@ -120,8 +168,9 @@ export default function L_MyPageTemplate({ addressManagePath = '/address-admin' 
                   onChange={e => {
                     const file = e.target.files?.[0];
                     if (file) {
+                      setEditAvatarFile(file); // ✅ 파일 보관
                       const url = URL.createObjectURL(file);
-                      setEditAvatar(url);
+                      setEditAvatar(url); // 미리보기
                     }
                   }}
                 />
@@ -147,18 +196,22 @@ export default function L_MyPageTemplate({ addressManagePath = '/address-admin' 
               <Field>
                 <Row $justify="space-between">
                   <FieldLabel>휴대폰 번호</FieldLabel>
-                  <IdValue>010-1234-5678</IdValue>
+                  <IdValue>{user?.phoneNumber || '-'}</IdValue>
                 </Row>
               </Field>
 
               <Row $justify="space-between">
                 <FieldLabel>아이디</FieldLabel>
-                <IdValue>soongsil123</IdValue>
+                <IdValue>{user?.logInId || '-'}</IdValue>
               </Row>
             </Form>
 
             <FooterSticky>
-              <Button text="저장" onClick={handleSave} />
+              <Button
+                text={saving ? '저장 중...' : '저장'}
+                onClick={handleSave}
+                disabled={saving}
+              />
             </FooterSticky>
           </SheetBody>
         </BottomSheet>

@@ -10,7 +10,7 @@ export const DASHBOARD_ITEMS = {
     text: '공지사항 작성',
     image: MegaphoneIcon,
     description: null,
-    route: '/admin/notice/write',
+    route: '/notice/write',
     backgroundColor: 'rgba(60, 102, 255, 0.10)',
   },
   auth: {

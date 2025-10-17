@@ -1,8 +1,9 @@
 // src/components/common/Toast.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import { color, typo } from '../../styles/tokens';
+import { typo } from '../../styles/tokens';
 import iconCheckFilled from '../../assets/common/icon-check-filled.svg';
+import iconWarning from '../../assets/common/icon-warning.svg';
 
 const ENTER_MS = 200;
 const EXIT_MS = 200;
@@ -21,6 +22,11 @@ export default function Toast({ message, icon = iconCheckFilled, show, duration 
   const hideTimerRef = useRef(null);
   const exitTimerRef = useRef(null);
   const closedRef = useRef(false);
+
+  if (icon == 'warning') {
+    // icon에 warning 전달하면 빨간색 느낌표 아이콘 렌더링
+    icon = iconWarning;
+  }
 
   // show 변경 반영
   useEffect(() => {

@@ -1,24 +1,20 @@
+// src/Router.jsx
+import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 
-///////////////////////////////// 공통 //////////////////////////////////
 // 공통 onboard 관련
 import SignIn from './pages/common/SignIn';
 import SignUp from './pages/common/SignUp';
-import InitProcess from './templates/common/InitProcessTemplate';
+import InitProcess from './pages/common/InitProcess';
 
-///////////////////////////////// landlord(집주인) 관련 //////////////////////////////////
-// main 관련
+// landlord(집주인) 관련
 import AlarmLandlord from './pages/landlord/main/Alarm';
 import MainLandlord from './pages/landlord/main/Index';
-
-// 뚝딱 관련
 import RepairHomeLandlord from './pages/landlord/repair/L_RepairHome';
 import RepairProgressLandlord from './pages/landlord/repair/L_RepairProgress';
 import WriteReviewLandlord from './pages/landlord/repair/L_WriteReview';
 import ContractorProfileLandlord from './pages/landlord/repair/L_ContractorProfile';
 import RepairHistoryLandlord from './pages/landlord/repair/L_RepairHistory';
-
-// 어드민 관련
 import AdminAuth from './pages/landlord/admin/AdminAuth';
 import AdminHome from './pages/landlord/admin/AdminHome';
 import AdminNotice from './pages/landlord/admin/AdminNotice';
@@ -28,91 +24,67 @@ import AdminTenantsInfo from './pages/landlord/admin/AdminTenantsInfo';
 import AdminTenantsDetail from './pages/landlord/admin/AdminTenantsDetail';
 import AdminCommonBills from './pages/landlord/admin/AdminCommonBills';
 import AdminCommonBillsWrite from './pages/landlord/admin/AdminCommonBillsWrite';
-
-// 채팅 관련
 import ChatMainLandlord from './pages/landlord/communication/ChatMain';
 import ChatRoomLandlord from './pages/landlord/communication/ChatRoom';
-
-// 마이 관련
 import MyPageLandlord from './pages/landlord/my/L_MyPage';
 import AddressAdminLandlord from './pages/landlord/my/L_AddressAdmin';
 import ExtraAddressRegisterLandlord from './pages/landlord/my/L_ExtraAddressRegister';
 
-///////////////////////////////// tenant(세입자) 관련 //////////////////////////////////
-// main 관련
+// tenant(입주민) 관련
 import Main from './pages/tenant/main/Index';
 import Bills from './pages/tenant/main/Bills';
 import Notice from './pages/tenant/main/Notice';
 import NoticeDetail from './pages/tenant/main/NoticeDetail';
 import Alarm from './pages/tenant/main/Alarm';
-// 뚝딱 관련
 import RepairHome from './pages/tenant/repair/RepairHome';
 import RequestRepair from './pages/tenant/repair/RequestRepair';
 import RepairProgress from './pages/tenant/repair/RepairProgress';
 import ContractorProfile from './pages/tenant/repair/ContractorProfile';
 import WriteReview from './pages/tenant/repair/WriteReview';
 import RepairHistory from './pages/tenant/repair/RepairHistory';
-
-// 똑똑 관련
 import Communication from './pages/tenant/communication/Communication';
 import Chat from './pages/tenant/communication/Chat';
 import ChatRoom from './pages/tenant/communication/ChatRoom';
 import Message from './pages/tenant/communication/Message';
 import MessageDetail from './pages/tenant/communication/MessageDetail';
 import MessageWrite from './pages/tenant/communication/MessageWrite';
-
-// 마이 관련
 import MyPage from './pages/tenant/my/MyPage';
 import AddressAdmin from './pages/tenant/my/AddressAdmin';
 import AddressAdminDetail from './pages/tenant/my/AddressAdminDetail';
 import ExtraAddressRegister from './pages/tenant/my/ExtraAddressRegister';
 
-///////////////////////////////// 공통 컴포넌트 //////////////////////////////////
+// 공통 컴포넌트
 import NavBar from './components/common/NavBar';
 import IndexWelcome from './pages/tenant/main/IndexWelcome';
-
 import { HIDE_BOTTOM_BAR_PATHS } from './styles/layout';
 import { HIDE_HEADER_PATHS } from './styles/layout';
 import { AppShell, MainContainer, BottomBar } from './styles/layout';
 
+// ✅ Zustand 전역 상태
+import { useAuthStore } from './store/useAuthStore';
+
 const Layout = ({ currentRole }) => {
   const { pathname } = useLocation();
 
-  // 1) 공통/역할별 화이트 배경 경로 세트
   const WHITE_BG_ROUTES = {
     common: [
       '/sign-in',
       '/sign-up',
       '/init-process',
-      '/address-admin', // startsWith 매칭
-      '/address/add', // startsWith 매칭
+      '/address-admin',
+      '/address/add',
       '/repair-history',
       '/write-review',
     ],
-    tenant: [
-      // 입주민 전용 화이트 배경
-      '/request-repair',
-      // 필요 시 추가...
-    ],
-    landlord: [
-      // 집주인 전용 화이트 배경
-      '/repair',
-      '/admin',
-
-      // 필요 시 추가...
-    ],
+    tenant: ['/request-repair'],
+    landlord: ['/repair', '/admin'],
   };
 
-  // prefix 기준 매칭 유틸
   const startsWithAny = patterns => patterns.some(p => pathname === p || pathname.startsWith(p));
-
-  // 2) 화이트 배경 여부: 공통 + 현재 역할용 경로만 적용
   const isWhiteBg =
     startsWithAny(WHITE_BG_ROUTES.common) || startsWithAny(WHITE_BG_ROUTES[currentRole] || []);
-
   const bgColor = isWhiteBg ? '#ffffff' : '#f9f9f9';
 
-  // ==== 이하 동일 ====
   const hideBar =
     HIDE_BOTTOM_BAR_PATHS.map(path => pathname.startsWith(path)).includes(true) ||
     pathname.startsWith('/address-admin') ||
@@ -126,7 +98,6 @@ const Layout = ({ currentRole }) => {
       <MainContainer $hasBar={!hideBar} $hasHeader={hasHeader} $headerHeight={headerHeight}>
         <Outlet />
       </MainContainer>
-
       {!hideBar && (
         <BottomBar>
           <NavBar currentRole={currentRole} />
@@ -136,9 +107,13 @@ const Layout = ({ currentRole }) => {
   );
 };
 
-export default function AppRouter({ role }) {
-  const currentRole = 'landlord';
-  // const currentRole = 'tenant';
+export default function AppRouter() {
+  // ✅ 하드코딩 제거, 전역 role 사용
+  const currentRole = useAuthStore(s => s.role);
+  const hydrated = useAuthStore(s => s.hydrated);
+
+  // ✅ persist 복원 완료 전에는 렌더 지연(초기 깜빡임 방지)
+  if (!hydrated) return null;
 
   return (
     <BrowserRouter>
@@ -149,21 +124,21 @@ export default function AppRouter({ role }) {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/init-process" element={<InitProcess />} />
 
-          {/* 현재 역할(role)에 따라 다른 라우트 그룹을 렌더링 */}
+          {/* ✅ 현재 역할(role)에 따라 "같은 경로"를 다른 트리로 렌더링 (경로 변경 없음) */}
           {currentRole === 'landlord' ? (
             <>
-              {/* 집주인 main 관련 */}
+              {/* 집주인 main */}
               <Route path="/" element={<MainLandlord />} />
               <Route path="/alarm" element={<AlarmLandlord />} />
 
-              {/* 집주인 뚝딱 관련 */}
+              {/* 집주인 뚝딱 */}
               <Route path="/repair" element={<RepairHomeLandlord />} />
               <Route path="/repair-progress" element={<RepairProgressLandlord />} />
               <Route path="/repair-history" element={<RepairHistoryLandlord />} />
               <Route path="/contractor-profile" element={<ContractorProfileLandlord />} />
               <Route path="/write-review" element={<WriteReviewLandlord />} />
 
-              {/* 집주인 어드민 관련 */}
+              {/* 집주인 어드민 */}
               <Route path="/admin" element={<AdminHome />} />
               <Route path="/admin/auth" element={<AdminAuth />} />
               <Route path="/notice" element={<AdminNotice />} />
@@ -174,18 +149,18 @@ export default function AppRouter({ role }) {
               <Route path="/admin/common-bills" element={<AdminCommonBills />} />
               <Route path="/admin/common-bills/write" element={<AdminCommonBillsWrite />} />
 
-              {/* 집주인 채팅 관련 */}
+              {/* 집주인 채팅 */}
               <Route path="/chat" element={<ChatMainLandlord />} />
               <Route path="/chat/chat-room/:id" element={<ChatRoomLandlord />} />
 
-              {/* 집주인 마이 관련 */}
+              {/* 집주인 마이 */}
               <Route path="/my-page" element={<MyPageLandlord />} />
               <Route path="/address-admin" element={<AddressAdminLandlord />} />
               <Route path="/address/add/:step" element={<ExtraAddressRegisterLandlord />} />
             </>
           ) : (
             <>
-              {/* 세입자 main 관련 */}
+              {/* 입주민 main */}
               <Route path="/" element={<Main />} />
               <Route path="/welcome" element={<IndexWelcome />} />
               <Route path="/bills" element={<Bills />} />
@@ -193,7 +168,7 @@ export default function AppRouter({ role }) {
               <Route path="/notice" element={<Notice />} />
               <Route path="/notice/:id" element={<NoticeDetail />} />
 
-              {/* 세입자 뚝딱 관련 */}
+              {/* 입주민 뚝딱 */}
               <Route path="/repair" element={<RepairHome />} />
               <Route path="/request-repair" element={<RequestRepair />} />
               <Route path="/repair-progress" element={<RepairProgress />} />
@@ -201,7 +176,7 @@ export default function AppRouter({ role }) {
               <Route path="/contractor-profile" element={<ContractorProfile />} />
               <Route path="/write-review" element={<WriteReview />} />
 
-              {/* 세입자 똑똑 관련 */}
+              {/* 입주민 똑똑 */}
               <Route path="/communication" element={<Communication />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/chat/chat-room" element={<ChatRoom />} />
@@ -209,7 +184,7 @@ export default function AppRouter({ role }) {
               <Route path="/message/detail/:id" element={<MessageDetail />} />
               <Route path="/message/write" element={<MessageWrite />} />
 
-              {/* 세입자 마이 관련 */}
+              {/* 입주민 마이 */}
               <Route path="/my-page" element={<MyPage />} />
               <Route path="/address-admin" element={<AddressAdmin />} />
               <Route path="/address-admin/:id" element={<AddressAdminDetail />} />
@@ -217,7 +192,7 @@ export default function AppRouter({ role }) {
             </>
           )}
 
-          {/* Not Found 페이지 */}
+          {/* Not Found */}
           <Route path="*" element={<div>Not Found</div>} />
         </Route>
       </Routes>
