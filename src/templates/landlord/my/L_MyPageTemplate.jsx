@@ -29,7 +29,6 @@ export default function L_MyPageTemplate({
   error = null,
   saving = false,
   onSaveProfile,
-  onChangeCurrentAddress,
   addressManagePath = '/address-admin',
 }) {
   const nav = useNavigate();

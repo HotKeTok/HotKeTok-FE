@@ -50,10 +50,10 @@ export default function MyPage() {
           address: info.address || '',
         };
         try {
-          const addrRes = await fetchCurrentAddress(accessToken, {});
+          const addrRes = await fetchCurrentAddress(accessToken);
           const addr = addrRes?.data?.result || addrRes?.data?.data || {};
           const displayAddress =
-            addr.address || addr.fullAddress || addr.addressName || nextUser.address || '';
+            addr.currentAddress || addr.address || addr.fullAddress || nextUser.address || '';
           if (mounted) setUser({ ...nextUser, address: displayAddress });
         } catch {
           if (mounted) setUser(nextUser);
@@ -88,20 +88,6 @@ export default function MyPage() {
       } finally {
         setSaving(false);
       }
-    },
-    [accessToken]
-  );
-
-  const handleChangeCurrentAddress = useCallback(
-    async payload => {
-      if (!accessToken) return;
-      await changeCurrentAddress(accessToken, payload);
-      try {
-        const addrRes = await fetchCurrentAddress(accessToken, {});
-        const addr = addrRes?.data?.result || addrRes?.data?.data || {};
-        const displayAddress = addr.address || addr.fullAddress || addr.addressName || '';
-        setUser(prev => ({ ...prev, address: displayAddress }));
-      } catch {}
     },
     [accessToken]
   );

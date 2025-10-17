@@ -1,7 +1,7 @@
 // src/templates/tenant/my/MyPageTemplate.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Column, Row, Spacer } from '../../../styles/flex';
+import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import { Page } from '../../../styles/layout';
 
@@ -15,17 +15,36 @@ import BottomSheet from '../../../components/common/BottomSheet';
 import Button from '../../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
 
-export default function MyPageTemplate() {
-  // 화면 표시용(상단 카드)
-  const [name, setName] = useState('하케톡');
+/**
+ * ✅ API 연동 버전 (UI 변경 없음)
+ * props:
+ * - user: { name, phoneNumber, logInId, address }
+ * - loading, error, saving
+ * - onSaveProfile(nextName, imageFile)
+ * - onChangeCurrentAddress(payload)
+ */
+export default function MyPageTemplate({
+  user = { name: '', phoneNumber: '', logInId: '', address: '' },
+  loading = false,
+  error = null,
+  saving = false,
+  onSaveProfile,
+}) {
+  const [name, setName] = useState(user?.name || '핫케톡');
   const [avatar, setAvatar] = useState(AvatarImg);
+  const [avatarFile, setAvatarFile] = useState(null);
 
-  // 시트 오픈 상태
+  // 바텀시트 상태
   const [open, setOpen] = useState(false);
-
-  // 시트 내부 편집값 (저장 전까지 분리해서 보관)
   const [editName, setEditName] = useState(name);
   const [editAvatar, setEditAvatar] = useState(avatar);
+
+  const nav = useNavigate();
+
+  // ✅ API로부터 유저정보 들어오면 UI 반영
+  useEffect(() => {
+    if (user?.name) setName(user.name);
+  }, [user?.name]);
 
   const openSheet = () => {
     setEditName(name);
@@ -34,17 +53,54 @@ export default function MyPageTemplate() {
   };
   const closeSheet = () => setOpen(false);
 
-  const handleSave = () => {
+  // ✅ 저장 클릭 시 API 호출 연결
+  const handleSave = async () => {
     setName(editName);
     setAvatar(editAvatar);
     setOpen(false);
-  };
 
-  const nav = useNavigate();
+    if (typeof onSaveProfile === 'function') {
+      await onSaveProfile(editName, avatarFile);
+    }
+  };
 
   const moveAddressAdmin = () => {
     nav('/address-admin');
   };
+
+  // ✅ 로딩 상태
+  if (loading)
+    return (
+      <Page>
+        <PageWrapper>
+          <Header>
+            <RowForTopBar $justify="center" $align="center">
+              <Title>마이페이지</Title>
+            </RowForTopBar>
+          </Header>
+          <MiddleSection>
+            <Content>불러오는 중...</Content>
+          </MiddleSection>
+        </PageWrapper>
+      </Page>
+    );
+
+  // ✅ 에러 상태
+  if (error)
+    return (
+      <Page>
+        <PageWrapper>
+          <Header>
+            <RowForTopBar $justify="center" $align="center">
+              <Title>마이페이지</Title>
+            </RowForTopBar>
+          </Header>
+          <MiddleSection>
+            <Content style={{ color: 'red' }}>정보를 불러오지 못했습니다.</Content>
+          </MiddleSection>
+        </PageWrapper>
+      </Page>
+    );
 
   return (
     <Page>
@@ -61,15 +117,15 @@ export default function MyPageTemplate() {
             <Column $gap={24}>
               <Row $justify="space-between">
                 <Label>이름</Label>
-                <Content>{name}</Content>
+                <Content>{user?.name || name}</Content>
               </Row>
               <Row $justify="space-between">
                 <Label>휴대폰 번호</Label>
-                <Content>010-1234-1234</Content>
+                <Content>{user?.phoneNumber || '010-1234-1234'}</Content>
               </Row>
               <Row $justify="space-between">
                 <Label>아이디</Label>
-                <Content>soongsil123</Content>
+                <Content>{user?.logInId || 'soongsil123'}</Content>
               </Row>
             </Column>
             <EditButton onClick={openSheet}>프로필 편집</EditButton>
@@ -81,24 +137,24 @@ export default function MyPageTemplate() {
             <Row $justify="space-between">
               <Label>주소</Label>
               <MoveText onClick={moveAddressAdmin}>
-                주소관리 <img src={iconChevron} />
+                주소관리 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
             <Row $justify="space-between">
               <Label>수리내역</Label>
               <MoveText>
-                조회하기 <img src={iconChevron} />
+                조회하기 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
           </Column>
         </EndSection>
-        {/* ===== 프로필 편집 바텀시트 ===== */}
+
+        {/* ===== 바텀시트 ===== */}
         <BottomSheet isOpen={open} onClose={closeSheet} height="100dvh">
           <SheetBody>
             <SheetHandle />
             <SheetTitle>프로필 편집</SheetTitle>
 
-            {/* 프로필 이미지 + 편집버튼 */}
             <AvatarWrap>
               <AvatarBig src={editAvatar} alt="프로필" />
               <EditBubble as="label">
@@ -110,6 +166,7 @@ export default function MyPageTemplate() {
                     if (file) {
                       const url = URL.createObjectURL(file);
                       setEditAvatar(url);
+                      setAvatarFile(file);
                     }
                   }}
                 />
@@ -117,7 +174,6 @@ export default function MyPageTemplate() {
               </EditBubble>
             </AvatarWrap>
 
-            {/* 입력 폼 */}
             <Form>
               <Field>
                 <FieldLabel>이름</FieldLabel>
@@ -136,18 +192,22 @@ export default function MyPageTemplate() {
               <Field>
                 <Row $justify="space-between">
                   <FieldLabel>휴대폰 번호</FieldLabel>
-                  <IdValue>010-1234-1234</IdValue>
+                  <IdValue>{user?.phoneNumber || '010-1234-1234'}</IdValue>
                 </Row>
               </Field>
 
               <Row $justify="space-between">
                 <FieldLabel>아이디</FieldLabel>
-                <IdValue>soongsil123</IdValue>
+                <IdValue>{user?.logInId || 'soongsil123'}</IdValue>
               </Row>
             </Form>
 
             <FooterSticky>
-              <Button text="저장" onClick={handleSave} />
+              <Button
+                text={saving ? '저장 중...' : '저장'}
+                onClick={handleSave}
+                disabled={saving}
+              />
             </FooterSticky>
           </SheetBody>
         </BottomSheet>
@@ -156,7 +216,6 @@ export default function MyPageTemplate() {
     </Page>
   );
 }
-
 /* ===== 스타일 ===== */
 const PageWrapper = styled.div`
   display: flex;
