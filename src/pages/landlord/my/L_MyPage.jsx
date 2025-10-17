@@ -2,12 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import L_MyPageTemplate from '../../../templates/landlord/my/L_MyPageTemplate';
 import { useAuthStore } from '../../../store/useAuthStore';
-import {
-  fetchMyInfo,
-  fetchCurrentAddress,
-  updateMyInfo,
-  changeCurrentAddress,
-} from '../../../api/myPage';
+import { fetchMyInfo, fetchCurrentAddress, updateMyInfo } from '../../../api/user-service';
 
 function formatPhone(p) {
   if (!p) return '';
@@ -99,7 +94,6 @@ export default function MyPage() {
       error={error}
       saving={saving}
       onSaveProfile={handleSaveProfile}
-      onChangeCurrentAddress={handleChangeCurrentAddress}
       addressManagePath="/address-admin"
     />
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import AdminAuthTemplate from '../../../templates/landlord/admin/AdminAuthTemplate';
-import { getTenantRequestList, approveTenant, rejectTenant } from '../../../api/adminAuth';
+import { getTenantRequestList, approveTenant, rejectTenant } from '../../../api/house-service';
 
 export default function AdminAuth() {
   const [items, setItems] = useState([]);

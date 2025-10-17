@@ -2,7 +2,8 @@
 // ✅ 이 파일은 API 연동/상태/콜백만 담당합니다. (UI는 템플릿에 위임)
 import React, { useMemo, useState } from 'react';
 import InitProcessTemplate from '../../templates/common/InitProcessTemplate';
-import { apiSearchRoadAddress, apiTenantRequest, apiLandlordRegister } from '../../api/initProcess';
+import { apiTenantRequest, apiLandlordRegister } from '../../api/house-service';
+import { apiSearchRoadAddress } from '../../api/infra-service';
 
 /** roadAddr 문자열을 템플릿에서 쓰기 좋게 보조 파싱 (UI 아님: 데이터 정규화 용도) */
 function parseRoadAddr(roadAddrStr = '') {

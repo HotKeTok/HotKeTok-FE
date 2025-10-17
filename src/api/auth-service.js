@@ -1,27 +1,6 @@
-// src/api/auth.js
+// src/api/auth-service.js
 import api from './client';
 import { getRefreshToken } from '../utils/auth';
-
-// 로그인
-export async function apiLogin({ logInId, password, role }) {
-  const { data } = await api.post(
-    '/auth-service/login',
-    { logInId, password, role },
-    { headers: { Authorization: undefined } } // ✅ 혹시 모를 잔여 헤더 제거
-  );
-  return data;
-}
-
-// 리프레시 토큰으로 토큰 재발급
-export async function apiRefreshToken() {
-  const refreshToken = getRefreshToken();
-  const { data } = await api.post(
-    '/auth-service/refresh',
-    { refreshToken },
-    { headers: { Authorization: undefined } } // ✅ RT 갱신도 토큰 금지
-  );
-  return data;
-}
 
 // 회원가입
 export async function apiSignUp({ name, logInId, password, phoneNumber }) {
@@ -34,7 +13,7 @@ export async function apiSignUp({ name, logInId, password, phoneNumber }) {
   return data;
 }
 
-// 인증번호 요청
+// 인증번호 전송
 export async function apiPhoneSend({ phoneNumber }) {
   // 숫자만 남기기
   const digits = String(phoneNumber || '')
@@ -72,5 +51,26 @@ export async function apiIdVerify({ logInId }) {
     throw new Error('아이디를 입력해주세요.');
   }
   const { data } = await api.post(`/auth-service/id/verify?logInId=${id}`, {});
+  return data;
+}
+
+// 로그인
+export async function apiLogin({ logInId, password, role }) {
+  const { data } = await api.post(
+    '/auth-service/login',
+    { logInId, password, role },
+    { headers: { Authorization: undefined } } // ✅ 혹시 모를 잔여 헤더 제거
+  );
+  return data;
+}
+
+// 토큰 재발급
+export async function apiRefreshToken() {
+  const refreshToken = getRefreshToken();
+  const { data } = await api.post(
+    '/auth-service/refresh',
+    { refreshToken },
+    { headers: { Authorization: undefined } } // ✅ RT 갱신도 토큰 금지
+  );
   return data;
 }

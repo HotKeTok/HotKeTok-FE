@@ -142,11 +142,7 @@ export default function L_MyPageTemplate({
               </MoveText>
             </Row>
 
-            <AddressPreview>
-              <Badge>현재 설정한 주소</Badge>
-              <CurrentAddress>{user?.address || '등록된 기본 주소가 없습니다'}</CurrentAddress>
-              {!!user?.address ? <Subline /> : <Subline>주소관리에서 등록해 주세요</Subline>}
-            </AddressPreview>
+            <CurrentAddress>{user?.address || '등록된 기본 주소가 없습니다'}</CurrentAddress>
 
             <Row $justify="space-between" $align="center" style={{ marginTop: 12 }}>
               <Label>수리내역</Label>

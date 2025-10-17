@@ -7,7 +7,7 @@ import {
   clearAuth,
   isAccessTokenExpiringSoon,
 } from '../utils/auth';
-import { apiRefreshToken } from './auth';
+import { apiRefreshToken } from './auth-service';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',

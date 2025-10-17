@@ -5,7 +5,7 @@ import SignUpTemplate from '../../templates/common/SignUpTemplate';
 import ActionGuideModal from '../../components/common/ActionGuideModal';
 import styled from 'styled-components';
 import { color, typo } from '../../styles/tokens';
-import { apiSignUp, apiPhoneSend, apiPhoneVerify, apiIdVerify } from '../../api/auth';
+import { apiSignUp, apiPhoneSend, apiPhoneVerify, apiIdVerify } from '../../api/auth-service';
 
 export default function SignUp() {
   const navigate = useNavigate();

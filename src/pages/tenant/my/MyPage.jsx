@@ -2,12 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import MyPageTemplate from '../../../templates/tenant/my/MyPageTemplate';
 import { useAuthStore } from '../../../store/useAuthStore';
-import {
-  fetchMyInfo,
-  fetchCurrentAddress,
-  updateMyInfo,
-  changeCurrentAddress,
-} from '../../../api/myPage';
+import { fetchMyInfo, fetchCurrentAddress, updateMyInfo } from '../../../api/user-service';
 
 // ✅ 전화번호 하이픈 포맷터
 function formatPhone(p) {

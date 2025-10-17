@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SignInTemplate from '../../templates/common/SignInTemplate';
 import Toast from '../../components/common/Toast';
-import { apiLogin } from '../../api/auth';
+import { apiLogin } from '../../api/auth-service';
 import { useAuthStore } from '../../store/useAuthStore';
 import { clearAuth } from '../../utils/auth';
 import { setTokens as setLegacyTokens } from '../../utils/auth';
