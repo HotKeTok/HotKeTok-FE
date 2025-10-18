@@ -30,11 +30,11 @@ export default function NoticeComponent({ notices }) {
           onClick={() => onNoticeDetailRoute(notice.id)}
         >
           <NoticeItem
-            title={notice.title}
+            author={notice.author}
+            authorProfileImage={notice.authorProfileImage}
             date={notice.date}
-            writer={notice.writer}
-            pinned={notice.pinned}
-            latest={notice.latest}
+            title={notice.title}
+            isFix={notice.isFix}
           />
         </div>
       ))}
