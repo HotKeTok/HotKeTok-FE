@@ -16,7 +16,11 @@ export default function NoticeDetailTemplate({ noticeDetail }) {
           <H2>{noticeDetail.title}</H2>
           <Row $justify="space-between" style={{ marginTop: 8 }}>
             <Row $gap={8} $align={'center'}>
-              <ProfileDefault width={24} height={24} />
+              {noticeDetail.authorProfileImage ? (
+                <ProfileImage src={noticeDetail.authorProfileImage} alt="Profile" />
+              ) : (
+                <ProfileDefault width={24} height={24} />
+              )}
               <Body2>{noticeDetail.author}</Body2>
             </Row>
             <Body2 style={{ color: theme.colors.grayscale[500] }}>
@@ -58,4 +62,11 @@ const Body2 = styled.div`
 const Divider = styled.div`
   height: 1px;
   background: #dedede;
+`;
+
+const ProfileImage = styled.img`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
 `;

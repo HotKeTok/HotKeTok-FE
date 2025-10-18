@@ -25,9 +25,5 @@ export default function Notice() {
     fetchData();
   }, [accessToken]);
 
-  const sortedNoticeList = useMemo(() => {
-    return getFixedNoticeList(noticeList, 1, 4);
-  }, [noticeList]);
-
-  return <NoticeTemplate noticeList={sortedNoticeList} />;
+  return <NoticeTemplate noticeList={noticeList} />;
 }
