@@ -17,7 +17,6 @@ export default function AdminNoticeDetail() {
       if (!accessToken) return;
 
       const data = await deleteNotice(accessToken, params.id);
-      console.log(data);
       if (data.success) {
         navigate('/notice', { replace: true });
       }

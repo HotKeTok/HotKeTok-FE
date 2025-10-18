@@ -1,32 +1,23 @@
-import React, { useState, useRef } from "react";
-import styled, { css } from "styled-components";
-import ArrowDown from "../../../assets/common/icon-arrow-down.svg?react";
-import Compliment from "../../../assets/communication/message/tag/Tag_Compliment_black.svg?react";
-import Noise from "../../../assets/communication/message/tag/Tag_Noise_black.svg?react";
-import Quiet from "../../../assets/communication/message/tag/Tag_Quiet_black.svg?react";
-import Sleeping from "../../../assets/communication/message/tag/Tag_Sleeping_black.svg?react";
-import { typo } from "../../../styles/tokens";
+import React, { useState, useRef } from 'react';
+import styled, { css } from 'styled-components';
+import ArrowDown from '../../../assets/common/icon-arrow-down.svg?react';
+import { typo } from '../../../styles/tokens';
+import { color } from '../../../styles/tokens';
 
-export default function BoxToggle ({ floor, handleSelectReceiver, selectedId }) {
+export default function BoxToggle({ floor, units = [], handleSelectReceiver, selectedId }) {
   const [isOpen, setIsOpen] = useState(false);
-
   const contentRef = useRef(null);
 
   const toggleHandler = () => {
-    setIsOpen((prev) => !prev);
+    setIsOpen(prev => !prev);
   };
-
-  // TODO: api에서 받아온 호수 데이터 매핑, tag 여러개 처리
 
   return (
     <ToggleContainer>
       <ToggleHeader onClick={toggleHandler}>
-        <Subtitle1>{floor}층</Subtitle1>
-        <Arrow
-          isOpen={isOpen}
-          src={ArrowDown}
-          style={{ width: 10, objectFit: "cover" }}
-        ><ArrowDown/>
+        <Subtitle1>{floor}</Subtitle1>
+        <Arrow isOpen={isOpen}>
+          <ArrowDown />
         </Arrow>
       </ToggleHeader>
 
@@ -35,44 +26,25 @@ export default function BoxToggle ({ floor, handleSelectReceiver, selectedId }) 
         isOpen={isOpen}
         maxHeight={contentRef.current?.scrollHeight}
       >
-        <ToggleContent
-          onClick={() => handleSelectReceiver(floor * 100 + 1)}
-          state={selectedId === floor * 100 + 1}
-        >
-          <Body2 className="body2">{floor}01호</Body2>
-          <Compliment />
-        </ToggleContent>
-        <ToggleContent
-          onClick={() => handleSelectReceiver(floor * 100 + 2)}
-          state={selectedId === floor * 100 + 2}
-        >
-          <Body2 className="body2">{floor}02호</Body2>
-          <Sleeping />
-        </ToggleContent>
-        <ToggleContent
-          onClick={() => handleSelectReceiver(floor * 100 + 3)}
-          state={selectedId === floor * 100 + 3}
-        >
-          <Body2 className="body2">{floor}03호</Body2>
-        </ToggleContent>
-        <ToggleContent
-          onClick={() => handleSelectReceiver(floor * 100 + 4)}
-          state={selectedId === floor * 100 + 4}
-        >
-          <Body2 className="body2">{floor}04호</Body2>
-          <Quiet/>
-        </ToggleContent>
-        <ToggleContent
-          onClick={() => handleSelectReceiver(floor * 100 + 5)}
-          state={selectedId === floor * 100 + 5}
-        >
-          <Body2 className="body2">{floor}05호</Body2>
-          <Noise/>
-        </ToggleContent>
+        {units.map(unit => (
+          <ToggleContent
+            key={unit.unitNumber}
+            onClick={!unit.isCurrentUser ? () => handleSelectReceiver(unit.userId) : undefined}
+            state={selectedId === unit.userId}
+            disabled={unit.isCurrentUser}
+          >
+            <UnitInfoWrapper>
+              <Body2>{unit.unitNumber}</Body2>
+              {unit.tags.map((message, index) => (
+                <TagMessage key={index}>{message}</TagMessage>
+              ))}
+            </UnitInfoWrapper>
+          </ToggleContent>
+        ))}
       </ToggleContentContainer>
     </ToggleContainer>
   );
-};
+}
 
 const ToggleContainer = styled.div`
   width: 100%;
@@ -98,16 +70,16 @@ const ToggleHeader = styled.div`
 
 const Arrow = styled.div`
   transition: transform 0.3s ease;
-  transform: rotate(${(props) => (props.isOpen ? "180deg" : "0deg")});
+  transform: rotate(${props => (props.isOpen ? '180deg' : '0deg')});
   width: 10px;
   object-fit: cover;
 `;
 
 const ToggleContentContainer = styled.div`
   overflow: hidden;
-  padding: ${(props) => (props.isOpen ? "16px 0px" : "0px 0px")};
+  padding: ${props => (props.isOpen ? '16px 0px' : '0px 0px')};
 
-  max-height: ${(props) => (props.isOpen ? `400px` : "0px")};
+  max-height: ${props => (props.isOpen ? `400px` : '0px')};
   transition: max-height 0.3s ease, padding 0.5s ease;
 
   display: flex;
@@ -131,21 +103,42 @@ const ToggleContent = styled.div`
   justify-content: space-between;
   align-items: center;
 
+  ${props =>
+    props.disabled &&
+    css`
+      cursor: not-allowed;
+      opacity: 0.5;
+    `}
+
   cursor: pointer;
 
-  ${(props) =>
-    props.state
+  ${props =>
+    props.state && !props.disabled
       ? css`
           border: 1.5px solid var(--Color-Primary, #01d281);
         `
       : css``}
 `;
 
-
 const Subtitle1 = styled.div`
-    ${typo('subtitle1')};
-`
+  ${typo('subtitle1')};
+`;
 
-const Body2= styled.div`
-    ${(typo('body2'))};
-`
+const Body2 = styled.div`
+  ${typo('body2')};
+`;
+
+const UnitInfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px; /* 호수와 태그 메시지 사이의 간격 */
+`;
+
+const TagMessage = styled.div`
+  ${typo('caption1')}; /* 작은 글씨체 적용 */
+  color: ${color('grayscale.700')}; /* 약간 연한 검은색 */
+  background-color: ${color('grayscale.100')};
+  padding: 4px 8px;
+  border-radius: 4px;
+`;

@@ -36,7 +36,6 @@ export default function AdminCommonBillsWriteTemplate() {
   const handleFormSubmit = () => {
     if (!isValidForm()) return;
     // 제출 시에는 콤마 없는 순수 숫자인 amount state를 사용
-    console.log({ date, type, content, amount });
     navigate(-1); // 이전 페이지로 이동
   };
 

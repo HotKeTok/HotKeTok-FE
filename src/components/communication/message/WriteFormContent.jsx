@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
 import IconChecked from '../../../assets/common/icon-checked.svg?react';
@@ -7,20 +6,19 @@ import { TAG_DATA } from '../../../constants/tenant/main/communication/tag';
 import { Row } from '../../../styles/flex';
 import { TIME_OPTIONS } from '../../../constants/tenant/main/communication/message';
 
-export default function WriteFormContent({ selectedId }) {
-  const [anonymity, setAnonymity] = useState(true);
-  const [tag, setTag] = useState([]);
-  const [descript, setDescript] = useState('');
-  const [silenceTime, setSilenceTime] = useState('');
-
+export default function WriteFormContent({ receiverInfo, formData, setFormData }) {
   const toggleTag = id => {
-    setTag(prev => {
-      if (prev.includes(id)) return prev.filter(x => x !== id);
-      return [...prev, id];
+    setFormData(prev => {
+      const newTags = prev.tag.includes(id) ? prev.tag.filter(x => x !== id) : [...prev.tag, id];
+      return { ...prev, tag: newTags };
     });
   };
 
-  const isSelected = id => tag.includes(id);
+  const isSelected = id => formData.tag.includes(id);
+
+  const onInputFormData = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
     <ContentContainer>
@@ -28,15 +26,17 @@ export default function WriteFormContent({ selectedId }) {
         {/* 1. 받는 이웃 */}
         <BasicInfoRow>
           <BasicInfoIndex>받는 이웃</BasicInfoIndex>
-          <Body1 style={{ color: `#1f1f1f` }}>{selectedId}호</Body1>
+          <Body1 style={{ color: `#1f1f1f` }}>{receiverInfo.unitNumber}</Body1>
         </BasicInfoRow>
 
         {/* 익명 여부 */}
         <BasicInfoRow>
           <BasicInfoIndex>익명 여부</BasicInfoIndex>
           <Row $align="center">
-            <CheckBtnContainer onClick={() => setAnonymity(v => !v)}>
-              {anonymity ? <IconChecked /> : <IconUnChecked />}
+            <CheckBtnContainer
+              onClick={() => onInputFormData('isAnonymous', !formData.isAnonymous)}
+            >
+              {formData.isAnonymous ? <IconChecked /> : <IconUnChecked />}
             </CheckBtnContainer>
             <Caption2 style={{ color: '#9a9a9a' }}>쪽지가 익명으로 전송돼요.</Caption2>
           </Row>
@@ -71,22 +71,28 @@ export default function WriteFormContent({ selectedId }) {
       </BasicInfoContainer>
 
       {/* 침묵 시간대 선택 */}
-      <BasicInfoContainer>
-        <BasicInfoSmallColumn>
-          <BasicInfoIndex>이 시간대에는 침묵을 지켜주세요.</BasicInfoIndex>
-          <BasicInfoDescript>층간소음을 원하지 않는 시간대를 선택 해주세요.</BasicInfoDescript>
-        </BasicInfoSmallColumn>
-        <TimeSelect value={silenceTime} onChange={e => setSilenceTime(e.target.value)}>
-          <option value="" disabled>
-            시간 선택
-          </option>
-          {TIME_OPTIONS.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
+      {formData.tag.includes('quiet') && (
+        <BasicInfoContainer>
+          <BasicInfoSmallColumn>
+            <BasicInfoIndex>이 시간대에는 침묵을 지켜주세요.</BasicInfoIndex>
+            <BasicInfoDescript>층간소음을 원하지 않는 시간대를 선택 해주세요.</BasicInfoDescript>
+          </BasicInfoSmallColumn>
+          <TimeSelect
+            value={formData.silentTime}
+            defaultValue={''}
+            onChange={e => onInputFormData('silentTime', e.target.value)}
+          >
+            <option value="" disabled>
+              시간 선택
             </option>
-          ))}
-        </TimeSelect>
-      </BasicInfoContainer>
+            {TIME_OPTIONS.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </TimeSelect>
+        </BasicInfoContainer>
+      )}
 
       {/* 상세 작성 */}
       <BasicInfoContainer style={{ gap: 5 }}>
@@ -95,13 +101,13 @@ export default function WriteFormContent({ selectedId }) {
 
         <DescriptInput
           placeholder="이웃에게 불쾌감을 줄 수 있는 내용은 삼가해 주세요."
-          value={descript}
-          onChange={e => setDescript(e.target.value)}
+          value={formData.detailContent}
+          onChange={e => onInputFormData('detailContent', e.target.value)}
           maxLength={100}
         />
         <WordCountContainer>
           <span style={{ color: '#a8a8a8' }}>
-            <strong>{descript.length} / 100</strong>
+            <strong>{formData.detailContent.length} / 100</strong>
           </span>
         </WordCountContainer>
       </BasicInfoContainer>

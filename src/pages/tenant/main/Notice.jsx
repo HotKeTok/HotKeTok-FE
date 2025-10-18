@@ -1,10 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import NoticeTemplate from '../../../templates/tenant/main/NoticeTemplate';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useState, useEffect } from 'react';
 import { getNoticeList } from '../../../api/notice-service';
-import { useMemo } from 'react';
-import { getFixedNoticeList } from '../../../utils/notice';
 
 export default function Notice() {
   const accessToken = useAuthStore(state => state.accessToken);

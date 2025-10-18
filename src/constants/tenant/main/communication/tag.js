@@ -16,6 +16,7 @@ import Tag_Quiet_disactive from '../../../../assets/communication/message/tag/Ta
 import Tag_Noise_disactive from '../../../../assets/communication/message/tag/Tag_Noise_disactive.svg?react';
 import Tag_Compliment_disactive from '../../../../assets/communication/message/tag/Tag_Compliment_disactive.svg?react';
 
+// 쪽지 태그 아이콘 맵핑 객체
 export const TAG_ICONS = {
   Tag_Sleeping: Tag_Sleeping,
   Tag_Quiet: Tag_Quiet,
@@ -23,7 +24,7 @@ export const TAG_ICONS = {
   Tag_Compliment: Tag_Compliment,
 };
 
-// 태그 데이터 배열
+// 쪽지 고정 태그 데이터 배열
 export const TAG_DATA = [
   {
     id: 'compliment',

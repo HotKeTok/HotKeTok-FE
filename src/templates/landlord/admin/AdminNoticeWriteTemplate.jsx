@@ -27,7 +27,6 @@ export default function AdminNoticeWriteTemplate({
   const [isFix, setisFix] = useState(false); // 버튼 활성화의 기준
 
   useEffect(() => {
-    console.log('Initial Data:', initialData);
     if (isEdit) {
       setTitle(initialData.title);
       setContent(initialData.content);
