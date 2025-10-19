@@ -37,9 +37,9 @@ export default function ButtonRound({
 const StyledButton = styled.button`
   width: ${({ $width }) => resolveWidth($width)};
   height: ${({ $height }) => ($height === 'full' ? '100%' : `${$height}px`)};
-  padding: 0 12px;
+  padding: 10px 16px;
   border-radius: 30px;
-  ${typo('button1')};
+  ${typo('button2')};
 
   background-color: ${({ $filled }) => ($filled ? color('brand.primary') : 'white')};
   border: 1.5px solid rgba(1, 210, 129, 0.3);
@@ -51,4 +51,8 @@ const StyledButton = styled.button`
   cursor: ${({ $disabled }) => ($disabled ? 'default' : 'pointer')};
 
   transition: background-color 0.15s ease, transform 0.02s ease;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
