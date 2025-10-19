@@ -3,22 +3,20 @@ import styled from 'styled-components';
 import TopBar from '../../../components/common/TopBar';
 import { BottomButtonContainer, Page, ScrollableContent } from '../../../styles/layout';
 import NoticeItem from '../../../components/main/notice/NoticeItem';
-import Button from '../../../components/common/Button';
-import { EXAMPLE_NOTICES } from '../../../mocks/main/notice';
 import { useNavigate } from 'react-router-dom';
 
-export default function NoticeTemplate() {
+export default function NoticeTemplate({ noticeList }) {
   const navigate = useNavigate();
 
   return (
     <Page>
       <TopBar title="공지사항" />
       <Content>
-        {EXAMPLE_NOTICES.map(notice => (
+        {noticeList.map(notice => (
           <NoticeItem
             key={notice.id}
             {...notice}
-            onClick={() => navigate(`/notice/${notice.id}`)}
+            onClick={() => navigate(`/notice/${notice.noticeId}`)}
           />
         ))}
       </Content>

@@ -10,17 +10,20 @@ import MessageIcn from '../../../assets/communication/message/message-icon.svg?r
 import MessageImg from '../../../assets/communication/message/message.png';
 import NoticeComponent from '../../../components/communication/NoticeComponent';
 import Notice from '../../../pages/tenant/main/Notice';
+import { useNavigate } from 'react-router-dom';
 
-export default function CommunicationTemplate({ onMessageRoute }) {
+export default function CommunicationTemplate({ notices }) {
+  const navigate = useNavigate();
+
   return (
     <Page>
       <PageHeader leftComponent={<Subtitle1>똑똑</Subtitle1>} />
       <ScrollableContent style={{ padding: '0 24px', paddingBottom: 143 }}>
         {/* 공지사항 컴포넌트 */}
-        <NoticeComponent notices={EXAMPLE_NOTICES} />
+        <NoticeComponent notices={notices} />
 
         {/* 메시지 컴포넌트 */}
-        <MessageWrapper style={{ marginTop: 16 }} onClick={onMessageRoute}>
+        <MessageWrapper style={{ marginTop: 16 }} onClick={() => navigate('/message')}>
           <Column $gap={10} $align="flex-start">
             <MessageIcn width={32} height={32} />
             <Column $gap={4}>

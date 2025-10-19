@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Column, Row } from '../../../styles/flex';
 import ArrowRight from '../../../assets/common/icon-arrow-right.svg?react';
 
-export default function AdminHomeTemplate() {
+export default function AdminHomeTemplate({ noticeList }) {
   const navigate = useNavigate();
 
   // const filteredItems = Object.values(DASHBOARD_ITEMS).filter(item =>
@@ -24,7 +24,7 @@ export default function AdminHomeTemplate() {
     <Page>
       <PageHeader leftComponent={<Subtitle1>관리</Subtitle1>} />
       <ScrollableContent style={{ padding: '0 24px', paddingBottom: 143 }}>
-        <NoticeComponent notices={EXAMPLE_NOTICES} />
+        <NoticeComponent notices={noticeList} />
 
         <DashboardContainer>
           {filteredItems.map((item, index) => {

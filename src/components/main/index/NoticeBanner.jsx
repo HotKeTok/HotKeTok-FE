@@ -3,9 +3,9 @@ import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import ArrowRight from '../../../assets/common/icon-arrow-right.svg?react';
 import { useNavigate } from 'react-router-dom';
-import { NOTICE_CARD_MOCK } from '../../../constants/tenant/main';
+import { formatDateToYMD } from '../../../utils/dateFormat';
 
-export default function NoticeBanner() {
+export default function NoticeBanner({ noticeList }) {
   const navigate = useNavigate();
 
   const handleBannerClick = () => {
@@ -23,17 +23,17 @@ export default function NoticeBanner() {
         <H3>공지사항</H3>
         <ArrowRightStyled style={{ width: 6, height: 7 }} />
       </Row>
-      {NOTICE_CARD_MOCK.map((item, index) => (
+      {noticeList.map((item, index) => (
         <Row
           $justify={'space-between'}
           style={{
-            borderBottom: item.border ? '1px solid #efefef' : 'none',
-            paddingBottom: item.border ? 12 : 0,
+            borderBottom: item.isFix ? '1px solid #efefef' : 'none',
+            paddingBottom: item.isFix ? 12 : 0,
           }}
           key={index}
         >
           <Body2>{item.title}</Body2>
-          <Caption2>{item.date}</Caption2>
+          <Caption2>{formatDateToYMD(item.date)}</Caption2>
         </Row>
       ))}
     </Container>

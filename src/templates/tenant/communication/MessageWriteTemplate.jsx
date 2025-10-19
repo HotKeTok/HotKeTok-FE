@@ -14,12 +14,25 @@ import { color, typo } from '../../../styles/tokens';
 import { Row } from '../../../styles/flex';
 import { useNavigate } from 'react-router-dom';
 
-export default function MessageWriteTemplate() {
+export default function MessageWriteTemplate({
+  state,
+  setState,
+  tenantList,
+  selectedReceiver,
+  setSelectedReceiver,
+  fetchNewMessageData,
+  preDefinedRecipient = { receiverId: null, senderNumber: null },
+}) {
   const navigate = useNavigate();
 
+  const [formData, setFormData] = useState({
+    receiverId: selectedReceiver,
+    isAnonymous: false,
+    tag: [],
+    silentTime: null,
+    detailContent: '',
+  });
   const [modal, setModal] = useState(false);
-  const [state, setState] = useState(0); // 0: 호수 선택, 1: 입력 폼 및 최종 제출
-  const [selectedReceiver, setSelectedReceiver] = useState(null); // 선택된 수신자 정보
 
   const BTN_TEXT = '작성하기';
 
@@ -35,10 +48,43 @@ export default function MessageWriteTemplate() {
     }
   };
 
-  const onConfirm = () => {
-    navigate('/message');
+  const isFormValid = () => {
+    const isQuietTagSelected = formData.tag.includes('quiet');
+    const isContentValid = formData.detailContent.trim().length > 0;
+    if (isQuietTagSelected) {
+      return formData.silentTime && isContentValid;
+    }
+    return isContentValid;
   };
 
+  const onConfirm = () => {
+    const updatedFormData = {
+      ...formData,
+      receiverId: selectedReceiver,
+    };
+    fetchNewMessageData(updatedFormData).then(() => {
+      setModal(false);
+      navigate('/message');
+    });
+  };
+
+  const getReceiverInfo = () => {
+    if (preDefinedRecipient.receiverId) {
+      return {
+        unitNumber: preDefinedRecipient.senderNumber,
+        userId: preDefinedRecipient.receiverId,
+      };
+    } else {
+      return tenantList
+        .flatMap(floor => floor.units)
+        .find(unit => unit.userId === selectedReceiver);
+    }
+  };
+
+  if (state === 1 && !selectedReceiver && !preDefinedRecipient.receiverId) {
+    // 수신자가 선택되지 않았으면 호수 선택 화면으로 강제 이동
+    setState(0);
+  }
   return (
     <PageWithoutBottomBar>
       <TopBar title="쪽지 쓰기" />
@@ -46,18 +92,23 @@ export default function MessageWriteTemplate() {
       <ScrollableContent style={{ background: '#fff' }}>
         {state === 0 ? (
           <WriteChoiceContent
-            handleSelectReceiver={number => handleSelectReceiver(number)}
+            handleSelectReceiver={string => handleSelectReceiver(string)}
             selectedReceiver={selectedReceiver}
+            tenantList={tenantList}
           />
         ) : (
-          <WriteFormContent selectedReceiver={selectedReceiver} />
+          <WriteFormContent
+            receiverInfo={getReceiverInfo()}
+            formData={formData}
+            setFormData={setFormData}
+          />
         )}
       </ScrollableContent>
       <BottomButtonContainer>
         <Button
           text={BTN_TEXT}
           onClick={btnClickHandler}
-          active={state === 0 ? selectedReceiver : true}
+          active={state === 0 ? selectedReceiver : isFormValid()}
         />
       </BottomButtonContainer>
       {/* 확인 모달 */}
@@ -66,7 +117,13 @@ export default function MessageWriteTemplate() {
           isOpen={modal}
           titleComponent={
             <Row $align="center">
-              <H3>{selectedReceiver}</H3>
+              <H3>
+                {
+                  tenantList
+                    .flatMap(floor => floor.units)
+                    .find(unit => unit.userId === selectedReceiver)?.unitNumber
+                }
+              </H3>
               <Body1>님께 쪽지를 보낼까요?</Body1>
             </Row>
           }

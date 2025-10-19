@@ -1,21 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import TopBar from '../../../components/common/TopBar';
 import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../styles/layout';
 import styled from 'styled-components';
-import {
-  EXAMPLE_RECEIVED_MESSAGE_LIST,
-  EXAMPLE_SENT_MESSAGE_LIST,
-} from '../../../mocks/communication/message';
-import { TAG_ICONS } from '../../../constants/tenant/main/communication/tag';
 import PencilIcn from '../../../assets/communication/message/pencil-icon.svg?react';
 import { formatDateToYMD, getHHMMTime } from '../../../utils/dateFormat';
 import { color, typo } from '../../../styles/tokens';
-import MenuIcn from '../../../assets/common/icon-menu.svg?react';
-import ReportMenuIcon from '../../../components/communication/message/ReportMenuIcon';
 import ConfirmModal from '../../../components/common/ConfirmModal';
-import { TIME_OPTIONS } from '../../../constants/tenant/main/communication/message';
 import { useNavigate } from 'react-router-dom';
 import OptionsMenu from '../../../components/common/OptionsMenu';
+import { TAG_DATA } from '../../../constants/tenant/main/communication/tag';
 
 /**
  * MessageDetailTemplate component
@@ -25,17 +18,17 @@ import OptionsMenu from '../../../components/common/OptionsMenu';
  * @param {function} onReply
  * @returns
  */
-export default function MessageDetailTemplate({ id, type = 'receive', message = {}, onReply }) {
+export default function MessageDetailTemplate({
+  type = 'receive',
+  messageDetail = {},
+  onReply,
+  onReport,
+}) {
   const navigation = useNavigate();
   const [modal, setModal] = useState(false);
-  const messageDetail =
-    (type === 'receive' ? EXAMPLE_RECEIVED_MESSAGE_LIST : EXAMPLE_SENT_MESSAGE_LIST).find(
-      msg => msg.id == id
-    ) || {};
-  // todo: 탭에 따라 type 검토
 
   function handleReplyClick() {
-    if (typeof onReply === 'function') onReply(message);
+    if (typeof onReply === 'function') onReply(messageDetail);
   }
 
   function handleReportClick() {
@@ -43,12 +36,10 @@ export default function MessageDetailTemplate({ id, type = 'receive', message = 
   }
 
   function handleConfirmReport() {
-    // todo: 신고시 삭제 api 요청
+    onReport();
     setModal(false);
     navigation(-1);
   }
-
-  const TagComponent = TAG_ICONS[messageDetail.tag];
 
   const menuOption = [
     {
@@ -74,13 +65,11 @@ export default function MessageDetailTemplate({ id, type = 'receive', message = 
       <ScrollableNoBottomBarContent>
         <ContentContainer>
           <IndexAndValue>
-            <Title>{type === 'sent' ? '보낸' : '받은'} 이웃</Title>
+            <Title>{type === 'sent' ? '받은' : '보낸'} 이웃</Title>
             <Value>
-              {type === 'receive'
-                ? messageDetail.anonymity
-                  ? '익명'
-                  : messageDetail.sender
-                : messageDetail.sender}
+              {type === 'receive' && messageDetail.isAnonymous
+                ? '익명'
+                : messageDetail.senderNumber}
             </Value>
           </IndexAndValue>
 
@@ -91,25 +80,34 @@ export default function MessageDetailTemplate({ id, type = 'receive', message = 
             )}`}</Value>
           </IndexAndValue>
 
-          <IndexAndValue>
+          <IndexAndValue style={{ alignItems: 'flex-start' }}>
             <Title>태그</Title>
             <TagArea>
-              <TagComponent />
+              {messageDetail.tags.length > 0 &&
+                messageDetail.tags.map(tag => {
+                  const TagIcon = TAG_DATA.find(t => t.id === tag).activeIcon;
+                  return <TagIcon key={tag} />;
+                })}
             </TagArea>
           </IndexAndValue>
 
+          {messageDetail.silentTime && (
+            <IndexAndValue style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+              <Title>⏰ 이 시간 이후부터는 조용히 해주셨으면 좋겠어요!</Title>
+              <QuietTime>{messageDetail.silentTime}</QuietTime>
+            </IndexAndValue>
+          )}
+
           <IndexAndValue style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
             <Title>내용</Title>
-            <DescriptBox>
-              <div>{messageDetail.content}</div>
-            </DescriptBox>
+            <DescriptBox>{messageDetail.content}</DescriptBox>
           </IndexAndValue>
 
           {type === 'receive' && !messageDetail.anonymity ? (
             <ButtonWrapper>
               <SendButton onClick={handleReplyClick}>
                 <PencilIcn width={12} height={12} />
-                {messageDetail.senderId || messageDetail.receiverId}호에 답장하기
+                {messageDetail.senderNumber}에 답장하기
               </SendButton>
             </ButtonWrapper>
           ) : null}
@@ -159,6 +157,7 @@ const DescriptBox = styled.div`
   border-radius: 6px;
   border: 1px solid #efefef;
   background: #fafafb;
+  word-break: break-all;
 
   ${typo('body2')};
   color: ${color('grayscale.800')};
@@ -193,6 +192,20 @@ const SendButton = styled.div`
 
 const TagArea = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
   gap: 8px;
+`;
+
+const QuietTime = styled.div`
+  width: 100%;
+  margin-left: auto;
+  text-align: right;
+  border-radius: 6px;
+  padding: 5px;
+  ${typo('body1')};
+  color: ${color('grayscale.800')};
+
+  white-space: pre-line;
 `;

@@ -12,34 +12,32 @@ import { useNavigate } from 'react-router-dom';
 /**
  * Admin Notice Write/Edit Template
  * @param {boolean} isEdit - 수정 모드 여부
- * @param {object} initialData - 수정 시 초기 데이터 { title, content, isFixed }
+ * @param {object} initialData - 수정 시 초기 데이터 { title, content, isFix }
  * @param {function} onSubmit - 작성/수정 완료 시 호출될 함수
  */
 export default function AdminNoticeWriteTemplate({
   isEdit = false,
-  initialData = { title: '', content: '', isFixed: false },
-  onSubmit = () => console.log('Submit clicked'),
+  initialData = { noticeId: null, title: '', content: '', isFix: false },
+  onSubmit,
 }) {
   const navigate = useNavigate();
   const [modal, setModal] = useState(false); // 확인 모달 상태 관리
   const [title, setTitle] = useState(''); // 제목
   const [content, setContent] = useState(''); // 내용
-  const [isFixed, setIsFixed] = useState(false); // 버튼 활성화의 기준
+  const [isFix, setisFix] = useState(false); // 버튼 활성화의 기준
 
   useEffect(() => {
     if (isEdit) {
       setTitle(initialData.title);
       setContent(initialData.content);
-      setIsFixed(initialData.isFixed);
+      setisFix(initialData.isFix);
     }
   }, [isEdit, initialData]);
 
   const isFormValid = title.trim() !== '' && content.trim() !== ''; // 공백 제거
   const isFormDirty = isEdit
-    ? title !== initialData.title ||
-      content !== initialData.content ||
-      isFixed !== initialData.isFixed
-    : title !== '' || content !== '' || isFixed; // 버튼 활성화의 기준 (작성/수정에 따라 다름)
+    ? title !== initialData.title || content !== initialData.content || isFix !== initialData.isFix
+    : title !== '' || content !== '' || isFix; // 버튼 활성화의 기준 (작성/수정에 따라 다름)
 
   const handleBackClick = () => {
     if (isFormDirty) {
@@ -57,7 +55,13 @@ export default function AdminNoticeWriteTemplate({
 
   const handleSubmit = () => {
     if (isFormValid) {
-      onSubmit({ title, content, isFixed });
+      onSubmit({
+        // 수정된 값만 전송
+        ...(isEdit && { noticeId: parseInt(initialData.noticeId) }),
+        ...(title !== initialData.title && { title }),
+        ...(content !== initialData.content && { content }),
+        ...(isFix !== initialData.isFix && { isFix }),
+      });
     }
   };
 
@@ -87,8 +91,8 @@ export default function AdminNoticeWriteTemplate({
               <CharCounter>{content.length}/300</CharCounter>
             </TextareaWrapper>
           </Field>
-          <CheckboxWrapper onClick={() => setIsFixed(!isFixed)}>
-            {isFixed ? <CheckbtnFilled /> : <CheckbtnNotFilled />}
+          <CheckboxWrapper onClick={() => setisFix(!isFix)}>
+            {isFix ? <CheckbtnFilled /> : <CheckbtnNotFilled />}
             <CheckboxLabel>
               <p>고정글로 게시</p>
               <span>공지가 상단에 고정돼요.</span>
@@ -97,7 +101,7 @@ export default function AdminNoticeWriteTemplate({
         </Form>
         <ButtonWrapper>
           <Button
-            active={isFormValid}
+            active={isFormDirty}
             text={`공지 ${isEdit ? '수정' : '작성'}하기`}
             onClick={handleSubmit}
           />

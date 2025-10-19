@@ -19,12 +19,8 @@ import { formatNumberWithCommas } from '../../../utils/number';
  * @param {object} commonBill - 공동 관리비 정보
  * @returns
  */
-export default function MainTemplate({ address, utilityBill, commonBill }) {
+export default function MainTemplate({ address, utilityBill, commonBill, noticeList }) {
   const navigate = useNavigate();
-
-  const handleBillClick = () => {
-    navigate('/bills');
-  };
 
   return (
     <Page>
@@ -37,7 +33,12 @@ export default function MainTemplate({ address, utilityBill, commonBill }) {
           <H3 style={{ color: '#fff', marginBottom: 16 }}>{address}</H3>
 
           <Row $justify={'flex-end'} style={{ marginBottom: 4 }}>
-            <Row $gap={6} $align={'center'} style={{ cursor: 'pointer' }} onClick={handleBillClick}>
+            <Row
+              $gap={6}
+              $align={'center'}
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate('/bills')}
+            >
               <Button2 style={{ color: '#fff' }}>내역 보기</Button2>
               <ArrowRight style={{ width: 4, height: 7 }} />
             </Row>
@@ -56,7 +57,7 @@ export default function MainTemplate({ address, utilityBill, commonBill }) {
       </ColorBackground>
 
       <BottomContent $overlap={24} $gap={24}>
-        <NoticeBanner />
+        <NoticeBanner noticeList={noticeList} />
         <RepairBanner />
         <CompanyCard />
       </BottomContent>

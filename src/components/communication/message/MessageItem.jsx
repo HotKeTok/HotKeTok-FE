@@ -1,24 +1,25 @@
-import React from "react";
-import styled from "styled-components";
-import { formatDateToYMD } from "../../../utils/dateFormat";
-import { color, typo } from "../../../styles/tokens";
+import React from 'react';
+import styled from 'styled-components';
+import { formatDateToYMD } from '../../../utils/dateFormat';
+import { color, typo } from '../../../styles/tokens';
 
-export default function MessageItem({ entry = {}, onClick }) {
-  const { id, senderId, anonymity, content, createdAt } = entry || {};
+export default function MessageItem({ type, entry = {}, onClick }) {
+  const { postId, number, anonymous, content, createdAt } = entry || {};
 
   function handleClick() {
-    if (typeof onClick === "function") onClick(id);
+    if (typeof onClick === 'function') onClick(postId);
   }
 
   return (
-    <Content role="button" onClick={handleClick} tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handleClick()}>
-      <SenderLabel>
-        {anonymity ? "익명" : `${senderId}호`}
-      </SenderLabel>
+    <Content
+      role="button"
+      onClick={handleClick}
+      tabIndex={0}
+      onKeyDown={e => e.key === 'Enter' && handleClick()}
+    >
+      <SenderLabel>{type === 'receive' && anonymous ? '익명' : number}</SenderLabel>
 
-      <MessageBody title={content}>
-        {content}
-      </MessageBody>
+      <MessageBody title={content}>{content}</MessageBody>
 
       <DateBox>{formatDateToYMD(createdAt)}</DateBox>
     </Content>
@@ -44,7 +45,6 @@ const Content = styled.div`
   &:focus {
     outline: 2px solid rgba(1, 210, 129, 0.2);
   }
-
 `;
 
 const SenderLabel = styled.div`
@@ -54,7 +54,7 @@ const SenderLabel = styled.div`
   color: ${color('grayscale.800')};
   ${typo('button2')};
 
-  text-align:left;
+  text-align: left;
   white-space: nowrap;
 `;
 
@@ -74,8 +74,8 @@ const MessageBody = styled.div`
 `;
 
 const DateBox = styled.div`
- color: ${color('grayscale.500')}; 
- ${typo('caption1')};
+  color: ${color('grayscale.500')};
+  ${typo('caption1')};
 
   white-space: nowrap;
   margin-left: 12px;
