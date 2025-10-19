@@ -1,5 +1,5 @@
-import ChatRoomTemplate from "../../../templates/landlord/chat/ChatRoomTemplate";
+import ChatRoomTemplate from '../../../templates/common/chat/ChatRoomTemplate';
 
-export default function ChatRoom(){
-    return (<ChatRoomTemplate/>)
+export default function ChatRoom() {
+  return <ChatRoomTemplate />;
 }

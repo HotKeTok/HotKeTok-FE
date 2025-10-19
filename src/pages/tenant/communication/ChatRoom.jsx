@@ -1,7 +1,6 @@
-import ChatRoomTemplate from "../../../templates/tenant/communication/ChatRoomTemplate";
+import ChatRoomTemplate from '../../../templates/common/chat/ChatRoomTemplate';
 
-export default function ChatRoom(){
-    return (
-        <ChatRoomTemplate/>
-    )
+// 입주민 채팅방 상세 페이지
+export default function ChatRoom() {
+  return <ChatRoomTemplate />;
 }
