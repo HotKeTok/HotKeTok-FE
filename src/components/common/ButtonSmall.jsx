@@ -21,7 +21,7 @@ export default function ButtonSmall({ active = true, text, width = 'full', heigh
       onClick={active ? onClick : undefined}
       disabled={!active}
     >
-      <div>{text}</div>
+      {text}
     </StyledButton>
   );
 }
