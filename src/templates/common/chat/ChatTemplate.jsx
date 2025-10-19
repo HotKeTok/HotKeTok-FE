@@ -2,15 +2,16 @@ import { useMemo, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import ButtonRound from '../../../components/common/ButtonRound';
 import TopBar from '../../../components/common/TopBar';
-import { Page, ScrollableContent } from '../../../styles/layout';
+import { Page, ScrollableNoBottomBarContent, TOP_BAR_HEIGHT } from '../../../styles/layout';
 import { useNavigate } from 'react-router-dom';
 import { DUMMY_CHAT_LIST } from '../../../constants/chat';
 import { formatTodayTimeOrIsoTime } from '../../../utils/dateFormat';
 import SwipeableChatItem from '../../../components/chat/SwipableChatItem';
 import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
+import IcnNoChat from '../../../assets/chat/no-chat-icon.svg?react';
 
-export default function ChatTemplate({ chatRooms }) {
+export default function ChatTemplate({ chatRooms, onDelete }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('direct');
   // API로부터 받은 원본 데이터라고 가정합니다.
@@ -28,7 +29,7 @@ export default function ChatTemplate({ chatRooms }) {
     DUMMY_CHAT_LIST.forEach(chat => {
       // UI 렌더링에 필요한 형태로 데이터를 가공합니다.
       const transformedChat = {
-        id: chat.roomId, // key로 사용할 id
+        roomId: chat.roomId, // key로 사용할 id
         lastMessage: chat.lastMessageContent,
         timestamp: chat.lastMessageTime,
         unreadCount: chat.unreadCount,
@@ -61,15 +62,9 @@ export default function ChatTemplate({ chatRooms }) {
     return { directTalk, groupTalk };
   }, [rawChats]);
 
-  const handleDelete = id => {
-    alert(`채팅방 ID ${id} 삭제`);
-    // 실제로는 여기서 API 호출 후 rawChats 상태를 업데이트해야 합니다.
-    setRawChats(prevChats => prevChats.filter(chat => chat.roomId !== id));
-  };
-
   const chatsToShow = activeTab === 'direct' ? processedChats.directTalk : processedChats.groupTalk;
   return (
-    <Page style={{ backgroundColor: '#f5f6f6' }}>
+    <Page style={{ backgroundColor: '#f5f6f6', position: 'relative' }}>
       <TopBar title="채팅" />
       <ToggleContainer>
         <ButtonRound
@@ -85,48 +80,59 @@ export default function ChatTemplate({ chatRooms }) {
           height={38}
         />
       </ToggleContainer>
-      <ScrollableContainerWithGap style={{ padding: '0 24px' }}>
-        {chatsToShow.map(chat => (
-          <SwipeableChatItem key={chat.id} onDelete={() => handleDelete(chat.roomId)}>
-            <ChatItem onClick={() => navigate(`/chat/chat-room/${chat.roomId}`)}>
-              {/* TODO: 단체톡은 시공업체 아이콘, 개인톡은 상대방 프로필 이미지 표시 */}
-              <Avatar src={chat.avatar} />
 
-              <Column $justify="flex-start" $align="flex-start" style={{ width: '100%' }}>
-                <MessageInfo>
-                  <SenderInfo>
-                    <SenderName>{chat.name}</SenderName>
-                    {/* 개인톡이면서 상대방이 업체일 경우 태그 표시 */}
-                    {chat.isVendor && <SenderType>업체</SenderType>}
-                  </SenderInfo>
-                  <Timestamp>{formatTodayTimeOrIsoTime(chat.timestamp)}</Timestamp>
-                </MessageInfo>
-                <MessageContent>
-                  {/* 단체톡일 경우 참여자 목록을 부가 정보로 표시 */}
-                  <LastMessage style={{ maxWidth: chat.unreadCount > 0 ? 230 : 'auto' }}>
-                    {chat.lastMessage}
-                  </LastMessage>
-                  {chat.unreadCount > 0 && <UnreadBadge>{chat.unreadCount}</UnreadBadge>}
-                </MessageContent>
-              </Column>
-            </ChatItem>
-          </SwipeableChatItem>
-        ))}
-      </ScrollableContainerWithGap>
+      <ScrollableNoBottomBarContent
+        style={{ padding: '0 24px', height: `calc(100vh- ${TOP_BAR_HEIGHT}) -55px` }}
+      >
+        {chatsToShow.length === 0 ? (
+          <FullContainer>
+            <IcnNoChat width={155} height={84} />
+            <H2 style={{ marginBottom: 4, marginTop: 6 }}>진행 중인 채팅이 없어요.</H2>
+            <Body1>입주민, 시공업체 와의 채팅은 여기에 표시됩니다.</Body1>
+          </FullContainer>
+        ) : (
+          <Column $gap={16} style={{ paddingTop: 10, paddingBottom: 20 }}>
+            {chatsToShow.map(chat => (
+              <SwipeableChatItem key={chat.id} onDelete={() => onDelete(chat.roomId, chat.name)}>
+                <ChatItem onClick={() => navigate(`/chat/chat-room/${chat.roomId}`)}>
+                  {/* TODO: 단체톡은 시공업체 아이콘, 개인톡은 상대방 프로필 이미지 표시 */}
+                  <Avatar src={chat.avatar} />
+
+                  <Column $justify="flex-start" $align="flex-start" style={{ width: '100%' }}>
+                    <MessageInfo>
+                      <SenderInfo>
+                        <SenderName>{chat.name}</SenderName>
+                        {/* 개인톡이면서 상대방이 업체일 경우 태그 표시 */}
+                        {chat.isVendor && <SenderType>업체</SenderType>}
+                      </SenderInfo>
+                      <Timestamp>{formatTodayTimeOrIsoTime(chat.timestamp)}</Timestamp>
+                    </MessageInfo>
+                    <MessageContent>
+                      {/* 단체톡일 경우 참여자 목록을 부가 정보로 표시 */}
+                      <LastMessage style={{ maxWidth: chat.unreadCount > 0 ? 230 : 'auto' }}>
+                        {chat.lastMessage}
+                      </LastMessage>
+                      {chat.unreadCount > 0 && <UnreadBadge>{chat.unreadCount}</UnreadBadge>}
+                    </MessageContent>
+                  </Column>
+                </ChatItem>
+              </SwipeableChatItem>
+            ))}
+          </Column>
+        )}
+      </ScrollableNoBottomBarContent>
     </Page>
   );
 }
 
 const ToggleContainer = styled.div`
-  padding: 10px 32px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  padding: 10px 32px 0px;
   display: flex;
   gap: 8px;
-`;
-
-const ScrollableContainerWithGap = styled(ScrollableContent)`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 `;
 
 const ChatItem = styled.div`
@@ -191,6 +197,26 @@ const LastMessage = styled.p`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+const FullContainer = styled.div`
+  width: 100%;
+  height: 65%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const H2 = styled.div`
+  ${typo('h2')};
+  color: ${color('grayscale.600')};
+`;
+
+const Body1 = styled.div`
+  ${typo('body1')};
+  color: ${color('grayscale.600')};
 `;
 
 const MessageContent = styled.div`

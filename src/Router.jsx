@@ -24,7 +24,7 @@ import AdminTenantsInfo from './pages/landlord/admin/AdminTenantsInfo';
 import AdminTenantsDetail from './pages/landlord/admin/AdminTenantsDetail';
 import AdminCommonBills from './pages/landlord/admin/AdminCommonBills';
 import AdminCommonBillsWrite from './pages/landlord/admin/AdminCommonBillsWrite';
-import ChatMainLandlord from './pages/landlord/communication/ChatMain';
+import ChatLandlord from './pages/landlord/communication/Chat';
 import ChatRoomLandlord from './pages/landlord/communication/ChatRoom';
 import MyPageLandlord from './pages/landlord/my/L_MyPage';
 import AddressAdminLandlord from './pages/landlord/my/L_AddressAdmin';
@@ -150,7 +150,7 @@ export default function AppRouter() {
               <Route path="/admin/common-bills/write" element={<AdminCommonBillsWrite />} />
 
               {/* 집주인 채팅 */}
-              <Route path="/chat" element={<ChatMainLandlord />} />
+              <Route path="/chat" element={<ChatLandlord />} />
               <Route path="/chat/chat-room/:id" element={<ChatRoomLandlord />} />
 
               {/* 집주인 마이 */}
@@ -179,7 +179,7 @@ export default function AppRouter() {
               {/* 입주민 똑똑 */}
               <Route path="/communication" element={<Communication />} />
               <Route path="/chat" element={<Chat />} />
-              <Route path="/chat/chat-room" element={<ChatRoom />} />
+              <Route path="/chat/chat-room/:id" element={<ChatRoom />} />
               <Route path="/message" element={<Message />} />
               <Route path="/message/detail/:id" element={<MessageDetail />} />
               <Route path="/message/write" element={<MessageWrite />} />
