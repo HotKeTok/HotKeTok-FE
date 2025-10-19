@@ -172,3 +172,28 @@ export const formatTodayTimeOrIsoTime = isoString => {
       .replace(/ /g, '');
   }
 };
+
+// 날짜 포맷팅을 위한 헬퍼 함수
+/**
+ * @function formatIsTodayOrIsoTime
+ * @description ISO 8601 형식의 날짜 문자열을 받아서,
+ *              오늘 날짜인 경우 '오늘' 문자열을,
+ *              그 외의 경우 'YYYY년 M월 D일' 형식으로 변환하여 반환합니다.
+ * @param {*} isoString
+ * @returns
+ */
+export const formatIsTodayOrIsoTime = isoString => {
+  const messageDate = new Date(isoString);
+  const now = new Date();
+
+  const isToday = messageDate.setHours(0, 0, 0, 0) === now.setHours(0, 0, 0, 0);
+  if (isToday) {
+    return '오늘';
+  }
+
+  return messageDate.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};

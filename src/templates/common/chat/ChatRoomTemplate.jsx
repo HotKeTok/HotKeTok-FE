@@ -1,7 +1,13 @@
+// 공통 채팅방 상세 템플릿
+// messages: 채팅 메시지 배열
+// onSendMessage: 메시지 전송 함수
+// myUserId: 내 사용자 ID
+// roomInfo: 방 정보 (예: 제목)
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { Page, ScrollableNoBottomBarContent } from '../../../styles/layout';
-import TopBar from '../../../components/common/TopBar';
+import TopBar from '../../../components/common/TopBar'; // 공용 TopBar 컴포넌트
+import { formatTodayTimeOrIsoTime, getHHMMTimeWithHour12 } from '../../../utils/dateFormat';
 import IcnSend from '../../../assets/chat/send-icon.svg?react';
 import { color, typo } from '../../../styles/tokens';
 import MessageBubble from '../../../components/chat/MessageBubble';
@@ -71,6 +77,92 @@ export default function ChatRoomTemplate({ messages, participants, myUserId, onS
     </Page>
   );
 }
+
+const StyledScrollableContent = styled(ScrollableNoBottomBarContent)`
+  padding: 16px;
+  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const InputContainer = styled.div`
+  position: fixed;
+  width: 390px;
+  padding-bottom: 20px;
+  background-color: ${color('grayscale.200')};
+
+  bottom: 0;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px 20px;
+`;
+
+const InputWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  border: 1px solid ${color('grayscale.300')};
+  background-color: ${color('grayscale.200')};
+  border-radius: 30px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const ChatInput = styled.input`
+  background: transparent;
+  outline: none;
+  border: none;
+
+  flex-grow: 1;
+  padding-left: 15px;
+  font-size: 15px;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const SendButton = styled.div`
+  height: 100%;
+  padding: 0 10px;
+
+  height: 40px;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+
+    svg {
+      path {
+        stroke: ${color('grayscale.500')};
+      }
+    }
+  }
+`;
+
+const StyledSendIcn = styled(IcnSend)`
+  ${props =>
+    props.disabled
+      ? css`
+          path {
+            stroke: ${color('grayscale.500')};
+          }
+        `
+      : css`
+          path {
+            stroke: black;
+          }
+        `}
+`;
 
 const StyledScrollableContent = styled(ScrollableNoBottomBarContent)`
   padding: 16px;
