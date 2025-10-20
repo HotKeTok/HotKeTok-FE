@@ -87,7 +87,7 @@ export default function AdminCommonBillsTemplate({ billsList, year, month, setYe
             menuStyle={menuStyle}
           />
         </FilterContainer>
-        {billsList.transactions.length === 0 ? (
+        {billsList.details.length === 0 ? (
           <Column
             $gap={10}
             $justify="center"
@@ -101,13 +101,13 @@ export default function AdminCommonBillsTemplate({ billsList, year, month, setYe
           <Column $gap={30}>
             <BillSummary
               month={month}
-              balance={billsList.summary.balance}
-              income={billsList.summary.income}
-              expense={billsList.summary.expense}
+              balance={billsList.balance}
+              income={billsList.income}
+              expense={billsList.expense}
             />
             <Column $gap={14}>
-              {billsList.transactions.map(bill => (
-                <BillItem key={bill.id} {...bill} />
+              {billsList.details.map((bill, index) => (
+                <BillItem key={index} id={index} {...bill} />
               ))}
             </Column>
           </Column>
