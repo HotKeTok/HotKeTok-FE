@@ -13,30 +13,38 @@ import CalendarIcn from '../../../assets/common/icon-calendar.svg?react';
 import Button from '../../../components/common/Button';
 import BaseModal from '../../../components/common/BaseModal';
 import Calendar from '../../../components/common/Calendar';
-import { useNavigate } from 'react-router-dom';
 import { formatNumberWithCommas } from '../../../utils/number'; // 콤마 포맷팅 함수 import
+import { formatDateToYYYYMMDD } from '../../../utils/dateFormat';
 
-export default function AdminCommonBillsWriteTemplate() {
-  const navigate = useNavigate();
-
+export default function AdminCommonBillsWriteTemplate({ fetchCommonBills }) {
   const today = formatDateToYMD(new Date());
   const [date, setDate] = useState(today);
   const [dateModalOpen, setDateModalOpen] = useState(false);
-  const [type, setType] = useState('income'); // 'income' | 'expense'
-  const [content, setContent] = useState('');
+  const [type, setType] = useState('INCOME'); // 'INCOME' | 'EXPENSE'
+  const [description, setDescription] = useState('');
   const [amount, setAmount] = useState(''); // State에는 콤마 없는 순수 숫자 문자열만 저장
 
   // 모든 인풋이 채워졌는지 확인하는 유효성 검사 함수
   const isValidForm = () => {
     return (
-      content.trim() !== '' && amount.trim() !== '' && !isNaN(Number(amount)) && Number(amount) > 0
+      description.trim() !== '' &&
+      amount.trim() !== '' &&
+      !isNaN(Number(amount)) &&
+      Number(amount) > 0
     );
   };
 
   const handleFormSubmit = () => {
     if (!isValidForm()) return;
-    // 제출 시에는 콤마 없는 순수 숫자인 amount state를 사용
-    navigate(-1); // 이전 페이지로 이동
+
+    const formData = {
+      date: formatDateToYYYYMMDD(date),
+      type,
+      description,
+      amount: Number(amount), // 숫자형으로 변환하여 전달
+    };
+
+    fetchCommonBills(formData);
   };
 
   const handleDateConfirm = selectedDate => {
@@ -78,18 +86,18 @@ export default function AdminCommonBillsWriteTemplate() {
           <Column $gap={10} style={{ width: '100%' }}>
             <Label>내용</Label>
             <Row $gap={10} style={{ width: '100%' }}>
-              <CustomBtn $active={type === 'income'} onClick={() => setType('income')}>
+              <CustomBtn $active={type === 'INCOME'} onClick={() => setType('INCOME')}>
                 입금
               </CustomBtn>
-              <CustomBtn $active={type === 'expense'} onClick={() => setType('expense')}>
+              <CustomBtn $active={type === 'EXPENSE'} onClick={() => setType('EXPENSE')}>
                 출금
               </CustomBtn>
             </Row>
             <Input
               type="text"
               placeholder="내용을 입력하세요.(예: 전기공사)"
-              value={content}
-              onChange={e => setContent(e.target.value)}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
             />
           </Column>
           {/* 금액 영역 */}
