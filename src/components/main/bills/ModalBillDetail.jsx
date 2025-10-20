@@ -5,6 +5,7 @@ import CloseIcn from '../../../assets/common/icon-close.svg?react';
 import ChartCategoryBar from './GraphCategoryBar';
 import BillSummary from './BillSummary';
 import { Row } from '../../../styles/flex';
+import { formatDateToYMD } from '../../../utils/dateFormat';
 
 // 증감 텍스트 헬퍼 함수
 const formatIncrease = (value, tab) => {
@@ -15,8 +16,28 @@ const formatIncrease = (value, tab) => {
   } else return <StatusText isIncrease>입금</StatusText>; // todo: 입금/출금으로 변경
 };
 
-export default function ModalBillDetail({ year, billData, onClose, tab }) {
-  if (!billData) {
+export default function ModalBillDetail({
+  loading,
+  year,
+  month,
+  utilityBillData,
+  commonBillData,
+  onClose,
+  tab,
+}) {
+  if (loading) {
+    return (
+      <ModalWrapper>
+        <ModalHeader>
+          <h4>{tab} 내역</h4>
+          <CloseButton onClick={onClose}>&times;</CloseButton>
+        </ModalHeader>
+        <p>로딩 중...</p>
+      </ModalWrapper>
+    );
+  }
+
+  if (!utilityBillData && !commonBillData) {
     return (
       <ModalWrapper>
         <ModalHeader>
@@ -28,19 +49,32 @@ export default function ModalBillDetail({ year, billData, onClose, tab }) {
     );
   }
 
-  const { electricity, gas, water } = billData.detail;
-  const chartData = [
-    { name: '전기요금', amount: electricity.amount, increase: electricity.increase },
-    { name: '수도요금', amount: water.amount, increase: water.increase },
-    { name: '도시가스', amount: gas.amount, increase: gas.increase },
+  let chartData = [];
+  chartData = [
+    {
+      description: '전기요금',
+      amount: utilityBillData.detail.electricity.amount,
+      increase: utilityBillData.detail.electricity.increase,
+    },
+    {
+      description: '수도요금',
+      amount: utilityBillData.detail.water.amount,
+      increase: utilityBillData.detail.water.increase,
+    },
+    {
+      description: '도시가스',
+      amount: utilityBillData.detail.gas.amount,
+      increase: utilityBillData.detail.gas.increase,
+    },
   ];
-  // todo: 관리비 내역도 데이터 가공하여 내려줌
+
+  const renderList = tab === '공동 관리비' ? commonBillData.details : chartData;
 
   return (
     <ModalWrapper>
       <ModalHeader>
         <h4>
-          {year}년 {billData.month}월 {tab}
+          {year}년 {month}월 {tab}
         </h4>
         <CloseButton onClick={onClose}>
           <CloseIcn />
@@ -50,19 +84,24 @@ export default function ModalBillDetail({ year, billData, onClose, tab }) {
       <SummaryWrapper>
         {tab === '공과금' && <ChartCategoryBar chartData={chartData} />}
         {tab === '공동 관리비' && (
-          <BillSummary month={billData.month} balance={457000} income={910000} expense={453000} />
+          <BillSummary
+            month={commonBillData.month}
+            balance={commonBillData.balance}
+            income={commonBillData.income}
+            expense={commonBillData.expense}
+          />
         )}
       </SummaryWrapper>
 
       <DetailList>
-        {chartData.map(item => (
-          <DetailItem key={item.name}>
+        {renderList.map(item => (
+          <DetailItem key={item.description}>
             <Row $justify="space-between" $align="center" style={{ width: '100%' }}>
-              <Body1>{item.name}</Body1>
+              <Body1>{item.description}</Body1>
               <Body1>{formatNumberWithCommas(item.amount)}원</Body1>
             </Row>
             <SubTextRow $justify="space-between" $align="center">
-              {tab === '공동 관리비' && <DateText>2024.9.11</DateText>}
+              {tab === '공동 관리비' && <DateText>{formatDateToYMD(item.date)}</DateText>}
               <span>{formatIncrease(item.increase)}</span>
             </SubTextRow>
           </DetailItem>

@@ -26,9 +26,9 @@ export default function ChartCategoryBar({ year, month, chartData }) {
   const sortedData = [...chartData].sort((a, b) => b.amount - a.amount);
 
   const opacityMap = {
-    [sortedData[0].name]: 1,
-    [sortedData[1].name]: 0.5,
-    [sortedData[2].name]: 0.3,
+    [sortedData[0].description]: 1,
+    [sortedData[1].description]: 0.5,
+    [sortedData[2].description]: 0.3,
   };
   const baseRgbColor = '94, 224, 163';
 
@@ -43,7 +43,7 @@ export default function ChartCategoryBar({ year, month, chartData }) {
             margin={{ top: 20, right: 20, left: 20, bottom: 5 }}
           >
             <XAxis
-              dataKey="name"
+              dataKey="description"
               axisLine={false}
               tickLine={false}
               tick={{
@@ -58,8 +58,8 @@ export default function ChartCategoryBar({ year, month, chartData }) {
             <Bar dataKey="amount" label={<CustomizedLabel />} shape={<RoundedBar />}>
               {chartData.map(entry => (
                 <Cell
-                  key={`cell-${entry.name}`}
-                  fill={`rgba(${baseRgbColor}, ${opacityMap[entry.name]})`}
+                  key={`cell-${entry.description}`}
+                  fill={`rgba(${baseRgbColor}, ${opacityMap[entry.description]})`}
                 />
               ))}
             </Bar>
