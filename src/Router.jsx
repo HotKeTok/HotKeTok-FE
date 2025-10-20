@@ -67,7 +67,7 @@ import useChatStore from './store/useChatStore';
 import * as StompJs from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
-const Layout = ({ currentRole }) => {
+const Layout = ({ currentRole, onBoardingStageFlag }) => {
   const { pathname } = useLocation();
 
   const WHITE_BG_ROUTES = {
@@ -107,7 +107,7 @@ const Layout = ({ currentRole }) => {
       </MainContainer>
       {!hideBar && (
         <BottomBar>
-          <NavBar currentRole={currentRole} />
+          <NavBar currentRole={currentRole} onBoardingStageFlag={onBoardingStageFlag} />
         </BottomBar>
       )}
     </AppShell>
@@ -133,12 +133,14 @@ export default function AppRouter() {
   }, [accessToken, connect, disconnect]);
 
   // ✅ persist 복원 완료 전에는 렌더 지연(초기 깜빡임 방지)
-  if (!hydrated) return null;
+  // if (!hydrated) return null;
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout currentRole={currentRole} />}>
+        <Route
+          element={<Layout currentRole={currentRole} onBoardingStageFlag={onBoardingStageFlag} />}
+        >
           {/* 공통 onboard 관련 */}
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />

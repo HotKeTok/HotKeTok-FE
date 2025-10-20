@@ -3,15 +3,17 @@ import styled from 'styled-components';
 import { Column, Row } from '../../../styles/flex';
 import { AUTH_TEXT } from '../../../constants/tenant/main';
 
-export default function AuthModal({ address }) {
+export default function AuthModal({ address, currentRole }) {
+  if (!address || !['tenant', 'landlord'].includes(currentRole)) return null;
+
   return (
     <Container $gap={10}>
       <H3>주소 인증 요청 중</H3>
       <Caption1>
-        {AUTH_TEXT['black'].map((text, index) => (
+        {AUTH_TEXT[currentRole]['black'].map((text, index) => (
           <div key={index}>{text}</div>
         ))}
-        {AUTH_TEXT['primary'].map((text, index) => (
+        {AUTH_TEXT[currentRole]['primary'].map((text, index) => (
           <div key={index} style={{ color: '#01d281' }}>
             {text}
           </div>
