@@ -1,5 +1,6 @@
 // src/Router.jsx
 import React from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 
 // 공통 onboard 관련
@@ -62,6 +63,10 @@ import { AppShell, MainContainer, BottomBar } from './styles/layout';
 
 // ✅ Zustand 전역 상태
 import { useAuthStore } from './store/useAuthStore';
+import useChatStore from './store/useChatStore';
+
+import * as StompJs from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const Layout = ({ currentRole }) => {
   const { pathname } = useLocation();
@@ -109,8 +114,21 @@ const Layout = ({ currentRole }) => {
 
 export default function AppRouter() {
   // ✅ 하드코딩 제거, 전역 role 사용
-  const currentRole = useAuthStore(s => s.role);
-  const hydrated = useAuthStore(s => s.hydrated);
+  const { accessToken, currentRole, hydrated } = useAuthStore();
+  const { connect, disconnect } = useChatStore(); // 웹소켓 연결 액션
+
+  useEffect(() => {
+    // accessToken이 존재하면 (로그인 성공 시) 웹소켓 연결
+    if (accessToken !== '' && hydrated) {
+      connect(accessToken);
+    }
+
+    // accessToken이 사라지면 (로그아웃 시) 웹소켓 연결 해제
+    // useEffect의 클린업 함수를 활용
+    return () => {
+      disconnect();
+    };
+  }, [accessToken, connect, disconnect]);
 
   // ✅ persist 복원 완료 전에는 렌더 지연(초기 깜빡임 방지)
   if (!hydrated) return null;
