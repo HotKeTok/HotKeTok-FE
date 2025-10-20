@@ -63,7 +63,7 @@ import { AppShell, MainContainer, BottomBar } from './styles/layout';
 // ✅ Zustand 전역 상태
 import { useAuthStore } from './store/useAuthStore';
 
-const Layout = ({ currentRole }) => {
+const Layout = ({ currentRole, onBoardingStageFlag }) => {
   const { pathname } = useLocation();
 
   const WHITE_BG_ROUTES = {
@@ -100,7 +100,7 @@ const Layout = ({ currentRole }) => {
       </MainContainer>
       {!hideBar && (
         <BottomBar>
-          <NavBar currentRole={currentRole} />
+          <NavBar currentRole={currentRole} onBoardingStageFlag={onBoardingStageFlag} />
         </BottomBar>
       )}
     </AppShell>
@@ -109,16 +109,21 @@ const Layout = ({ currentRole }) => {
 
 export default function AppRouter() {
   // ✅ 하드코딩 제거, 전역 role 사용
-  const currentRole = useAuthStore(s => s.role);
+  // const currentRole = useAuthStore(s => s.role);
+  const currentRole = 'landlord';
   const hydrated = useAuthStore(s => s.hydrated);
+  // const onBoardingStageFlag = useAuthStore(s => s.onBoardingStageFlag);
+  const onBoardingStageFlag = false; // TODO: 임시 하드코딩, 나중에 제거
 
   // ✅ persist 복원 완료 전에는 렌더 지연(초기 깜빡임 방지)
-  if (!hydrated) return null;
+  // if (!hydrated) return null;
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout currentRole={currentRole} />}>
+        <Route
+          element={<Layout currentRole={currentRole} onBoardingStageFlag={onBoardingStageFlag} />}
+        >
           {/* 공통 onboard 관련 */}
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
