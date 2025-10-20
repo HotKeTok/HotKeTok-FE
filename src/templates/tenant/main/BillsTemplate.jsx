@@ -18,12 +18,18 @@ const TabBarText = [
   { id: 2, text: '공동 관리비' },
 ];
 
-export default function BillsTemplate({ activeTab, setActiveTab }) {
+export default function BillsTemplate({
+  activeTab,
+  setActiveTab,
+  commonBillDetail,
+  fetchCommonBillsDetail,
+  loading,
+}) {
   const scrollRef = useRef(null);
 
   const [modal, setModal] = useState(false);
   const [year, setYear] = useState(2025);
-  const [selectedBills, setSelectedBills] = useState(null); // 선택된 공과금 내역
+  const [selectedUtilityBill, setSelectedUtilityBill] = useState(null); // 선택된 공과금 내역
 
   // 유저 보유 연도 (목데이터)
   const userYears = [2025, 2024, 2023, 2022];
@@ -45,8 +51,12 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
   }, [activeTab]);
 
   const handleOpenDetailModal = (year, month) => {
-    const bill = currentList.find(item => item.month === month);
-    setSelectedBills(bill);
+    if (activeTab === '공동 관리비') {
+      fetchCommonBillsDetail(year, month);
+    } else {
+      const bill = currentList.find(item => item.month === month);
+      setSelectedUtilityBill(bill);
+    }
     setModal(true);
   };
 
@@ -64,8 +74,11 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
       {/* 공통 바텀시트 */}
       <BottomSheet isOpen={modal} onClose={() => setModal(false)} height={'90%'}>
         <ModalBillDetail
+          loading={loading}
           year={year}
-          billData={selectedBills}
+          month={activeTab === '공과금' ? selectedUtilityBill?.month : commonBillDetail?.month}
+          utilityBillData={selectedUtilityBill}
+          commonBillData={commonBillDetail}
           onClose={() => setModal(false)}
           tab={activeTab}
         />
