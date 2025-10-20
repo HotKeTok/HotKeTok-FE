@@ -1,13 +1,7 @@
-// 공통 채팅방 상세 템플릿
-// messages: 채팅 메시지 배열
-// onSendMessage: 메시지 전송 함수
-// myUserId: 내 사용자 ID
-// roomInfo: 방 정보 (예: 제목)
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { Page, ScrollableNoBottomBarContent } from '../../../styles/layout';
-import TopBar from '../../../components/common/TopBar'; // 공용 TopBar 컴포넌트
-import { formatTodayTimeOrIsoTime, getHHMMTimeWithHour12 } from '../../../utils/dateFormat';
+import TopBar from '../../../components/common/TopBar';
 import IcnSend from '../../../assets/chat/send-icon.svg?react';
 import { color, typo } from '../../../styles/tokens';
 import MessageBubble from '../../../components/chat/MessageBubble';

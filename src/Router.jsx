@@ -64,6 +64,9 @@ import { useAuthStore } from './store/useAuthStore';
 import { getAccessToken } from './utils/auth';
 import useChatStore from './store/useChatStore';
 
+import * as StompJs from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+
 /* ---------- 인증 보호 ---------- */
 const ProtectedRoute = () => {
   const token = getAccessToken();
@@ -123,10 +126,7 @@ const Layout = ({ currentRole, onBoardingStageFlag }) => {
 
 /* ---------- 라우터 ---------- */
 export default function AppRouter() {
-  const accessToken = useAuthStore(s => s.accessToken);
-  const currentRole = useAuthStore(s => s.role);
-  const hydrated = useAuthStore(s => s.hydrated);
-  const onBoardingStageFlag = useAuthStore(s => s.onBoardingStageFlag);
+  const { accessToken, currentRole, hydrated, onBoardingStageFlag } = useAuthStore();
   const { connect, disconnect } = useChatStore(); // 웹소켓 연결 액션
 
   useEffect(() => {

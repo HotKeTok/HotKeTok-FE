@@ -18,5 +18,9 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
       '@assets': resolve(__dirname, 'src/assets'),
     },
+    plugins: [react(), svgr()],
+    define: {
+      global: 'window',
+    },
   },
 });

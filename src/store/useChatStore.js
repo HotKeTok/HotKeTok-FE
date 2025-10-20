@@ -31,7 +31,7 @@ const useChatStore = create((set, get) => ({
         Authorization: `Bearer ${accessToken}`,
       },
       debug: str => console.log(new Date(), str),
-      reconnectDelay: 10000,
+      reconnectDelay: 1000000,
       onConnect: () => {
         console.log('STOMP 연결 성공!');
         set({ isConnected: true });
