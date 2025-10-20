@@ -81,13 +81,13 @@ export default function MainTemplate() {
               <Button
                 key={index}
                 onClick={() => navigate(item.route)}
-                style={{ backgroundColor: item.backgroundColor }}
+                style={{ background: item.background }}
               >
-                <Row $gap={14}>
+                <Row $gap={14} style={{ height: '100%' }}>
                   <TextWrapper>
                     <Title>{item.text}</Title>
                     {/* description이 true일 때만 특정 텍스트를 보여주는 로직 (예시) */}
-                    {item.description && <Description>3건 진행중</Description>}
+                    {item.description && <Description>요청 3건</Description>}
                   </TextWrapper>
                   <Column $justify={'center'} style={{ height: 38, width: 20, cursor: 'pointer' }}>
                     <StyleArrowRight width={7} height={11} stroke="#565656" />
@@ -158,6 +158,8 @@ const Button = styled.button`
   width: 166px;
   height: 140px;
 
+  position: relative;
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -166,6 +168,11 @@ const Button = styled.button`
 
 const TextWrapper = styled.div`
   width: 80%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const Title = styled.div`
@@ -174,13 +181,26 @@ const Title = styled.div`
   word-break: keep-all;
 `;
 
-const Description = styled.p`
-  font-size: 14px;
-  color: #868e96;
-  margin: 0;
+const Description = styled.div`
+  max-width: 65%;
+  background: #fff;
+  padding: 3px 8px;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  ${typo('button3')};
+  color: ${color('brand.primary')};
+
+  border-radius: 30px;
 `;
 
 const Icon = styled.div`
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+
   width: 50px;
   height: 50px;
   align-self: flex-end; // 아이콘을 오른쪽 아래로
