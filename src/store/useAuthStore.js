@@ -7,6 +7,7 @@ const initialState = {
   accessToken: '',
   refreshToken: '',
   hydrated: false, // persist 복원 완료 플래그
+  onBoardingStageFlag: false, // 인증 여부
 };
 
 export const useAuthStore = create(
@@ -21,6 +22,9 @@ export const useAuthStore = create(
         setTokens: ({ accessToken = '', refreshToken = '' }) => set({ accessToken, refreshToken }),
         clearTokens: () => set({ accessToken: '', refreshToken: '' }),
 
+        setOnBoardingStageFlag: () => set({ onBoardingStageFlag: true }),
+        clearOnBoardingStageFlag: () => set({ onBoardingStageFlag: false }),
+
         logout: () => set({ ...initialState, hydrated: true }),
 
         _setHydrated: v => set({ hydrated: v }),
@@ -31,6 +35,7 @@ export const useAuthStore = create(
           role: state.role,
           accessToken: state.accessToken,
           refreshToken: state.refreshToken,
+          onBoardingStageFlag: state.onBoardingStageFlag,
         }),
         onRehydrateStorage: () => state => {
           if (state?._setHydrated) state._setHydrated(true);

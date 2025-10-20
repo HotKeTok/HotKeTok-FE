@@ -16,6 +16,7 @@ export default function SignIn() {
   const navigate = useNavigate();
   const setRole = useAuthStore(s => s.setRole);
   const setStoreTokens = useAuthStore(s => s.setTokens);
+  const setOnBoardingStageFlag = useAuthStore(s => s.setOnBoardingStageFlag);
 
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ open: false, message: '' });
@@ -36,6 +37,7 @@ export default function SignIn() {
 
       setStoreTokens(tokens); // ✅ Zustand
       setLegacyTokens(tokens); // ✅ utils/auth (HK_ACCESS_TOKEN/REFRESH_TOKEN 동기화)
+      setOnBoardingStageFlag(onBoardingStageFlag);
 
       if (serverRole === 'OWNER') {
         setRole('landlord');
