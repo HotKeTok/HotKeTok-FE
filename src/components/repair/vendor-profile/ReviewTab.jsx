@@ -2,6 +2,10 @@
 import React, { useState } from 'react';
 import { Row } from '../../../styles/flex';
 import Button from '../../common/Button';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { formatCategoryName } from '../../../utils/format';
+import { formatDateToYMD } from '../../../utils/dateFormat';
 
 import {
   TabBody,
@@ -31,9 +35,15 @@ import iconGrayStar from '../../../assets/repair/vendor-profile/icon-star-gray.s
 const WriteButton = styled(Button)`
   width: 100%;
 `;
-import styled from 'styled-components';
 
-export default function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSort }) {
+export default function ReviewTab({
+  reviews,
+  reviewCount,
+  reviewSort,
+  onChangeSort,
+  vendorId, // ⬅ 추가: 작성 페이지로 vendorId 전달
+  vendorName, // ⬅ 선택: 쿼리에 함께 넘기면 템플릿 타이틀 표시 용
+}) {
   const [open, setOpen] = useState(false);
   const label =
     reviewSort === 'latest'
@@ -41,6 +51,15 @@ export default function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSo
       : reviewSort === 'ratingLow'
       ? '별점 낮은 순'
       : '별점 높은 순';
+
+  const navigate = useNavigate();
+
+  const goWriteReview = () => {
+    const q = new URLSearchParams();
+    if (vendorId) q.set('vendorId', String(vendorId));
+    if (vendorName) q.set('vendorName', vendorName);
+    navigate(`/write-review?${q.toString()}`);
+  };
 
   return (
     <TabBody>
@@ -69,34 +88,36 @@ export default function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSo
 
       <ScrollWrapper>
         {reviews.map(r => (
-          <ReviewCard key={r.id}>
+          <ReviewCard key={r.id ?? r.reviewId}>
             <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
               <Row $gap={8} style={{ alignItems: 'center' }}>
-                <Avatar>{r.user[0]}</Avatar>
+                <Avatar>{(r.user ?? r.writerName ?? '유')[0]}</Avatar>
                 <div>
-                  <ReviewerName>{r.user}</ReviewerName>
+                  <ReviewerName>{r.user ?? r.writerName}</ReviewerName>
                   <Row $gap={4} style={{ alignItems: 'center' }}>
                     <Stars>
                       {Array.from({ length: 5 }).map((_, i) => (
                         <StarIconImg
                           key={i}
-                          src={i < r.rating ? iconYelloStar : iconGrayStar}
-                          alt={i < r.rating ? 'yellow star' : 'gray star'}
+                          src={i < (r.rating ?? r.rate ?? 0) ? iconYelloStar : iconGrayStar}
+                          alt={i < (r.rating ?? r.rate ?? 0) ? 'yellow star' : 'gray star'}
                         />
                       ))}
                     </Stars>
-                    {!!r.tags?.length && <Badge>{r.tags.join('/')}</Badge>}
+                    {!!(r.tags?.length || r.category) && (
+                      <Badge>{formatCategoryName((r.tags?.join('/') ?? r.category) || '')}</Badge>
+                    )}
                   </Row>
                 </div>
               </Row>
-              <ReviewDate>{r.date}</ReviewDate>
+              <ReviewDate>{formatDateToYMD(r.date) ?? ''}</ReviewDate>
             </Row>
 
-            <ReviewText>{r.body}</ReviewText>
+            <ReviewText>{r.body ?? r.content}</ReviewText>
 
-            {!!r.photos?.length && (
+            {!!(r.photos?.length || r.review_image?.length || r.reviewImage?.length) && (
               <PhotoRow>
-                {r.photos.map((src, i) => (
+                {(r.photos ?? r.review_image ?? r.reviewImage).map((src, i) => (
                   <Photo key={i}>
                     <img src={src} alt={`review-${i}`} />
                   </Photo>
@@ -108,7 +129,7 @@ export default function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSo
       </ScrollWrapper>
 
       <Row style={{ paddingTop: '16px' }}>
-        <WriteButton text="후기 작성하기" onClick={() => alert('후기 작성')} />
+        <WriteButton text="후기 작성하기" onClick={goWriteReview} />
       </Row>
     </TabBody>
   );

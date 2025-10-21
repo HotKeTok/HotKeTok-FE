@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useParams } from 'react-router-dom';
 import VendorProfileTemplate from '../../../templates/tenant/repair/VendorProfileTemplate';
 import { apiGetVendorProfile } from '../../../api/vendor-service';
+import { apiGetVendorReviews } from '../../../api/review-service';
+
 import Toast from '../../../components/common/Toast';
 
 /** API → 템플릿 구조 매핑 */
@@ -46,6 +48,23 @@ function mapApiVendorToTemplate(d) {
   };
 }
 
+function mapApiReviewsToTemplate(data) {
+  const list = Array.isArray(data?.reviews) ? data.reviews : [];
+  return {
+    count: Number(data?.count) || list.length,
+    reviews: list.map(r => ({
+      id: r.reviewId,
+      user: r.writerName,
+      rating: r.rate,
+      body: r.content,
+      tags: r.category ? [r.category] : [],
+      photos: Array.isArray(r.reviewImage) ? r.reviewImage : [],
+      date: r.date ?? null,
+      profileImage: r.writerProfileImage,
+    })),
+  };
+}
+
 export default function VendorProfile() {
   const params = useParams();
   const [sp] = useSearchParams();
@@ -66,7 +85,18 @@ export default function VendorProfile() {
         if (!mounted) return;
 
         if (res.success && res.data) {
-          setVendor(mapApiVendorToTemplate(res.data));
+          const prof = mapApiVendorToTemplate(res.data);
+          const revRes = await apiGetVendorReviews({ vendorId });
+          const { count, reviews } =
+            revRes.success && revRes.data
+              ? mapApiReviewsToTemplate(revRes.data)
+              : { count: 0, reviews: [] };
+
+          setVendor({
+            ...prof,
+            reviewCount: count,
+            reviews,
+          });
         } else {
           openToast(res.message || '업체 정보를 불러오지 못했습니다.');
         }
