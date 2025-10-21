@@ -73,6 +73,7 @@ export default function AdminCommonBillsTemplate({
         </Column>
       );
     } else if (billsList) {
+      const sortedBillsList = billsList.details.sort((a, b) => new Date(b.date) - new Date(a.date));
       return (
         <Column $gap={30}>
           <BillSummary
@@ -82,7 +83,7 @@ export default function AdminCommonBillsTemplate({
             expense={billsList.expense}
           />
           <Column $gap={14}>
-            {billsList.details.map((bill, index) => (
+            {sortedBillsList.map((bill, index) => (
               <BillItem key={index} id={index} {...bill} />
             ))}
           </Column>
