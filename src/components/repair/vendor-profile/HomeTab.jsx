@@ -17,14 +17,19 @@ export default function HomeTab({ vendor }) {
       </Card>
       <div style={{ padding: '22px 4px' }}>
         <Column $gap={12}>
-          <Row $gap={10}>
-            <Icon src={iconClock} />
-            <IconInfo>{vendor.contact.hours}</IconInfo>
-          </Row>
-          <Row $gap={10}>
-            <Icon src={iconPhone} />
-            <IconInfo>{vendor.contact.phone}</IconInfo>
-          </Row>
+          {vendor.contact.hours ? (
+            <Row $gap={10}>
+              <Icon src={iconClock} />
+
+              <IconInfo> {vendor.contact.hours} </IconInfo>
+            </Row>
+          ) : null}
+          {vendor.contact.phone ? (
+            <Row $gap={10}>
+              <Icon src={iconPhone} />
+              <IconInfo>{vendor.contact.phone}</IconInfo>
+            </Row>
+          ) : null}
           <Row $gap={10}>
             <Icon src={iconBookmark} />
             <IconInfo>{vendor.categories.join('/')}</IconInfo>
