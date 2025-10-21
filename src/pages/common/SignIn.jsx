@@ -50,12 +50,11 @@ export default function SignIn() {
         return;
       }
       if (serverRole === 'NONE') {
-        setRole('tenant');
-        if (onBoardingStageFlag) navigate('/welcome', { replace: true }); // ✅ 기존 '/welcome' 유지
+        setRole('none'); // 인증 안된 상태 'none'
+        if (onBoardingStageFlag) navigate('/', { replace: true });
         else navigate('/init-process', { replace: true });
         return;
       }
-
       openToast('알 수 없는 사용자 유형이에요.');
     } catch (e) {
       const status = e?.response?.status;

@@ -10,10 +10,10 @@ export default function AddressBox({ address, currentRole }) {
     <Container $gap={10}>
       <Subtitle1>{address}</Subtitle1>
       <Caption1 style={{ ...typo('caption1') }}>
-        {AUTH_TEXT[currentRole]['black'].map((text, index) => (
+        {AUTH_TEXT['black'].map((text, index) => (
           <div key={index}>{text}</div>
         ))}
-        {AUTH_TEXT[currentRole]['primary'].map((text, index) => (
+        {AUTH_TEXT['primary'].map((text, index) => (
           <div key={index} style={{ color: '#01d281', marginTop: index === 0 ? 8 : 4 }}>
             {text}
           </div>
