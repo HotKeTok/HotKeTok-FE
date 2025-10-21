@@ -98,7 +98,7 @@ const Layout = ({ currentRole, onBoardingStageFlag }) => {
       <MainContainer $hasBar={!hideBar} $hasHeader={hasHeader} $headerHeight={headerHeight}>
         <Outlet />
       </MainContainer>
-      {!hideBar && (
+      {!hideBar && currentRole !== 'none' && (
         <BottomBar>
           <NavBar currentRole={currentRole} onBoardingStageFlag={onBoardingStageFlag} />
         </BottomBar>
@@ -109,15 +109,14 @@ const Layout = ({ currentRole, onBoardingStageFlag }) => {
 
 export default function AppRouter() {
   // ✅ 하드코딩 제거, 전역 role 사용
-  // const currentRole = useAuthStore(s => s.role);
-  const currentRole = 'landlord';
+  const currentRole = useAuthStore(s => s.role);
   const hydrated = useAuthStore(s => s.hydrated);
-  // const onBoardingStageFlag = useAuthStore(s => s.onBoardingStageFlag);
-  const onBoardingStageFlag = false; // TODO: 임시 하드코딩, 나중에 제거
+  const onBoardingStageFlag = useAuthStore(s => s.onBoardingStageFlag);
 
   // ✅ persist 복원 완료 전에는 렌더 지연(초기 깜빡임 방지)
-  // if (!hydrated) return null;
+  if (!hydrated) return null;
 
+  console.log('현재 role:', currentRole);
   return (
     <BrowserRouter>
       <Routes>
@@ -128,9 +127,11 @@ export default function AppRouter() {
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/init-process" element={<InitProcess />} />
+          {currentRole === 'none' && <Route path="/" element={<IndexWelcome />} />}
 
           {/* ✅ 현재 역할(role)에 따라 "같은 경로"를 다른 트리로 렌더링 (경로 변경 없음) */}
-          {currentRole === 'landlord' ? (
+
+          {currentRole === 'landlord' && (
             <>
               {/* 집주인 main */}
               <Route path="/" element={<MainLandlord />} />
@@ -163,11 +164,12 @@ export default function AppRouter() {
               <Route path="/address-admin" element={<AddressAdminLandlord />} />
               <Route path="/address/add/:step" element={<ExtraAddressRegisterLandlord />} />
             </>
-          ) : (
+          )}
+
+          {currentRole === 'tenant' && (
             <>
               {/* 입주민 main */}
               <Route path="/" element={<Main />} />
-              <Route path="/welcome" element={<IndexWelcome />} />
               <Route path="/bills" element={<Bills />} />
               <Route path="/alarm" element={<Alarm />} />
               <Route path="/notice" element={<Notice />} />

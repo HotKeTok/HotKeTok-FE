@@ -1,6 +1,5 @@
 import styled, { css } from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
 
 import HomeIcon from '../../assets/common/icon-home.svg?react';
 import CommunicationIcon from '../../assets/common/icon-communication.svg?react';
@@ -15,8 +14,6 @@ import MyIconActive from '../../assets/common/icon-my-active.svg?react';
 
 import { typo, color } from '../../styles/tokens';
 import { BOTTOM_BAR_HEIGHT } from '../../styles/layout';
-import BottomSheet from './BottomSheet';
-import AuthModal from '../main/index/AuthModal';
 
 const Nav = styled.nav`
   position: relative;
@@ -52,24 +49,13 @@ const NavItem = styled(Link)`
   }
 `;
 
-const OnboardingOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 10; // NavItem 위에 위치하도록 z-index 설정
-`;
-
 const navItems = [
   {
     to: '/',
     label: '홈',
     Icon: HomeIcon,
     ActiveIcon: HomeIconActive,
-    isActive: pathname =>
-      pathname === '/' || pathname === '/welcome' || pathname.startsWith('/main'),
+    isActive: pathname => pathname === '/' || pathname.startsWith('/main'),
     roles: ['landlord', 'tenant'],
   },
   {
@@ -102,9 +88,7 @@ const navItems = [
   },
 ];
 
-export default function NavBar({ currentRole, onBoardingStageFlag }) {
-  const [isSheetOpen, setSheetOpen] = useState(false);
-  const address = '서울특별시 강남구 영동대로 112길 46'; // TODO: 유저 주소로 변경
+export default function NavBar({ currentRole }) {
   const { pathname } = useLocation();
 
   const visibleNavItems = navItems.filter(item => item.roles.includes(currentRole));
@@ -122,18 +106,5 @@ export default function NavBar({ currentRole, onBoardingStageFlag }) {
       );
     });
 
-  return (
-    <>
-      <BottomSheet
-        isOpen={isSheetOpen}
-        onClose={() => setSheetOpen(false)}
-        height="260px"
-        children={<AuthModal address={address} currentRole={currentRole} />}
-      />
-      <Nav>
-        {onBoardingStageFlag && <OnboardingOverlay onClick={() => setSheetOpen(true)} />}
-        {renderNavItems()}
-      </Nav>
-    </>
-  );
+  return <Nav>{renderNavItems()}</Nav>;
 }

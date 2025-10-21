@@ -40,7 +40,7 @@ export default function IndexWelcomeTemplate() {
 
   return (
     <Container>
-      <PageHeader leftComponent={<SelectHome homeTitle="우리집" />} />
+      <div style={{ height: 48 }} />
       <AddressBox address="서울특별시 강남구 영동대로 112길 46" currentRole={currentRole} />
       <Center>
         <WelcomeHouse />

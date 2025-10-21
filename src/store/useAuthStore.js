@@ -7,7 +7,7 @@ const initialState = {
   accessToken: '',
   refreshToken: '',
   hydrated: false, // persist 복원 완료 플래그
-  onBoardingStageFlag: false, // 인증 여부
+  onBoardingStageFlag: false, // 온보딩 진행 여부
 };
 
 export const useAuthStore = create(
