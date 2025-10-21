@@ -12,7 +12,7 @@ import {
   Thumb,
   InquiryButton,
 } from './Styles';
-
+import { formatCategoryName } from '../../../utils/format';
 import iconGreenStar from '../../../assets/repair/icon-star-green.svg';
 
 export default function VendorProfileHeader({ vendor }) {
@@ -23,7 +23,9 @@ export default function VendorProfileHeader({ vendor }) {
           <Column $gap={3}>
             <Row $gap={8} style={{ alignItems: 'center' }}>
               <Name>{vendor.name}</Name>
-              <CategoryText>{vendor.categories.join('/')}</CategoryText>
+              <CategoryText>
+                {vendor.categories.map(c => formatCategoryName(c)).join('/')}
+              </CategoryText>
             </Row>
             <Row $gap={14} $align="center">
               <Row $gap={4}>

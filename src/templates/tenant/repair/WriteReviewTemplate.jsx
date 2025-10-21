@@ -1,4 +1,4 @@
-// WriteReviewTemplate.jsx
+// src/templates/tenant/repair/WriteReviewTemplate.jsx
 import React, { useMemo, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
@@ -29,11 +29,13 @@ const REPAIR_TYPES = [
 
 /* =========================================================
  * 메인
- *  - prop: vendorName (상단 타이틀), default '매종 인테리어'
+ *  - prop:
+ *    - vendorName: 상단 타이틀
+ *    - onSubmit(form): 제출 콜백 (Page에서 API 호출)
  * ======================================================= */
-export default function WriteReviewTemplate({ vendorName = '매종 인테리어' }) {
+export default function WriteReviewTemplate({ vendorName = '매종 인테리어', onSubmit }) {
   const [rating, setRating] = useState(0); // 별점 1~5
-  const [types, setTypes] = useState(new Set()); // 수리 분야 다중 선택
+  const [types, setTypes] = useState(new Set()); // 수리 분야 단일 선택(Set 사용)
   const [text, setText] = useState(''); // 상세 후기
   const [photos, setPhotos] = useState([]); // [{url, file}]
   const fileRef = useRef(null);
@@ -46,10 +48,8 @@ export default function WriteReviewTemplate({ vendorName = '매종 인테리어'
 
   const toggleType = key =>
     setTypes(prev => {
-      // 이미 선택된 걸 다시 누르면 해제 (0개)
+      // 단일 선택: 이미 선택된 걸 다시 누르면 해제
       if (prev.has(key)) return new Set();
-
-      // 항상 하나만 선택되도록 새 Set에 해당 key만 넣기
       return new Set([key]);
     });
 
@@ -82,17 +82,15 @@ export default function WriteReviewTemplate({ vendorName = '매종 인테리어'
 
   const removePhoto = idx => setPhotos(p => p.filter((_, i) => i !== idx));
 
-  const onSubmit = () => {
+  const handleSubmit = () => {
     const payload = {
       vendorName,
       rating,
-      types: Array.from(types),
+      types: Array.from(types), // ['appliance'] 형태
       text: text.trim(),
-      photosCount: photos.length,
+      photos, // [{url, file}]
     };
-    // 실제 API 연결 전까지 임시 확인
-    // eslint-disable-next-line no-alert
-    alert(`리뷰 제출\n${JSON.stringify(payload, null, 2)}`);
+    if (onSubmit) onSubmit(payload);
   };
 
   return (
@@ -181,7 +179,7 @@ export default function WriteReviewTemplate({ vendorName = '매종 인테리어'
 
       {/* 하단 CTA */}
       <BottomBar>
-        <Button text="작성 완료" active={canSubmit} onClick={onSubmit} />
+        <Button text="작성 완료" active={canSubmit} onClick={handleSubmit} />
       </BottomBar>
     </Screen>
   );
@@ -199,12 +197,6 @@ const Screen = styled.div`
 
 const Content = styled.div`
   padding: 16px 24px; /* 하단 버튼 고려 */
-`;
-
-const Section = styled.section`
-  & + & {
-    margin-top: 24px;
-  }
 `;
 
 const SectionTitle = styled.div`
@@ -243,7 +235,7 @@ const TypeGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   row-gap: 10px;
-  column-gap: 16px;
+  column-gap: 8px;
 `;
 
 const TypeItem = styled.button`
@@ -272,6 +264,7 @@ const TypeIcon = styled.img`
 const TypeLabel = styled.span`
   ${typo('subtitle2')};
   color: ${({ $selected }) => ($selected ? color('grayscale.900') : color('grayscale.700'))};
+  white-space: nowrap;
 `;
 
 const ThumbGrid = styled.div`

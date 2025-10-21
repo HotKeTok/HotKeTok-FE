@@ -17,11 +17,14 @@ export default function VendorProfileTemplate({ vendor }) {
   const [tab, setTab] = useState('home'); // home | news | review
   const [reviewSort, setReviewSort] = useState('latest'); // latest | ratingLow | ratingHigh
 
+  // ReviewTab 정렬 안전 처리
   const sortedReviews = useMemo(() => {
     const list = Array.isArray(vendor?.reviews) ? [...vendor.reviews] : [];
     if (reviewSort === 'latest') return list.sort((a, b) => (a.date < b.date ? 1 : -1));
-    if (reviewSort === 'ratingLow') return list.sort((a, b) => a.rating - b.rating);
-    if (reviewSort === 'ratingHigh') return list.sort((a, b) => b.rating - a.rating);
+    if (reviewSort === 'ratingLow')
+      return list.sort((a, b) => (a.rating ?? a.rate ?? 0) - (b.rating ?? b.rate ?? 0));
+    if (reviewSort === 'ratingHigh')
+      return list.sort((a, b) => (b.rating ?? b.rate ?? 0) - (a.rating ?? a.rate ?? 0));
     return list;
   }, [vendor?.reviews, reviewSort]);
 
@@ -40,6 +43,8 @@ export default function VendorProfileTemplate({ vendor }) {
             reviewCount={vendor.reviewCount ?? 0}
             reviewSort={reviewSort}
             onChangeSort={setReviewSort}
+            vendorId={vendor?.id ?? vendor?.vendorId} // ⬅ 작성 페이지로 전달
+            vendorName={vendor?.name} // ⬅ 선택
           />
         )}
       </TabContainer>
