@@ -3,7 +3,7 @@ export const MOCK_UTILITY_BILLS = {
   2025: [
     {
       month: 10,
-      value: 152400,
+      balance: 152400,
       paidAt: '2025.10.11',
       detail: {
         electricity: { amount: 68000, increase: 2500 },
@@ -13,7 +13,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 9,
-      value: 137000,
+      balance: 137000,
       paidAt: '2025.9.11',
       detail: {
         electricity: { amount: 65500, increase: -4500 },
@@ -23,7 +23,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 8,
-      value: 132000,
+      balance: 132000,
       paidAt: '2025.8.11',
       detail: {
         electricity: { amount: 70000, increase: 5000 },
@@ -33,7 +33,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 7,
-      value: 122200,
+      balance: 122200,
       paidAt: '2025.7.11',
       detail: {
         electricity: { amount: 65000, increase: 8000 },
@@ -43,7 +43,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 6,
-      value: 110000,
+      balance: 110000,
       paidAt: '2025.6.11',
       detail: {
         electricity: { amount: 57000, increase: 2000 },
@@ -53,7 +53,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 5,
-      value: 112000,
+      balance: 112000,
       paidAt: '2025.5.11',
       detail: {
         electricity: { amount: 55000, increase: -3000 },
@@ -63,7 +63,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 4,
-      value: 121000,
+      balance: 121000,
       paidAt: '2025.4.11',
       detail: {
         electricity: { amount: 58000, increase: -5000 },
@@ -73,7 +73,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 3,
-      value: 136000,
+      balance: 136000,
       paidAt: '2025.3.11',
       detail: {
         electricity: { amount: 63000, increase: -2000 },
@@ -83,7 +83,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 2,
-      value: 149500,
+      balance: 149500,
       paidAt: '2025.2.11',
       detail: {
         electricity: { amount: 65000, increase: -1000 },
@@ -93,7 +93,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 1,
-      value: 161000,
+      balance: 161000,
       paidAt: '2025.1.11',
       detail: {
         electricity: { amount: 66000, increase: 4000 },
@@ -105,7 +105,7 @@ export const MOCK_UTILITY_BILLS = {
   2024: [
     {
       month: 12,
-      value: 142000,
+      balance: 142000,
       paidAt: '2024.12.11',
       detail: {
         electricity: { amount: 62000, increase: -500 },
@@ -115,7 +115,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 11,
-      value: 131500,
+      balance: 131500,
       paidAt: '2024.11.11',
       detail: {
         electricity: { amount: 62500, increase: -8570 },
@@ -125,7 +125,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 10,
-      value: 130410,
+      balance: 130410,
       paidAt: '2024.10.11',
       detail: {
         electricity: { amount: 71070, increase: 3520 },
@@ -135,7 +135,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 9,
-      value: 132100,
+      balance: 132100,
       paidAt: '2024.9.11',
       detail: {
         electricity: { amount: 72000, increase: 930 },
@@ -145,7 +145,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 8,
-      value: 141020,
+      balance: 141020,
       paidAt: '2024.8.11',
       detail: {
         electricity: { amount: 74010, increase: 2010 },
@@ -155,7 +155,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 7,
-      value: 140410,
+      balance: 140410,
       paidAt: '2024.7.11',
       detail: {
         electricity: { amount: 69500, increase: -510 },
@@ -165,7 +165,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 6,
-      value: 135210,
+      balance: 135210,
       paidAt: '2024.6.11',
       detail: {
         electricity: { amount: 68000, increase: -1500 },
@@ -175,7 +175,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 5,
-      value: 128420,
+      balance: 128420,
       paidAt: '2024.5.11',
       detail: {
         electricity: { amount: 69500, increase: 2500 },
@@ -185,7 +185,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 4,
-      value: 130000,
+      balance: 130000,
       paidAt: '2024.4.11',
       detail: {
         electricity: { amount: 67000, increase: -1000 },
@@ -195,7 +195,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 3,
-      value: 142000,
+      balance: 142000,
       paidAt: '2024.3.11',
       detail: {
         electricity: { amount: 68000, increase: 3000 },
@@ -205,7 +205,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 2,
-      value: 151000,
+      balance: 151000,
       paidAt: '2024.2.11',
       detail: {
         electricity: { amount: 65000, increase: -2000 },
@@ -215,7 +215,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 1,
-      value: 156000,
+      balance: 156000,
       paidAt: '2024.1.11',
       detail: {
         electricity: { amount: 67000, increase: 5000 },
@@ -227,7 +227,7 @@ export const MOCK_UTILITY_BILLS = {
   2023: [
     {
       month: 12,
-      value: 124000,
+      balance: 124000,
       paidAt: '2023.12.10',
       detail: {
         electricity: { amount: 72000, increase: 1200 },
@@ -237,7 +237,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 11,
-      value: 118400,
+      balance: 118400,
       paidAt: '2023.11.10',
       detail: {
         electricity: { amount: 70000, increase: -200 },
@@ -247,7 +247,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 10,
-      value: 133200,
+      balance: 133200,
       paidAt: '2023.10.10',
       detail: {
         electricity: { amount: 80000, increase: 5000 },
@@ -257,7 +257,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 9,
-      value: 125500,
+      balance: 125500,
       paidAt: '2023.9.10',
       detail: {
         electricity: { amount: 75000, increase: -3000 },
@@ -267,7 +267,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 8,
-      value: 120000,
+      balance: 120000,
       paidAt: '2023.8.10',
       detail: {
         electricity: { amount: 78000, increase: 6000 },
@@ -277,7 +277,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 7,
-      value: 110000,
+      balance: 110000,
       paidAt: '2023.7.10',
       detail: {
         electricity: { amount: 72000, increase: 10000 },
@@ -287,7 +287,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 6,
-      value: 98000,
+      balance: 98000,
       paidAt: '2023.6.10',
       detail: {
         electricity: { amount: 62000, increase: 4000 },
@@ -297,7 +297,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 5,
-      value: 94000,
+      balance: 94000,
       paidAt: '2023.5.10',
       detail: {
         electricity: { amount: 58000, increase: -1000 },
@@ -307,7 +307,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 4,
-      value: 101000,
+      balance: 101000,
       paidAt: '2023.4.10',
       detail: {
         electricity: { amount: 59000, increase: -2000 },
@@ -317,7 +317,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 3,
-      value: 112000,
+      balance: 112000,
       paidAt: '2023.3.10',
       detail: {
         electricity: { amount: 61000, increase: 1000 },
@@ -327,7 +327,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 2,
-      value: 118000,
+      balance: 118000,
       paidAt: '2023.2.10',
       detail: {
         electricity: { amount: 60000, increase: -1000 },
@@ -337,7 +337,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 1,
-      value: 124000,
+      balance: 124000,
       paidAt: '2023.1.10',
       detail: {
         electricity: { amount: 61000, increase: 2000 },
@@ -349,7 +349,7 @@ export const MOCK_UTILITY_BILLS = {
   2022: [
     {
       month: 12,
-      value: 99000,
+      balance: 99000,
       paidAt: '2022.12.10',
       detail: {
         electricity: { amount: 61000, increase: -3000 },
@@ -359,7 +359,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 11,
-      value: 102300,
+      balance: 102300,
       paidAt: '2022.11.10',
       detail: {
         electricity: { amount: 64000, increase: 1200 },
@@ -369,7 +369,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 10,
-      value: 102100,
+      balance: 102100,
       paidAt: '2022.10.10',
       detail: {
         electricity: { amount: 62800, increase: 2800 },
@@ -379,7 +379,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 9,
-      value: 97400,
+      balance: 97400,
       paidAt: '2022.9.10',
       detail: {
         electricity: { amount: 60000, increase: -5000 },
@@ -389,7 +389,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 8,
-      value: 99000,
+      balance: 99000,
       paidAt: '2022.8.10',
       detail: {
         electricity: { amount: 65000, increase: 5000 },
@@ -399,7 +399,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 7,
-      value: 91000,
+      balance: 91000,
       paidAt: '2022.7.10',
       detail: {
         electricity: { amount: 60000, increase: 8000 },
@@ -409,7 +409,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 6,
-      value: 81000,
+      balance: 81000,
       paidAt: '2022.6.10',
       detail: {
         electricity: { amount: 52000, increase: 2000 },
@@ -419,7 +419,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 5,
-      value: 80000,
+      balance: 80000,
       paidAt: '2022.5.10',
       detail: {
         electricity: { amount: 50000, increase: -1000 },
@@ -429,7 +429,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 4,
-      value: 86000,
+      balance: 86000,
       paidAt: '2022.4.10',
       detail: {
         electricity: { amount: 51000, increase: -2000 },
@@ -439,7 +439,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 3,
-      value: 94000,
+      balance: 94000,
       paidAt: '2022.3.10',
       detail: {
         electricity: { amount: 53000, increase: 1000 },
@@ -449,7 +449,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 2,
-      value: 98000,
+      balance: 98000,
       paidAt: '2022.2.10',
       detail: {
         electricity: { amount: 52000, increase: 0 },
@@ -459,7 +459,7 @@ export const MOCK_UTILITY_BILLS = {
     },
     {
       month: 1,
-      value: 102000,
+      balance: 102000,
       paidAt: '2022.1.10',
       detail: {
         electricity: { amount: 52000, increase: 4000 },

@@ -15,7 +15,7 @@ export default function MonthBillsItem({ year, item, monthsLabel, won, onClick }
         <RowTop>
           <Title>{`${year}년 ${monthsLabel(item.month)}`}</Title>
           <Right>
-            <Amount>{won(item.value)}</Amount>
+            <Amount>{won(item.balance)}</Amount>
           </Right>
         </RowTop>
         <Date>{item.paidAt}</Date>

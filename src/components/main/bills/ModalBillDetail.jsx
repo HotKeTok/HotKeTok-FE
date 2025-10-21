@@ -12,10 +12,16 @@ import { Column } from '../../../styles/flex';
 // 증감 텍스트 헬퍼 함수
 const formatIncrease = (value, tab) => {
   if (tab === '공과금') {
-    if (value > 0) return <StatusText isIncrease>{formatNumberWithCommas(value)} 증가</StatusText>;
-    if (value < 0) return <StatusText>{formatNumberWithCommas(Math.abs(value))} 감소</StatusText>;
+    if (value > 0)
+      return <StatusText $isincrease={'true'}>{formatNumberWithCommas(value)} 증가</StatusText>;
+    if (value < 0)
+      return (
+        <StatusText $isincrease={'false'}>
+          {formatNumberWithCommas(Math.abs(value))} 감소
+        </StatusText>
+      );
     return <StatusText>변동 없음</StatusText>; // 변동 없음
-  } else return <StatusText isIncrease>입금</StatusText>; // todo: 입금/출금으로 변경
+  } else return <StatusText $isincrease={'true'}>입금</StatusText>; // todo: 입금/출금으로 변경
 };
 
 export default function ModalBillDetail({
@@ -27,8 +33,6 @@ export default function ModalBillDetail({
   onClose,
   tab,
 }) {
-  console.log(commonBillData);
-
   if (loading) {
     return (
       <ModalWrapper>
@@ -185,7 +189,7 @@ const DetailItem = styled.div`
 
 const StatusText = styled.span`
   ${typo('caption1')};
-  color: ${props => (props.isIncrease ? '#3C66FF' : '#FF3F3F')};
+  color: ${props => (props.$isincrease === 'true' ? '#3C66FF' : '#FF3F3F')};
 `;
 
 const DateText = styled.div`
