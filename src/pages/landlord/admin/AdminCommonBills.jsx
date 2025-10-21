@@ -18,7 +18,6 @@ export default function AdminCommonBills() {
       setLoading(true);
       const response = await getCommonBillDetail(accessToken, year, month);
       if (response.success) {
-        console.log(response.data);
         setBillsList(response.data);
       }
     } catch (error) {
