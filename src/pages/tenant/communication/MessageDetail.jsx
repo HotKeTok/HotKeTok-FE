@@ -24,7 +24,16 @@ export default function MessageDetail() {
       if (!accessToken) return;
 
       const res = await reportMessage(accessToken, id);
-      if (res.success) navigate('/message', { replace: true });
+      if (res.success)
+        navigate(
+          '/message',
+          { replace: true },
+          {
+            state: {
+              needsRefresh: true,
+            },
+          }
+        );
     } catch (error) {
       console.error('Error reporting message:', error);
       return { success: false, error };
