@@ -6,6 +6,8 @@ import ChartCategoryBar from './GraphCategoryBar';
 import BillSummary from './BillSummary';
 import { Row } from '../../../styles/flex';
 import { formatDateToYMD } from '../../../utils/dateFormat';
+import EmptyBills from '../../../assets/common/icon-no-data.svg?react';
+import { Column } from '../../../styles/flex';
 
 // 증감 텍스트 헬퍼 함수
 const formatIncrease = (value, tab) => {
@@ -25,6 +27,8 @@ export default function ModalBillDetail({
   onClose,
   tab,
 }) {
+  console.log(commonBillData);
+
   if (loading) {
     return (
       <ModalWrapper>
@@ -37,38 +41,50 @@ export default function ModalBillDetail({
     );
   }
 
-  if (!utilityBillData && !commonBillData) {
+  if ((!utilityBillData && tab === '공과금') || (!commonBillData && tab === '공동 관리비')) {
     return (
       <ModalWrapper>
         <ModalHeader>
           <h4>{tab} 내역</h4>
           <CloseButton onClick={onClose}>&times;</CloseButton>
         </ModalHeader>
-        <p>선택된 {tab} 내역이 없습니다.</p>
+        <Column
+          $gap={10}
+          $justify="center"
+          $align="center"
+          style={{ width: '100%', height: '90%' }}
+        >
+          <EmptyBills />
+          <EmptyText>아직 추가된 공동 관리비 내역이 없어요.</EmptyText>
+        </Column>
       </ModalWrapper>
     );
   }
 
   let chartData = [];
-  chartData = [
-    {
-      description: '전기요금',
-      amount: utilityBillData.detail.electricity.amount,
-      increase: utilityBillData.detail.electricity.increase,
-    },
-    {
-      description: '수도요금',
-      amount: utilityBillData.detail.water.amount,
-      increase: utilityBillData.detail.water.increase,
-    },
-    {
-      description: '도시가스',
-      amount: utilityBillData.detail.gas.amount,
-      increase: utilityBillData.detail.gas.increase,
-    },
-  ];
-
-  const renderList = tab === '공동 관리비' ? commonBillData.details : chartData;
+  let renderList = [];
+  if (tab === '공과금') {
+    chartData = [
+      {
+        description: '전기요금',
+        amount: utilityBillData.detail.electricity.amount,
+        increase: utilityBillData.detail.electricity.increase,
+      },
+      {
+        description: '수도요금',
+        amount: utilityBillData.detail.water.amount,
+        increase: utilityBillData.detail.water.increase,
+      },
+      {
+        description: '도시가스',
+        amount: utilityBillData.detail.gas.amount,
+        increase: utilityBillData.detail.gas.increase,
+      },
+    ];
+    renderList = chartData;
+  } else {
+    renderList = commonBillData.details;
+  }
 
   return (
     <ModalWrapper>
@@ -112,6 +128,8 @@ export default function ModalBillDetail({
 }
 
 const ModalWrapper = styled.div`
+  height: 100%;
+
   background-color: white;
   padding: 20px 30px;
   border-radius: 30px;
@@ -186,4 +204,9 @@ const SubTextRow = styled(Row)`
   & > *:only-child {
     margin-left: auto;
   }
+`;
+
+const EmptyText = styled.div`
+  ${typo('body1')}
+  color: ${color('grayscale.500')};
 `;

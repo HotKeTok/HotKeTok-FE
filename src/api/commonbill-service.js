@@ -15,13 +15,14 @@ export async function getCommonBills(accessToken) {
 
 // GET/ 공동관리비 상세 조회
 export async function getCommonBillDetail(accessToken, year, month) {
-  const { data } = await client.get(`/commonbill-service/view?year=${year}&month=${month}`, {
+  const response = await client.get(`/commonbill-service/view?year=${year}&month=${month}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   return {
-    success: isOk(data),
-    data: data?.data ?? null,
-    message: data?.message ?? '',
+    success: response.data.success,
+    status: response.status,
+    data: response.data?.data ?? null,
+    message: response.data?.message ?? '',
   };
 }
 

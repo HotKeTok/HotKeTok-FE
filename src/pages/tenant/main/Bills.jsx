@@ -28,12 +28,16 @@ export default function Bills() {
       setLoading(true);
       const response = await getCommonBillDetail(accessToken, year, month);
       if (response.success) {
+        console.log(response.data);
         setBillDetail(response.data);
-      } else {
-        console.error('공동 관리비 내역 불러오기 실패:', response.message);
       }
     } catch (error) {
-      console.error('공동 관리비 내역 불러오기 중 오류 발생:', error);
+      if (error.status === 404) {
+        setBillDetail(undefined);
+      } else {
+        console.error('공동 관리비 내역 불러오기 중 오류 발생:', error);
+        setBillDetail(null);
+      }
     } finally {
       setLoading(false);
     }
