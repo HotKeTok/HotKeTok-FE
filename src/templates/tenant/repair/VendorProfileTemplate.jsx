@@ -198,44 +198,45 @@ function ReviewTab({ reviews, reviewCount, reviewSort, onChangeSort }) {
           )}
         </Dropdown>
       </Row>
-
-      {reviews.map(r => (
-        <ReviewCard key={r.id}>
-          <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-            <Row $gap={8} style={{ alignItems: 'center' }}>
-              <Avatar>{r.user[0]}</Avatar>
-              <div>
-                <ReviewerName>{r.user}</ReviewerName>
-                <Row $gap={4} style={{ alignItems: 'center' }}>
-                  <Stars>
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <StarIconImg
-                        key={i}
-                        src={i < r.rating ? iconYelloStar : iconGrayStar}
-                        alt={i < r.rating ? 'yellow star' : 'gray star'}
-                      />
-                    ))}
-                  </Stars>
-                  {!!r.tags?.length && <Badge>{r.tags.join('/')}</Badge>}
-                </Row>
-              </div>
+      <ScrollWrapper>
+        {reviews.map(r => (
+          <ReviewCard key={r.id}>
+            <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+              <Row $gap={8} style={{ alignItems: 'center' }}>
+                <Avatar>{r.user[0]}</Avatar>
+                <div>
+                  <ReviewerName>{r.user}</ReviewerName>
+                  <Row $gap={4} style={{ alignItems: 'center' }}>
+                    <Stars>
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <StarIconImg
+                          key={i}
+                          src={i < r.rating ? iconYelloStar : iconGrayStar}
+                          alt={i < r.rating ? 'yellow star' : 'gray star'}
+                        />
+                      ))}
+                    </Stars>
+                    {!!r.tags?.length && <Badge>{r.tags.join('/')}</Badge>}
+                  </Row>
+                </div>
+              </Row>
+              <ReviewDate>{r.date}</ReviewDate>
             </Row>
-            <ReviewDate>{r.date}</ReviewDate>
-          </Row>
 
-          <ReviewText>{r.body}</ReviewText>
+            <ReviewText>{r.body}</ReviewText>
 
-          {!!r.photos?.length && (
-            <PhotoRow>
-              {r.photos.map((src, i) => (
-                <Photo key={i}>
-                  <img src={src} alt={`review-${i}`} />
-                </Photo>
-              ))}
-            </PhotoRow>
-          )}
-        </ReviewCard>
-      ))}
+            {!!r.photos?.length && (
+              <PhotoRow>
+                {r.photos.map((src, i) => (
+                  <Photo key={i}>
+                    <img src={src} alt={`review-${i}`} />
+                  </Photo>
+                ))}
+              </PhotoRow>
+            )}
+          </ReviewCard>
+        ))}
+      </ScrollWrapper>
 
       <Row style={{ padding: '16px' }}>
         <WriteButton text="후기 작성하기" onClick={() => alert('후기 작성')} />
@@ -470,6 +471,7 @@ const DropdownItem = styled.div`
   &:hover {
     background: ${color('grayscale.200')};
   }
+  white-space: nowrap;
 `;
 
 const ChevronIcon = styled.img`
@@ -477,6 +479,11 @@ const ChevronIcon = styled.img`
   margin-left: 5px;
   transition: transform 0.2s ease;
   transform: rotate(${p => (p.$open ? '180deg' : '0deg')});
+`;
+
+const ScrollWrapper = styled.div`
+  height: 270px;
+  overflow-y: auto;
 `;
 
 const ReviewCard = styled.div`
@@ -501,6 +508,7 @@ const ReviewerName = styled.div`
 `;
 
 const Stars = styled.div`
+  display: flex;
   ${typo('caption.100')};
   color: #f7b500;
 `;
