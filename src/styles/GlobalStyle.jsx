@@ -54,6 +54,28 @@ const GlobalStyle = createGlobalStyle`
     max-width: 100%;
     display: block;
   }
+    /* 스크롤바 전체 */
+    ::-webkit-scrollbar {
+    width: 4px;  /* 스크롤바의 너비 */
+  }
+
+  /* 스크롤바 트랙(배경) */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* 스크롤바 핸들(움직이는 막대) */
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  /* 핸들을 호버했을 때 */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #777777;
+    border: 2px solid #777777;
+  }
+  
 `;
 
 export default GlobalStyle;
