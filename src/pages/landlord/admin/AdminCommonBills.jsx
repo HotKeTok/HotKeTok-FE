@@ -18,12 +18,16 @@ export default function AdminCommonBills() {
       setLoading(true);
       const response = await getCommonBillDetail(accessToken, year, month);
       if (response.success) {
+        console.log(response.data);
         setBillsList(response.data);
-      } else {
-        console.error('공동 관리비 내역 불러오기 실패:', response.message);
       }
     } catch (error) {
-      console.error('공동 관리비 내역 불러오기 중 오류 발생:', error);
+      if (error.status === 404) {
+        setBillsList(undefined);
+      } else {
+        console.error('공동 관리비 내역 불러오기 중 오류 발생:', error);
+        setBillsList(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -31,17 +35,11 @@ export default function AdminCommonBills() {
 
   useEffect(() => {
     fetchBillsData(year, month);
-  }, [year, month]);
+  }, [year, month, accessToken]);
 
-  if (loading) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (!billsList) {
-    return <div>공동 관리비 내역이 없습니다.</div>;
-  }
   return (
     <AdminCommonBillsTemplate
+      loading={loading}
       billsList={billsList}
       year={year}
       month={month}
