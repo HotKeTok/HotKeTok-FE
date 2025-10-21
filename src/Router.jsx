@@ -14,7 +14,7 @@ import MainLandlord from './pages/landlord/main/Index';
 import RepairHomeLandlord from './pages/landlord/repair/L_RepairHome';
 import RepairProgressLandlord from './pages/landlord/repair/L_RepairProgress';
 import WriteReviewLandlord from './pages/landlord/repair/L_WriteReview';
-import ContractorProfileLandlord from './pages/landlord/repair/L_ContractorProfile';
+import VendorProfileLandlord from './pages/landlord/repair/L_VendorProfile';
 import RepairHistoryLandlord from './pages/landlord/repair/L_RepairHistory';
 import AdminAuth from './pages/landlord/admin/AdminAuth';
 import AdminHome from './pages/landlord/admin/AdminHome';
@@ -40,7 +40,7 @@ import Alarm from './pages/tenant/main/Alarm';
 import RepairHome from './pages/tenant/repair/RepairHome';
 import RequestRepair from './pages/tenant/repair/RequestRepair';
 import RepairProgress from './pages/tenant/repair/RepairProgress';
-import ContractorProfile from './pages/tenant/repair/ContractorProfile';
+import VendorProfile from './pages/tenant/repair/VendorProfile';
 import WriteReview from './pages/tenant/repair/WriteReview';
 import RepairHistory from './pages/tenant/repair/RepairHistory';
 import Communication from './pages/tenant/communication/Communication';
@@ -153,7 +153,7 @@ export default function AppRouter() {
               <Route path="/repair" element={<RepairHomeLandlord />} />
               <Route path="/repair-progress" element={<RepairProgressLandlord />} />
               <Route path="/repair-history" element={<RepairHistoryLandlord />} />
-              <Route path="/contractor-profile" element={<ContractorProfileLandlord />} />
+              <Route path="/vendor-profile" element={<VendorProfileLandlord />} />
               <Route path="/write-review" element={<WriteReviewLandlord />} />
 
               {/* 집주인 어드민 */}
@@ -191,7 +191,7 @@ export default function AppRouter() {
               <Route path="/request-repair" element={<RequestRepair />} />
               <Route path="/repair-progress" element={<RepairProgress />} />
               <Route path="/repair-history" element={<RepairHistory />} />
-              <Route path="/contractor-profile" element={<ContractorProfile />} />
+              <Route path="/vendor-profile" element={<VendorProfile />} />
               <Route path="/write-review" element={<WriteReview />} />
 
               {/* 입주민 똑똑 */}

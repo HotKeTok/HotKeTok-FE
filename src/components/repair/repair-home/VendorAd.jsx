@@ -80,7 +80,7 @@ function CompanyCard({ category, name, rating, reviewCount, phone, address, imag
  * 가로 스크롤 캐러셀
  * - props.companies 가 없으면 MOCK_COMPANIES 사용
  * ======================================= */
-export default function ContractorAd({ companies = MOCK_COMPANIES }) {
+export default function VendorAd({ companies = MOCK_COMPANIES }) {
   return (
     <div>
       <HorizontalList role="list" aria-label="수리 업체 목록">

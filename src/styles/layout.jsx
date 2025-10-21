@@ -12,7 +12,7 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/request-repair',
   '/repair-progress',
   '/repair-history',
-  '/contractor-profile',
+  '/vendor-profile',
   '/write-review',
   '/message',
   '/alarm',

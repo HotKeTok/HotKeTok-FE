@@ -11,8 +11,8 @@ import { color, typo } from '../../../styles/tokens';
 import iconChecked from '../../../assets/repair/request-repair/icon_checked.svg';
 import iconUnchecked from '../../../assets/repair/request-repair/icon_unchecked.svg';
 import cameraIcon from '../../../assets/repair/request-repair/icon-camera.svg';
-import starYellow from '../../../assets/repair/contractor-profile/icon-star-yellow.svg';
-import starGray from '../../../assets/repair/contractor-profile/icon-star-gray.svg';
+import starYellow from '../../../assets/repair/vendor-profile/icon-star-yellow.svg';
+import starGray from '../../../assets/repair/vendor-profile/icon-star-gray.svg';
 
 const MAX_TEXT = 300;
 const MAX_PHOTOS = 8;
@@ -25,9 +25,9 @@ const REPAIR_TYPES = [
   { key: 'etc', label: '기타' },
 ];
 
-export default function L_WriteReviewTemplate({ contractorName: propName }) {
+export default function L_WriteReviewTemplate({ vendorName: propName }) {
   const [sp] = useSearchParams();
-  const contractorName = useMemo(() => propName || sp.get('name') || '업체', [propName, sp]);
+  const vendorName = useMemo(() => propName || sp.get('name') || '업체', [propName, sp]);
 
   const [rating, setRating] = useState(0);
   const [types, setTypes] = useState(new Set());
@@ -75,7 +75,7 @@ export default function L_WriteReviewTemplate({ contractorName: propName }) {
   const onSubmit = () => {
     const payload = {
       role: 'LANDLORD', // ✅ 집주인 후기
-      contractorName,
+      vendorName,
       rating,
       types: Array.from(types),
       text: text.trim(),
@@ -86,7 +86,7 @@ export default function L_WriteReviewTemplate({ contractorName: propName }) {
 
   return (
     <Screen>
-      <TopBar title={contractorName} />
+      <TopBar title={vendorName} />
       <Content>
         <Column $gap={40}>
           {/* 안내: 집주인 후기 */}

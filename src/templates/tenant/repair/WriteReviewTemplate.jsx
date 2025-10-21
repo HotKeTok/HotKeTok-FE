@@ -10,8 +10,8 @@ import { color, typo } from '../../../styles/tokens';
 import iconChecked from '../../../assets/repair/request-repair/icon_checked.svg';
 import iconUnchecked from '../../../assets/repair/request-repair/icon_unchecked.svg';
 import cameraIcon from '../../../assets/repair/request-repair/icon-camera.svg';
-import starYellow from '../../../assets/repair/contractor-profile/icon-star-yellow.svg';
-import starGray from '../../../assets/repair/contractor-profile/icon-star-gray.svg';
+import starYellow from '../../../assets/repair/vendor-profile/icon-star-yellow.svg';
+import starGray from '../../../assets/repair/vendor-profile/icon-star-gray.svg';
 
 /* =========================================================
  * 상수
@@ -29,9 +29,9 @@ const REPAIR_TYPES = [
 
 /* =========================================================
  * 메인
- *  - prop: contractorName (상단 타이틀), default '매종 인테리어'
+ *  - prop: vendorName (상단 타이틀), default '매종 인테리어'
  * ======================================================= */
-export default function WriteReviewTemplate({ contractorName = '매종 인테리어' }) {
+export default function WriteReviewTemplate({ vendorName = '매종 인테리어' }) {
   const [rating, setRating] = useState(0); // 별점 1~5
   const [types, setTypes] = useState(new Set()); // 수리 분야 다중 선택
   const [text, setText] = useState(''); // 상세 후기
@@ -84,7 +84,7 @@ export default function WriteReviewTemplate({ contractorName = '매종 인테리
 
   const onSubmit = () => {
     const payload = {
-      contractorName,
+      vendorName,
       rating,
       types: Array.from(types),
       text: text.trim(),
@@ -97,7 +97,7 @@ export default function WriteReviewTemplate({ contractorName = '매종 인테리
 
   return (
     <Screen>
-      <TopBar title={contractorName} />
+      <TopBar title={vendorName} />
       <Content>
         {/* 별점 */}
         <Column $gap={40}>
