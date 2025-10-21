@@ -6,7 +6,7 @@ import { Column, Row } from '../../../styles/flex';
 import { Page, ScrollableContent } from '../../../styles/layout';
 
 import RequestBanner from '../../../components/repair/repair-home/RequestBanner';
-import ContractorAd from '../../../components/repair/repair-home/ContractorAd';
+import VendorAd from '../../../components/repair/repair-home/VendorAd';
 import { useNavigate } from 'react-router-dom';
 import { getActiveRepairs } from '../../../mocks';
 
@@ -70,7 +70,7 @@ export default function RepairHomeTemplate() {
             <RecommandTitle>수리가 필요하신가요?</RecommandTitle>
             <RecommandSub>이런 업체는 어떠세요?</RecommandSub>
           </Column>
-          <ContractorAd />
+          <VendorAd />
         </Wrapper>
 
         <RequestFab type="button" aria-label="수리 요청하기" onClick={() => nav('/request-repair')}>

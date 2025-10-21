@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import NoticeBanner from '../../../components/main/index/NoticeBanner';
 import { BOTTOM_BAR_HEIGHT } from '../../../styles/layout';
 import RepairBanner from '../../../components/repair/repair-home/RequestBanner';
-import CompanyCard from '../../../components/repair/repair-home/ContractorAd';
+import CompanyCard from '../../../components/repair/repair-home/VendorAd';
 import { formatNumberWithCommas } from '../../../utils/number';
 
 /**

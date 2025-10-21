@@ -1,4 +1,4 @@
-// src/templates/ContractorProfileTemplate.jsx
+// src/templates/VendorProfileTemplate.jsx
 import React, { useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 
@@ -13,26 +13,26 @@ import iconPhone from '../../../assets/repair/icon-phone.svg';
 import iconBookmark from '../../../assets/repair/icon-bookmark.svg';
 import iconAddress from '../../../assets/repair/icon-address.svg';
 import iconChevron from '../../../assets/common/icon-arrow-down.svg';
-import iconYelloStar from '../../../assets/repair/contractor-profile/icon-star-yellow.svg';
-import iconGrayStar from '../../../assets/repair/contractor-profile/icon-star-gray.svg';
+import iconYelloStar from '../../../assets/repair/vendor-profile/icon-star-yellow.svg';
+import iconGrayStar from '../../../assets/repair/vendor-profile/icon-star-gray.svg';
 
 // ✅ mock 데이터 import
-import { MOCK_CONTRACTORS } from '../../../mocks/repair/contractors';
+import { MOCK_VENDORS } from '../../../mocks/repair/vendors';
 
 /* =========================================================
  * 메인 컴포넌트
- *  - prop: contractorId (없으면 첫 업체)
+ *  - prop: vendorId (없으면 첫 업체)
  * ======================================================= */
-export default function ContractorProfileTemplate({ contractorId }) {
-  const contractor = useMemo(() => {
-    if (!contractorId) return MOCK_CONTRACTORS[0];
-    return MOCK_CONTRACTORS.find(c => c.id === contractorId) || MOCK_CONTRACTORS[0];
-  }, [contractorId]);
+export default function VendorProfileTemplate({ vendorId }) {
+  const vendor = useMemo(() => {
+    if (!vendorId) return MOCK_VENDORS[0];
+    return MOCK_VENDORS.find(c => c.id === vendorId) || MOCK_VENDORS[0];
+  }, [vendorId]);
 
   const [tab, setTab] = useState('home'); // home | news | review
   const [reviewSort, setReviewSort] = useState('latest'); // latest | ratingLow | ratingHigh
   const sortedReviews = useMemo(() => {
-    const list = [...contractor.reviews];
+    const list = [...vendor.reviews];
     if (reviewSort === 'latest') {
       return list.sort((a, b) => (a.date < b.date ? 1 : -1));
     }
@@ -43,7 +43,7 @@ export default function ContractorProfileTemplate({ contractorId }) {
       return list.sort((a, b) => b.rating - a.rating);
     }
     return list;
-  }, [contractor.reviews, reviewSort]);
+  }, [vendor.reviews, reviewSort]);
 
   return (
     <Screen>
@@ -52,20 +52,20 @@ export default function ContractorProfileTemplate({ contractorId }) {
         <Column $gap={12}>
           <Column $gap={3}>
             <Row $gap={8} style={{ alignItems: 'center' }}>
-              <Name>{contractor.name}</Name>
-              <CategoryText>{contractor.categories.join('/')}</CategoryText>
+              <Name>{vendor.name}</Name>
+              <CategoryText>{vendor.categories.join('/')}</CategoryText>
             </Row>
             <Row $gap={14} $align="center">
               <Row $gap={4}>
                 <IconWrapper src={iconGreenStar} />
-                <RatingText>{contractor.ratingAvg?.toFixed(1) ?? '0.0'}</RatingText>
+                <RatingText>{vendor.ratingAvg?.toFixed(1) ?? '0.0'}</RatingText>
               </Row>
-              <SmallText>후기 {contractor.reviewCount ?? 0}</SmallText>
+              <SmallText>후기 {vendor.reviewCount ?? 0}</SmallText>
             </Row>
           </Column>
 
           <Gallery>
-            {contractor.images.map((src, i) => (
+            {vendor.images.map((src, i) => (
               <Thumb key={i}>
                 <img src={src} alt={`thumb-${i}`} />
               </Thumb>
@@ -89,12 +89,12 @@ export default function ContractorProfileTemplate({ contractorId }) {
         </TabButton>
       </Tabs>
 
-      {tab === 'home' && <HomeTab contractor={contractor} />}
-      {tab === 'news' && <NewsTab news={contractor.news} contractor={contractor} />}
+      {tab === 'home' && <HomeTab vendor={vendor} />}
+      {tab === 'news' && <NewsTab news={vendor.news} vendor={vendor} />}
       {tab === 'review' && (
         <ReviewTab
           reviews={sortedReviews}
-          reviewCount={contractor.reviewCount}
+          reviewCount={vendor.reviewCount}
           reviewSort={reviewSort}
           onChangeSort={setReviewSort}
         />
@@ -107,30 +107,30 @@ export default function ContractorProfileTemplate({ contractorId }) {
  * 탭: 홈
  *  - 소개 / 운영시간 / 연락처 / 카테고리 / 주소
  * ======================================================= */
-function HomeTab({ contractor }) {
+function HomeTab({ vendor }) {
   return (
     <TabBody>
       <Card>
         <CardTitle>소개</CardTitle>
-        <CardBody>{contractor.intro}</CardBody>
+        <CardBody>{vendor.intro}</CardBody>
       </Card>
       <div style={{ padding: '22px 4px' }}>
         <Column $gap={12}>
           <Row $gap={10}>
             <Icon src={iconClock} />
-            <IconInfo>{contractor.contact.hours}</IconInfo>
+            <IconInfo>{vendor.contact.hours}</IconInfo>
           </Row>
           <Row $gap={10}>
             <Icon src={iconPhone} />
-            <IconInfo>{contractor.contact.phone}</IconInfo>
+            <IconInfo>{vendor.contact.phone}</IconInfo>
           </Row>
           <Row $gap={10}>
             <Icon src={iconBookmark} />
-            <IconInfo>{contractor.categories.join('/')}</IconInfo>
+            <IconInfo>{vendor.categories.join('/')}</IconInfo>
           </Row>
           <Row $gap={10}>
             <Icon src={iconAddress} />
-            <IconInfo>{contractor.contact.address}</IconInfo>
+            <IconInfo>{vendor.contact.address}</IconInfo>
           </Row>
         </Column>
       </div>
@@ -141,7 +141,7 @@ function HomeTab({ contractor }) {
 /* =========================================================
  * 탭: 소식
  * ======================================================= */
-function NewsTab({ news, contractor }) {
+function NewsTab({ news, vendor }) {
   return (
     <TabBody style={{ paddingTop: '5px' }}>
       {news.map(n => (
@@ -149,7 +149,7 @@ function NewsTab({ news, contractor }) {
           <Row $justify="space-between" $align="center" style={{ marginBottom: '12px' }}>
             <Row $gap={5} $align="center">
               <Avatar>메</Avatar>
-              <NewsContractorName>{contractor.name}</NewsContractorName>
+              <NewsVendorName>{vendor.name}</NewsVendorName>
             </Row>
             <NewsDate>{n.date}</NewsDate>
           </Row>
@@ -390,7 +390,7 @@ const IconInfo = styled.div`
 `;
 
 /* ----- News ----- */
-const NewsContractorName = styled.div`
+const NewsVendorName = styled.div`
   ${typo('button3')};
   color: ${color('grayscale.800')};
 `;

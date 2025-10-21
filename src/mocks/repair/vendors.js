@@ -1,4 +1,4 @@
-// src/mocks/contractors.js
+// src/mocks/vendors.js
 function makeThumb({ w = 320, h = 240, text = 'IMAGE' } = {}) {
   const svg = encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
@@ -11,7 +11,7 @@ function makeThumb({ w = 320, h = 240, text = 'IMAGE' } = {}) {
   return `data:image/svg+xml;utf8,${svg}`;
 }
 
-export const MOCK_CONTRACTORS = [
+export const MOCK_VENDORS = [
   {
     id: '916',
     name: '메종 인테리어',
