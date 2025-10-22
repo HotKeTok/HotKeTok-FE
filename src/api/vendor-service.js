@@ -1,10 +1,7 @@
 // src/api/vendor-service.js
 import api from './client';
 
-/**
- * 업체 프로필 조회 API
- * GET /vendor-service/profile
- */
+// GET : 업체 정보 확인
 export async function apiGetVendorProfile({ vendorId }) {
   const { data } = await api.get('/vendor-service/profile', {
     params: { vendorId },
@@ -19,10 +16,7 @@ export async function apiGetVendorProfile({ vendorId }) {
   };
 }
 
-/**
- * 업체 소식 조회 API
- * GET /vendor-service/news
- */
+// GET : 업체 소식 확인
 export async function apiGetVendorNews({ vendorId }) {
   const { data } = await api.get('/vendor-service/news', {
     params: { vendorId },
