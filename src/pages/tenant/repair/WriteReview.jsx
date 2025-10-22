@@ -25,6 +25,24 @@ function dataURLtoBlob(dataURL) {
   return new Blob([u8], { type: mime });
 }
 
+// mime → 안전한 확장자 매핑
+const MIME_EXT = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'image/svg+xml': 'svg', // ★ 핵심
+};
+
+// 안전한 파일명 생성 (영문/숫자/.-_ 만 허용)
+function makeSafeName(base, mime, idx) {
+  const ext = MIME_EXT[mime] || 'bin';
+  const cleaned = String(base || 'review')
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]/g, '-'); // 한글/공백/특수문자 제거
+  return `${cleaned}_${Date.now()}_${idx}.${ext}`;
+}
+
 export default function WriteReview() {
   const navigate = useNavigate();
   const params = useParams();
@@ -65,14 +83,12 @@ export default function WriteReview() {
           if (p?.file instanceof File) {
             // 한글/특수문자 파일명 이슈 방지: 안전한 이름으로 교체
             const orig = p.file;
-            const ext = (orig.type && orig.type.split('/')[1]) || 'jpg';
-            const safeName = `review_${Date.now()}_${idx}.${ext}`;
+            const safeName = makeSafeName('review', orig.type, idx);
             return new File([orig], safeName, { type: orig.type });
           }
           if (typeof p?.url === 'string' && p.url.startsWith('data:')) {
             const blob = dataURLtoBlob(p.url);
-            const ext = (blob.type && blob.type.split('/')[1]) || 'jpg';
-            const safeName = `review_${Date.now()}_${idx}.${ext}`;
+            const safeName = makeSafeName('review', blob.type, idx);
             return new File([blob], safeName, { type: blob.type });
           }
           return null;
