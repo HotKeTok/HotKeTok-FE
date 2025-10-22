@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useParams, useLocation } from 'react-router-dom';
-import VendorProfileTemplate from '../../../templates/tenant/repair/VendorProfileTemplate';
+import VendorProfileTemplate from '../../templates/common/VendorProfileTemplate';
+import { apiGetVendorProfile, apiGetVendorNews } from '../../api/vendor-service';
 import {
-  apiGetVendorProfile,
-  apiGetVendorNews, // ✅ 추가
-} from '../../../api/vendor-service';
-import { apiGetVendorReviews, apiDeleteReview } from '../../../api/review-service';
-import { parseJwt, getAccessToken } from '../../../utils/auth';
-
-import Toast from '../../../components/common/Toast';
+  apiGetVendorReviews,
+  apiDeleteReview,
+  apiGetReviewWriteStatus,
+} from '../../api/review-service';
+import { parseJwt, getAccessToken } from '../../utils/auth';
+import Toast from '../../components/common/Toast';
 
 /** API → 템플릿 구조 매핑 */
 function mapApiVendorToTemplate(d) {
@@ -42,7 +42,7 @@ function mapApiVendorToTemplate(d) {
       phone: d?.phoneNumber ?? '',
       address: fullAddr,
     },
-    news: [], // ✅ 초기값
+    news: [],
     reviews: [],
   };
 }
@@ -61,6 +61,7 @@ function mapApiReviewsToTemplate(data) {
       photos: Array.isArray(r.reviewImage) ? r.reviewImage : [],
       date: r.date ?? null,
       profileImage: r.writerProfileImage,
+      // 서버 표준: authorId (int)
       authorId: typeof r.authorId === 'number' ? r.authorId : Number(r.authorId ?? NaN),
     })),
   };
@@ -86,6 +87,7 @@ export default function VendorProfile() {
   const location = useLocation();
   const vendorId = Number(params?.vendorId) || Number(sp.get('vendorId')) || 1;
 
+  // 로그인 사용자 ID
   const token = getAccessToken();
   const decoded = parseJwt(token) || {};
   const rawId =
@@ -100,6 +102,7 @@ export default function VendorProfile() {
   const [vendor, setVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '' });
+  const [canWrite, setCanWrite] = useState(true);
   const openToast = msg => setToast({ show: true, message: msg });
   const closeToast = () => setToast({ show: false, message: '' });
 
@@ -127,10 +130,11 @@ export default function VendorProfile() {
     (async () => {
       try {
         setLoading(true);
-        const [profileRes, reviewRes, newsRes] = await Promise.all([
+        const [profileRes, reviewRes, newsRes, statusRes] = await Promise.all([
           apiGetVendorProfile({ vendorId }),
           apiGetVendorReviews({ vendorId }),
-          apiGetVendorNews({ vendorId }), // ✅ 추가
+          apiGetVendorNews({ vendorId }),
+          apiGetReviewWriteStatus({ vendorId }),
         ]);
         if (!mounted) return;
 
@@ -144,13 +148,10 @@ export default function VendorProfile() {
             newsRes.success && Array.isArray(newsRes.data)
               ? mapApiNewsToTemplate(newsRes.data)
               : [];
+          const status = statusRes.success ? !!statusRes.data?.status : true;
 
-          setVendor({
-            ...prof,
-            reviewCount: count,
-            reviews,
-            news, // ✅ 추가
-          });
+          setVendor({ ...prof, reviewCount: count, reviews, news });
+          setCanWrite(status);
         } else {
           openToast(profileRes.message || '업체 정보를 불러오지 못했습니다.');
         }
@@ -161,7 +162,6 @@ export default function VendorProfile() {
         if (mounted) setLoading(false);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -207,6 +207,7 @@ export default function VendorProfile() {
         vendor={vendor}
         onDeleteReview={handleDeleteReview}
         currentUserId={currentUserId}
+        canWriteReview={canWrite}
       />
       <Toast show={toast.show} message={toast.message} onClose={closeToast} />
     </>

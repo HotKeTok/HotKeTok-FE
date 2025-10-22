@@ -1,3 +1,4 @@
+// src/components/repair/vendor-profile/ReviewTab.jsx
 import React, { useState } from 'react';
 import { Column, Row } from '../../../styles/flex';
 import Button from '../../common/Button';
@@ -47,6 +48,7 @@ export default function ReviewTab({
   vendorName,
   onDelete,
   currentUserId,
+  canWriteReview, // ✅ 추가
 }) {
   const [open, setOpen] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -163,9 +165,12 @@ export default function ReviewTab({
         })}
       </ScrollWrapper>
 
-      <Row style={{ paddingTop: '16px' }}>
-        <WriteButton text="후기 작성하기" onClick={goWriteReview} />
-      </Row>
+      {/* ✅ 작성 가능할 때만 노출 */}
+      {canWriteReview && (
+        <Row style={{ paddingTop: '16px' }}>
+          <WriteButton text="후기 작성하기" onClick={goWriteReview} />
+        </Row>
+      )}
 
       {isDelete ? (
         <ConfirmModal

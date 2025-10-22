@@ -1,19 +1,28 @@
-// src/templates/tenant/repair/VendorProfileTemplate.jsx
 import React, { useMemo, useState } from 'react';
 
-import TopBar from '../../../components/common/TopBar';
-import { Screen, TabContainer } from '../../../components/repair/vendor-profile/Styles';
-import VendorProfileHeader from '../../../components/repair/vendor-profile/VendorProfileHeader';
-import VendorTabsBar from '../../../components/repair/vendor-profile/VendorTabsBar';
-import HomeTab from '../../../components/repair/vendor-profile/HomeTab';
-import NewsTab from '../../../components/repair/vendor-profile/NewsTab';
-import ReviewTab from '../../../components/repair/vendor-profile/ReviewTab';
+import TopBar from '../../components/common/TopBar';
+import { Screen, TabContainer } from '../../components/repair/vendor-profile/Styles';
+import VendorProfileHeader from '../../components/repair/vendor-profile/VendorProfileHeader';
+import VendorTabsBar from '../../components/repair/vendor-profile/VendorTabsBar';
+import HomeTab from '../../components/repair/vendor-profile/HomeTab';
+import NewsTab from '../../components/repair/vendor-profile/NewsTab';
+import ReviewTab from '../../components/repair/vendor-profile/ReviewTab';
 
 /**
- * UI 전담 템플릿
- * @param {{ vendor: object, onDeleteReview?: (id:number)=>void }} props
+ * 공통 UI 템플릿
+ * @param {{
+ *   vendor: object,
+ *   onDeleteReview?: (id:number)=>void,
+ *   currentUserId?: number,
+ *   canWriteReview?: boolean
+ * }} props
  */
-export default function VendorProfileTemplate({ vendor, onDeleteReview, currentUserId }) {
+export default function VendorProfileTemplate({
+  vendor,
+  onDeleteReview,
+  currentUserId,
+  canWriteReview = true,
+}) {
   const [tab, setTab] = useState('home'); // home | news | review
   const [reviewSort, setReviewSort] = useState('latest'); // latest | ratingLow | ratingHigh
 
@@ -45,8 +54,9 @@ export default function VendorProfileTemplate({ vendor, onDeleteReview, currentU
             onChangeSort={setReviewSort}
             vendorId={vendor?.id ?? vendor?.vendorId}
             vendorName={vendor?.name}
-            onDelete={onDeleteReview} // ✅ 전달
+            onDelete={onDeleteReview}
             currentUserId={currentUserId}
+            canWriteReview={canWriteReview}
           />
         )}
       </TabContainer>
