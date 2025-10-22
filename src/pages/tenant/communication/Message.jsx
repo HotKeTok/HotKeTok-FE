@@ -3,9 +3,12 @@ import { useEffect, useState } from 'react';
 import { getReceivedMessages, getSentMessages } from '../../../api/post-service';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { Row } from '../../../styles/flex';
+import { useLocation } from 'react-router-dom';
 
 export default function Message() {
   const accessToken = useAuthStore(s => s.accessToken);
+  const location = useLocation();
+  const { needsRefresh } = location.state || {};
 
   const [loading, setLoading] = useState(true);
   // 0: 받은 쪽지, 1: 보낸 쪽지
@@ -36,7 +39,7 @@ export default function Message() {
     };
 
     fetchData();
-  }, [toggleState, accessToken]);
+  }, [toggleState, accessToken, needsRefresh]);
 
   return (
     <MessageTemplate

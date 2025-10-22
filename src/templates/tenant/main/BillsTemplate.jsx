@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ScrollableContent } from '../../../styles/layout';
 import TopBar from '../../../components/common/TopBar';
@@ -8,34 +8,37 @@ import { Column, Row } from '../../../styles/flex';
 import YearSelect from '../../../components/main/bills/YearSelect';
 import MonthBillsItem from '../../../components/main/bills/MonthBillsItem';
 import BottomSheet from '../../../components/common/BottomSheet';
-import { MOCK_UTILITY_BILLS } from '../../../mocks/main/bills';
 import { Page } from '../../../styles/layout';
 import { TOP_BAR_HEIGHT } from '../../../styles/layout';
 import GraphUtilityBills from '../../../components/main/bills/GraphUtilityBills';
 import ModalBillDetail from '../../../components/main/bills/ModalBillDetail';
+
 const TabBarText = [
   { id: 1, text: '공과금' },
   { id: 2, text: '공동 관리비' },
 ];
 
-export default function BillsTemplate({ activeTab, setActiveTab }) {
+const monthsLabel = m => `${m}월`;
+const won = n => `${n.toLocaleString()}원`;
+
+export default function BillsTemplate({
+  activeTab,
+  setActiveTab,
+  year,
+  setYear,
+
+  billList,
+  commonBillDetail,
+  fetchCommonBillsDetail,
+  loading,
+}) {
   const scrollRef = useRef(null);
 
   const [modal, setModal] = useState(false);
-  const [year, setYear] = useState(2025);
-  const [selectedBills, setSelectedBills] = useState(null); // 선택된 공과금 내역
+  const [selectedUtilityBill, setSelectedUtilityBill] = useState(null); // 선택된 공과금 내역
 
   // 유저 보유 연도 (목데이터)
   const userYears = [2025, 2024, 2023, 2022];
-
-  const monthsLabel = m => `${m}월`;
-  const won = n => `${n.toLocaleString()}원`;
-
-  const currentList = useMemo(() => MOCK_UTILITY_BILLS[year] ?? [], [year]);
-  const latest = useMemo(() => (currentList.length ? currentList[0] : null), [currentList]);
-
-  const LATEST_DATE = latest ? `${year}년 ${latest.month}월분` : '';
-  const LATEST_COST = latest ? latest.value : 0;
 
   // 탭이 바뀔 때마다 스크롤 위로
   useEffect(() => {
@@ -45,10 +48,20 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
   }, [activeTab]);
 
   const handleOpenDetailModal = (year, month) => {
-    const bill = currentList.find(item => item.month === month);
-    setSelectedBills(bill);
+    if (activeTab === '공동 관리비') {
+      fetchCommonBillsDetail(year, month);
+    } else {
+      const bill = billList.find(item => item.month === month);
+      setSelectedUtilityBill(bill);
+    }
     setModal(true);
   };
+
+  const latest = billList ? billList.map(item => item).sort((a, b) => b.month - a.month)[0] : null;
+  const LATEST_DATE = latest ? `${year}년 ${latest.month}월분` : '';
+  const LATEST_COST = latest ? latest.balance : 0;
+
+  const sorted = billList ? billList.map(item => item).sort((a, b) => b.month - a.month) : [];
 
   return (
     <Wrapper>
@@ -64,8 +77,11 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
       {/* 공통 바텀시트 */}
       <BottomSheet isOpen={modal} onClose={() => setModal(false)} height={'90%'}>
         <ModalBillDetail
+          loading={loading}
           year={year}
-          billData={selectedBills}
+          month={activeTab === '공과금' ? selectedUtilityBill?.month : commonBillDetail?.month}
+          utilityBillData={selectedUtilityBill}
+          commonBillData={commonBillDetail}
           onClose={() => setModal(false)}
           tab={activeTab}
         />
@@ -78,8 +94,12 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
         <Content>
           <Row $align="flex-end" $justify="space-between" style={{ marginBottom: 20 }}>
             <Column $gap={4} $align="flex-start" style={{ marginBottom: 10 }}>
-              <Date>{LATEST_DATE}</Date>
-              <MainCost>{won(LATEST_COST)}</MainCost>
+              {billList && (
+                <>
+                  <Date>{LATEST_DATE}</Date>
+                  <MainCost>{won(LATEST_COST)}</MainCost>
+                </>
+              )}
             </Column>
             {activeTab === '공동 관리비' && (
               <ListHeader>
@@ -91,23 +111,29 @@ export default function BillsTemplate({ activeTab, setActiveTab }) {
           {activeTab === '공과금' && (
             <>
               <GraphUtilityBills year={year} />
-              <ListHeader>
+              <ListHeader style={{ marginBottom: 10 }}>
                 <YearSelect value={year} onChange={setYear} years={userYears} />
               </ListHeader>
             </>
           )}
 
           <List>
-            {currentList.map(item => (
-              <MonthBillsItem
-                key={`${year}-${item.month}`}
-                year={year}
-                item={item}
-                monthsLabel={monthsLabel}
-                won={won}
-                onClick={() => handleOpenDetailModal(year, item.month)}
-              />
-            ))}
+            {sorted.length !== 0 ? (
+              sorted.map(item => (
+                <MonthBillsItem
+                  key={`${year}-${item.month}`}
+                  year={year}
+                  item={item}
+                  monthsLabel={monthsLabel}
+                  won={won}
+                  onClick={() => handleOpenDetailModal(year, item.month)}
+                />
+              ))
+            ) : (
+              <Row $justify="center" style={{ marginTop: 50 }}>
+                {year}년 내역이 없습니다.
+              </Row>
+            )}
           </List>
         </Content>
       </ScrollableContent>
