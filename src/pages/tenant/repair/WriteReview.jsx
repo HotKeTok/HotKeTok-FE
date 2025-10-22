@@ -31,7 +31,7 @@ const MIME_EXT = {
   'image/png': 'png',
   'image/webp': 'webp',
   'image/gif': 'gif',
-  'image/svg+xml': 'svg', // ★ 핵심
+  'image/svg+xml': 'svg',
 };
 
 // 안전한 파일명 생성 (영문/숫자/.-_ 만 허용)
@@ -57,9 +57,9 @@ export default function WriteReview() {
 
   const vendorName = sp.get('vendorName') || '업체 후기 작성';
 
-  const [toast, setToast] = useState({ open: false, message: '' });
-  const openToast = msg => setToast({ open: true, message: msg });
-  const closeToast = () => setToast({ open: false, message: '' });
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const openToast = msg => setToast({ show: true, message: msg });
+  const closeToast = () => setToast({ show: false, message: '' });
 
   /**
    * 템플릿 onSubmit 훅
@@ -119,8 +119,9 @@ export default function WriteReview() {
         return;
       }
 
-      openToast('리뷰가 작성되었습니다.');
-      setTimeout(() => navigate(-1), 500);
+      navigate(`/vendor-profile?vendorId=${vendorId}`, {
+        state: { toastMessage: '후기 작성이 완료되었어요.' },
+      });
     } catch (e) {
       openToast('네트워크 오류가 발생했습니다.');
     }
@@ -129,7 +130,7 @@ export default function WriteReview() {
   return (
     <>
       <WriteReviewTemplate vendorName={vendorName} onSubmit={handleSubmit} />
-      <Toast open={toast.open} message={toast.message} onClose={closeToast} />
+      <Toast show={toast.show} message={toast.message} onClose={closeToast} />
     </>
   );
 }
