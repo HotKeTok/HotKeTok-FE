@@ -2,22 +2,7 @@
 import api from './client';
 import { getAccessToken } from '../utils/auth';
 
-// 후기 목록 조회
-export async function apiGetVendorReviews({ vendorId }) {
-  const token = getAccessToken?.();
-  const { data } = await api.get('/review-service', {
-    params: { vendorId },
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
-  const success = data?.success === true || data?.status === 200 || data?.code === 'COMMON200';
-  return {
-    success,
-    data: data?.data ?? null,
-    message: data?.message ?? '',
-  };
-}
-
-// 후기 작성 (multipart/form-data)
+// POST : 업체 후기 작성 (multipart/form-data)
 export async function apiCreateReview(formData) {
   const { data } = await api.post('/review-service', formData, {
     headers: {
@@ -35,7 +20,22 @@ export async function apiCreateReview(formData) {
   };
 }
 
-// ✅ 후기 삭제 (DELETE /review-service?reviewId=123)
+// GET : 업체별 후기 목록 조회
+export async function apiGetVendorReviews({ vendorId }) {
+  const token = getAccessToken?.();
+  const { data } = await api.get('/review-service', {
+    params: { vendorId },
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  const success = data?.success === true || data?.status === 200 || data?.code === 'COMMON200';
+  return {
+    success,
+    data: data?.data ?? null,
+    message: data?.message ?? '',
+  };
+}
+
+// DELETE : 후기 삭제
 export async function apiDeleteReview({ reviewId }) {
   const { data } = await api.delete('/review-service', {
     params: { reviewId },
@@ -53,7 +53,7 @@ export async function apiDeleteReview({ reviewId }) {
   };
 }
 
-// 리뷰 작성 가능 여부 조회
+// GET : 리뷰 작성 가능 여부 조회
 export async function apiGetReviewWriteStatus({ vendorId }) {
   const token = getAccessToken?.();
   const { data } = await api.get('/review-service/status', {

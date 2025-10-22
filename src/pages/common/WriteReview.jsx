@@ -5,7 +5,7 @@ import WriteReviewTemplate from '../../templates/common/WriteReviewTemplate';
 import Toast from '../../components/common/Toast';
 import { apiCreateReview } from '../../api/review-service';
 
-// 🔹 서버 Enum 매핑 (밑줄 기반)
+// 서버 Enum 매핑 (밑줄 기반)
 const CATEGORY_ENUM_BY_KEY = {
   appliance: '가전',
   door_window: '문_창문',
@@ -14,7 +14,7 @@ const CATEGORY_ENUM_BY_KEY = {
   etc: '기타',
 };
 
-// 🔹 dataURL → Blob 변환
+// dataURL → Blob 변환
 function dataURLtoBlob(dataURL) {
   const [header, base64] = String(dataURL || '').split(',');
   const mimeMatch = /^data:(.*?);base64$/.exec(header || '');
@@ -25,7 +25,7 @@ function dataURLtoBlob(dataURL) {
   return new Blob([u8], { type: mime });
 }
 
-// 🔹 mime → 확장자
+// mime → 확장자
 const MIME_EXT = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -34,7 +34,7 @@ const MIME_EXT = {
   'image/svg+xml': 'svg',
 };
 
-// 🔹 안전한 파일명 생성
+// 안전한 파일명 생성
 function makeSafeName(base, mime, idx) {
   const ext = MIME_EXT[mime] || 'bin';
   const cleaned = String(base || 'review')
@@ -67,7 +67,7 @@ export default function WriteReview() {
       const construct_category = CATEGORY_ENUM_BY_KEY[firstKey] ?? '기타';
       const safePhotos = Array.isArray(photos) ? photos : [];
 
-      // 🔹 파일 변환
+      // 파일 변환
       const fileItems = safePhotos
         .map((p, idx) => {
           if (p?.file instanceof File) {
@@ -84,7 +84,7 @@ export default function WriteReview() {
         })
         .filter(Boolean);
 
-      // 🔹 서버 요구사항대로 FormData 구성
+      // 서버 요구사항대로 FormData 구성
       const requestJson = {
         vendorId,
         construct_category,
