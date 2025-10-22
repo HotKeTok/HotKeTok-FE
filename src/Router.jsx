@@ -7,14 +7,15 @@ import { BrowserRouter, Routes, Route, Outlet, useLocation } from 'react-router-
 import SignIn from './pages/common/SignIn';
 import SignUp from './pages/common/SignUp';
 import InitProcess from './pages/common/InitProcess';
-import VendorProfile from './pages/common/VendorProfile';
+
+import VendorProfile from './pages/common/VendorProfile'; // 수리업체 정보 확인
+import WriteReview from './pages/common/WriteReview'; // 후기 작성
 
 // landlord(집주인) 관련
 import AlarmLandlord from './pages/landlord/main/Alarm';
 import MainLandlord from './pages/landlord/main/Index';
 import RepairHomeLandlord from './pages/landlord/repair/L_RepairHome';
 import RepairProgressLandlord from './pages/landlord/repair/L_RepairProgress';
-import WriteReviewLandlord from './pages/landlord/repair/L_WriteReview';
 import RepairHistoryLandlord from './pages/landlord/repair/L_RepairHistory';
 import AdminAuth from './pages/landlord/admin/AdminAuth';
 import AdminHome from './pages/landlord/admin/AdminHome';
@@ -40,7 +41,6 @@ import Alarm from './pages/tenant/main/Alarm';
 import RepairHome from './pages/tenant/repair/RepairHome';
 import RequestRepair from './pages/tenant/repair/RequestRepair';
 import RepairProgress from './pages/tenant/repair/RepairProgress';
-import WriteReview from './pages/tenant/repair/WriteReview';
 import RepairHistory from './pages/tenant/repair/RepairHistory';
 import Communication from './pages/tenant/communication/Communication';
 import Chat from './pages/tenant/communication/Chat';
@@ -152,9 +152,9 @@ export default function AppRouter() {
               <Route path="/repair" element={<RepairHomeLandlord />} />
               <Route path="/repair-progress" element={<RepairProgressLandlord />} />
               <Route path="/repair-history" element={<RepairHistoryLandlord />} />
-              {/* ✅ 공통 VendorProfile 사용 */}
+              {/* 공통 VendorProfile, WriteReview 사용 */}
               <Route path="/vendor-profile" element={<VendorProfile />} />
-              <Route path="/write-review" element={<WriteReviewLandlord />} />
+              <Route path="/write-review" element={<WriteReview />} />
 
               {/* 집주인 어드민 */}
               <Route path="/admin" element={<AdminHome />} />
@@ -191,7 +191,7 @@ export default function AppRouter() {
               <Route path="/request-repair" element={<RequestRepair />} />
               <Route path="/repair-progress" element={<RepairProgress />} />
               <Route path="/repair-history" element={<RepairHistory />} />
-              {/* ✅ 공통 VendorProfile 사용 */}
+              {/* 공통 VendorProfile, WriteReview 사용 */}
               <Route path="/vendor-profile" element={<VendorProfile />} />
               <Route path="/write-review" element={<WriteReview />} />
 
