@@ -52,7 +52,7 @@ export default function MessageDetailTemplate({
     <PageWithoutBottomBar>
       <TopBar
         title={`${type === 'sent' ? '보낸 쪽지' : '받은 쪽지'}`}
-        rightComponent={<OptionsMenu options={menuOption} />}
+        rightComponent={type === 'receive' && <OptionsMenu options={menuOption} />}
       />
       <ConfirmModal
         isOpen={modal}
