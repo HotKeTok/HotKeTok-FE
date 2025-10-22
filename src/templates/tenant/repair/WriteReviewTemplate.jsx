@@ -133,20 +133,22 @@ export default function WriteReviewTemplate({ vendorName = '매종 인테리어'
             <Column $gap={6}>
               <SubTitle>후기 사진</SubTitle>
               <ThumbGrid>
-                <UploadCard onClick={handlePick}>
-                  <img src={cameraIcon} alt="" />
-                  <small>
-                    사진 {photos.length}/{MAX_PHOTOS}
-                  </small>
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleFiles}
-                    style={{ display: 'none' }}
-                  />
-                </UploadCard>
+                {photos.length < MAX_PHOTOS && (
+                  <UploadCard onClick={handlePick} aria-label="사진 업로드">
+                    <img src={cameraIcon} alt="" />
+                    <small>
+                      사진 {photos.length}/{MAX_PHOTOS}
+                    </small>
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFiles}
+                      style={{ display: 'none' }}
+                    />
+                  </UploadCard>
+                )}
 
                 {photos.map((p, idx) => (
                   <Thumb key={idx}>
