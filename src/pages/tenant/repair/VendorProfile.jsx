@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useParams, useLocation } from 'react-router-dom';
 import VendorProfileTemplate from '../../../templates/tenant/repair/VendorProfileTemplate';
-import { apiGetVendorProfile } from '../../../api/vendor-service';
+import {
+  apiGetVendorProfile,
+  apiGetVendorNews, // ✅ 추가
+} from '../../../api/vendor-service';
 import { apiGetVendorReviews, apiDeleteReview } from '../../../api/review-service';
 import { parseJwt, getAccessToken } from '../../../utils/auth';
 
@@ -11,7 +14,6 @@ import Toast from '../../../components/common/Toast';
 function mapApiVendorToTemplate(d) {
   if (!d) return null;
 
-  // 러닝타임 텍스트: "월,화,수,목,금 09:00~18:00"
   const days = Array.isArray(d?.runningTime?.working_day_of_week)
     ? d.runningTime.working_day_of_week.join(',')
     : '';
@@ -19,12 +21,10 @@ function mapApiVendorToTemplate(d) {
   const close = d?.runningTime?.closingTime ?? '';
   const hoursText = [days, open && close ? `${open}~${close}` : ''].filter(Boolean).join(' ');
 
-  // 주소
   const addr1 = d?.addressAndDetail ?? '';
   const addr2 = d?.detailAddress ? ` ${d.detailAddress}` : '';
   const fullAddr = `${addr1}${addr2}`.trim();
 
-  // 이미지(소개 이미지가 있으면 우선, 없으면 단일 image)
   const introImages = Array.isArray(d?.introductionImage) ? d.introductionImage : [];
   const main = d?.image ? [d.image] : [];
   const images = introImages.length ? introImages : main;
@@ -42,11 +42,12 @@ function mapApiVendorToTemplate(d) {
       phone: d?.phoneNumber ?? '',
       address: fullAddr,
     },
-    news: [],
+    news: [], // ✅ 초기값
     reviews: [],
   };
 }
 
+/** 리뷰 데이터 변환 */
 function mapApiReviewsToTemplate(data) {
   const list = Array.isArray(data?.reviews) ? data.reviews : [];
   return {
@@ -60,10 +61,23 @@ function mapApiReviewsToTemplate(data) {
       photos: Array.isArray(r.reviewImage) ? r.reviewImage : [],
       date: r.date ?? null,
       profileImage: r.writerProfileImage,
-      // 서버 표준: authorId (int)
       authorId: typeof r.authorId === 'number' ? r.authorId : Number(r.authorId ?? NaN),
     })),
   };
+}
+
+/** 소식 데이터 변환 */
+function mapApiNewsToTemplate(list) {
+  return Array.isArray(list)
+    ? list.map(n => ({
+        id: n.newsId,
+        author: n.authorName,
+        profileImage: n.authorProfileImage,
+        title: n.title,
+        body: n.content,
+        date: n.createdAt,
+      }))
+    : [];
 }
 
 export default function VendorProfile() {
@@ -72,7 +86,6 @@ export default function VendorProfile() {
   const location = useLocation();
   const vendorId = Number(params?.vendorId) || Number(sp.get('vendorId')) || 1;
 
-  // 현재 로그인한 사용자 ID 추출
   const token = getAccessToken();
   const decoded = parseJwt(token) || {};
   const rawId =
@@ -90,7 +103,7 @@ export default function VendorProfile() {
   const openToast = msg => setToast({ show: true, message: msg });
   const closeToast = () => setToast({ show: false, message: '' });
 
-  // 공통: 리뷰 재조회 함수
+  // 리뷰 새로고침
   const refreshReviews = async () => {
     const revRes = await apiGetVendorReviews({ vendorId });
     const { count, reviews } =
@@ -100,38 +113,46 @@ export default function VendorProfile() {
     setVendor(prev => (prev ? { ...prev, reviewCount: count, reviews } : prev));
   };
 
-  // 이동 시 전달된 toastMessage가 있으면 자동 띄움
+  // 이동 시 전달된 toastMessage 표시
   useEffect(() => {
     if (location.state?.toastMessage) {
       openToast(location.state.toastMessage);
-      // 한 번 띄운 후에는 state 제거 (뒤로가기 시 중복 방지)
       window.history.replaceState({}, document.title, location.pathname + location.search);
     }
   }, [location.state, location.pathname, location.search]);
 
+  // 메인 데이터 조회
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         setLoading(true);
-        const res = await apiGetVendorProfile({ vendorId });
+        const [profileRes, reviewRes, newsRes] = await Promise.all([
+          apiGetVendorProfile({ vendorId }),
+          apiGetVendorReviews({ vendorId }),
+          apiGetVendorNews({ vendorId }), // ✅ 추가
+        ]);
         if (!mounted) return;
 
-        if (res.success && res.data) {
-          const prof = mapApiVendorToTemplate(res.data);
-          const revRes = await apiGetVendorReviews({ vendorId });
+        if (profileRes.success && profileRes.data) {
+          const prof = mapApiVendorToTemplate(profileRes.data);
           const { count, reviews } =
-            revRes.success && revRes.data
-              ? mapApiReviewsToTemplate(revRes.data)
+            reviewRes.success && reviewRes.data
+              ? mapApiReviewsToTemplate(reviewRes.data)
               : { count: 0, reviews: [] };
+          const news =
+            newsRes.success && Array.isArray(newsRes.data)
+              ? mapApiNewsToTemplate(newsRes.data)
+              : [];
 
           setVendor({
             ...prof,
             reviewCount: count,
             reviews,
+            news, // ✅ 추가
           });
         } else {
-          openToast(res.message || '업체 정보를 불러오지 못했습니다.');
+          openToast(profileRes.message || '업체 정보를 불러오지 못했습니다.');
         }
       } catch {
         if (!mounted) return;
@@ -146,7 +167,7 @@ export default function VendorProfile() {
     };
   }, [vendorId]);
 
-  // 삭제 핸들러: API 호출 후 목록/평점 재조회
+  // 후기 삭제
   const handleDeleteReview = async reviewId => {
     try {
       const res = await apiDeleteReview({ reviewId });
@@ -164,15 +185,14 @@ export default function VendorProfile() {
         const { count, reviews } = mapApiReviewsToTemplate(revRes.data);
         setVendor({ ...prof, reviewCount: count, reviews });
       } else {
-        await refreshReviews(); // fallback
+        await refreshReviews();
       }
-    } catch (e) {
+    } catch {
       openToast('네트워크 오류가 발생했습니다.');
     }
   };
 
   if (loading) return <div style={{ padding: 24 }}>불러오는 중...</div>;
-
   if (!vendor)
     return (
       <>
