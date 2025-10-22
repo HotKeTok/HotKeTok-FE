@@ -8,6 +8,7 @@ import Button from './Button';
  * 공통 확인 모달 컴포넌트
  * @param {object} props
  * @param {boolean} props.isOpen - 모달의 표시 여부
+ * @param {boolean} props.isXbutton - X버튼 표시 여부
  * @param {string} props.title - 모달 제목
  * @param {string} props.description - 모달 설명
  * @param {function} props.onClose - 취소/닫기 버튼 클릭 핸들러
@@ -17,6 +18,7 @@ import Button from './Button';
  */
 export default function ConfirmModal({
   isOpen,
+  isXbutton = true,
   title,
   description,
   onClose,
@@ -31,7 +33,7 @@ export default function ConfirmModal({
   return (
     <Dim onClick={onClose}>
       <Modal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
-        <CloseIcon onClick={onClose} aria-label="Close modal" />
+        {isXbutton ? <CloseIcon onClick={onClose} aria-label="Close modal" /> : null}
         <div>
           <ModalTitle>{title}</ModalTitle>
           <ModalDesc>{description}</ModalDesc>

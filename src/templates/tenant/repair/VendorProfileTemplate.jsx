@@ -11,9 +11,9 @@ import ReviewTab from '../../../components/repair/vendor-profile/ReviewTab';
 
 /**
  * UI 전담 템플릿
- * @param {{ vendor: object }} props
+ * @param {{ vendor: object, onDeleteReview?: (id:number)=>void }} props
  */
-export default function VendorProfileTemplate({ vendor }) {
+export default function VendorProfileTemplate({ vendor, onDeleteReview, currentUserId }) {
   const [tab, setTab] = useState('home'); // home | news | review
   const [reviewSort, setReviewSort] = useState('latest'); // latest | ratingLow | ratingHigh
 
@@ -43,8 +43,10 @@ export default function VendorProfileTemplate({ vendor }) {
             reviewCount={vendor.reviewCount ?? 0}
             reviewSort={reviewSort}
             onChangeSort={setReviewSort}
-            vendorId={vendor?.id ?? vendor?.vendorId} // ⬅ 작성 페이지로 전달
-            vendorName={vendor?.name} // ⬅ 선택
+            vendorId={vendor?.id ?? vendor?.vendorId}
+            vendorName={vendor?.name}
+            onDelete={onDeleteReview} // ✅ 전달
+            currentUserId={currentUserId}
           />
         )}
       </TabContainer>
