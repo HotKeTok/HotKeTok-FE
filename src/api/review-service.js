@@ -52,3 +52,25 @@ export async function apiDeleteReview({ reviewId }) {
     message: data?.message ?? '',
   };
 }
+
+// 리뷰 작성 가능 여부 조회
+export async function apiGetReviewWriteStatus({ vendorId }) {
+  const token = getAccessToken?.();
+  const { data } = await api.get('/review-service/status', {
+    params: { vendorId }, // ← 서버가 vendorId를 받도록 확정
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  // ★ isSuccess 를 포함해서 성공 판별
+  const success =
+    data?.isSuccess === true ||
+    data?.success === true ||
+    data?.status === 200 ||
+    data?.code === 'COMMON200';
+
+  return {
+    success,
+    data: data?.result ?? data?.data ?? null, // ← result 기준으로 정규화
+    message: data?.message ?? '',
+  };
+}
