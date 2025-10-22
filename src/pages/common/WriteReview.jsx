@@ -95,7 +95,8 @@ export default function WriteReview() {
       const fd = new FormData();
       fd.append('request', new Blob([JSON.stringify(requestJson)], { type: 'application/json' }));
       fileItems.forEach(file => {
-        fd.append('reviewImage', file, file.name);
+        // 서버 스펙: 파일 파트 키는 'images'
+        fd.append('images', file, file.name);
       });
 
       const res = await apiCreateReview(fd);
