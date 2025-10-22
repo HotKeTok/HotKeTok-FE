@@ -41,8 +41,8 @@ export default function ReviewTab({
   reviewCount,
   reviewSort,
   onChangeSort,
-  vendorId, // ⬅ 추가: 작성 페이지로 vendorId 전달
-  vendorName, // ⬅ 선택: 쿼리에 함께 넘기면 템플릿 타이틀 표시 용
+  vendorId,
+  vendorName,
 }) {
   const [open, setOpen] = useState(false);
   const label =
