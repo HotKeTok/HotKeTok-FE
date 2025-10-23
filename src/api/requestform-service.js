@@ -34,6 +34,26 @@ export async function apiCreateRequestFormMultipart(accessToken, payload, imageF
   };
 }
 
+// GET : 개별 요청서 조회
+export async function apiGetRepairDetail(accessToken, requestformId) {
+  try {
+    const { data } = await client.get(`/requestform-service/requestform-info/${requestformId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    const success = data?.success === true || data?.status === 200 || data?.code === 'COMMON200';
+
+    return {
+      success,
+      data: data?.data ?? null,
+      message: data?.message ?? '',
+    };
+  } catch (e) {
+    console.error('[apiGetRepairDetail] Error:', e);
+    return { success: false, message: e?.response?.data?.message || e.message };
+  }
+}
+
 // GET: 진행 중인 요청서 조회
 export async function apiGetInProgressRepairs(accessToken) {
   try {
