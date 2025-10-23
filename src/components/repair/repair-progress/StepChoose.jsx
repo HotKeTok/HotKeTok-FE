@@ -1,4 +1,4 @@
-// src/components/repair/repair-process/StepChoose.jsx
+// src/components/repair/repair-progress/StepChoose.jsx
 import React from 'react';
 import styled from 'styled-components';
 import ModeItem from '../../common/ModeItem';

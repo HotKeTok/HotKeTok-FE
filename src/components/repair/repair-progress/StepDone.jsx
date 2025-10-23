@@ -1,4 +1,4 @@
-// src/components/repair/repair-process/StepDone.jsx
+// src/components/repair/repair-progress/StepDone.jsx
 import React from 'react';
 import styled from 'styled-components';
 import Button from '../../common/Button';
