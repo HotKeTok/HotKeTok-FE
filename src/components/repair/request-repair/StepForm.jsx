@@ -72,7 +72,10 @@ export default function StepForm({ draft, setDraft, days, onNext, onBack, onImag
 
   const canComplete = useMemo(() => {
     const hasDateTime = !!draft.dateKey && !!draft.time;
-    if (draft.useAI) return draft.images.length >= 1 && hasDateTime;
+    if (draft.useAI) {
+      const hasType = !!draft.typeKey;
+      return draft.images.length >= 1 && hasType && hasDateTime;
+    }
     const hasDesc = draft.desc && draft.desc.trim().length > 0 && draft.desc.length <= 300;
     return !!draft.typeKey && hasDesc && hasDateTime;
   }, [draft]);
@@ -303,6 +306,6 @@ const Spinner = styled.div`
 
 const LoadingText = styled.div`
   margin-top: 16px;
-  ${typo('body2')};
-  color: ${color('grayscale.700')};
+  ${typo('button1')};
+  color: ${color('grayscale.600')};
 `;
