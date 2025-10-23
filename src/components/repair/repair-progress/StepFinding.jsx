@@ -1,4 +1,4 @@
-// src/components/repair/repair-process/StepFinding.jsx
+// src/components/repair/repair-progress/StepFinding.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
