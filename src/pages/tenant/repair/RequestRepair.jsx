@@ -69,11 +69,13 @@ export default function RequestRepair() {
     };
   }, [accessToken]);
 
-  // 템플릿에서 파일 선택 시 호출될 콜백
   const handleImageFilesSelected = useCallback(files => {
-    // files: File[] (템플릿 input에서 전달)
-    // 최대 8장 정책은 템플릿에서 이미 강제 중이라면 그대로 수용
-    setImageFiles(files);
+    // files: 이번에 추가로 선택된 File[] (누적 필요)
+    setImageFiles(prev => {
+      const remain = Math.max(0, 8 - prev.length);
+      const toAdd = files.slice(0, remain);
+      return [...prev, ...toAdd];
+    });
   }, []);
 
   // draft → API payload

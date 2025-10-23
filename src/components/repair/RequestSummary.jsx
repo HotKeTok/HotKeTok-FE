@@ -31,6 +31,7 @@ export default function RequestSummary({ context, address, repairTypes = [] }) {
   }, [context?.typeKey, context?.useAI, repairTypes]);
 
   const dateTimeLabel = useMemo(() => {
+    if (context?.fullDateLabel) return context.fullDateLabel;
     if (context?.dateKey && context?.time) {
       const d = new Date(context.dateKey);
       const y = d.getFullYear();
@@ -130,8 +131,8 @@ const ThumbRow = styled.div`
 `;
 
 const Thumb = styled.div`
-  width: 80px;
-  height: 80px;
+  width: calc((100% - 6px * 3) / 4);
+  aspect-ratio: 1 / 1;
   background-size: cover;
   background-position: center;
   border-radius: 6px;
