@@ -11,8 +11,8 @@ import { apiRefreshToken } from './auth-service';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 10000,
-  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+  timeout: 20000,
+  headers: { Accept: 'application/json' },
 });
 
 /** 동시 401 처리용 큐 */
@@ -59,6 +59,12 @@ api.interceptors.request.use(async config => {
   if (at) {
     config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${at}`;
+  }
+
+  // ✅ FormData일 때는 Content-Type 제거해서 multipart boundary 자동 설정
+  if (config.data instanceof FormData) {
+    if (config.headers['Content-Type']) delete config.headers['Content-Type'];
+    return config;
   }
 
   // 선제 갱신
