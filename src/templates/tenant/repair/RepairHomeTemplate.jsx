@@ -1,3 +1,4 @@
+// src/templates/tenant/repair/RepairHomeTemplate.jsx
 import React, { useMemo } from 'react';
 import PageHeader from '../../../components/common/PageHeader';
 import styled from 'styled-components';
@@ -8,14 +9,12 @@ import { Page, ScrollableContent } from '../../../styles/layout';
 import RequestBanner from '../../../components/repair/repair-home/RequestBanner';
 import VendorAd from '../../../components/repair/repair-home/VendorAd';
 import { useNavigate } from 'react-router-dom';
-import { getActiveRepairs } from '../../../mocks';
 
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
 
-export default function RepairHomeTemplate() {
+export default function RepairHomeTemplate({ list = [], loading = false }) {
   const nav = useNavigate();
-  const list = useMemo(() => getActiveRepairs(), []);
-  const hasActive = list.length > 0;
+  const hasActive = useMemo(() => (list?.length || 0) > 0, [list]);
 
   const goHistory = () => nav('/repair-history');
   const goProgress = id => nav(`/repair-progress?id=${encodeURIComponent(id)}`);
@@ -29,12 +28,15 @@ export default function RepairHomeTemplate() {
             <StatusText>
               {hasActive
                 ? `총 ${list.length}건의 수리가 진행중이에요.`
+                : loading
+                ? '불러오는 중...'
                 : '현재 진행중인 수리가 없어요.'}
             </StatusText>
             <MoveRepairHistory onClick={goHistory}>
               지난 수리내역 <Chevron src={iconChevron} />
             </MoveRepairHistory>
           </RowWrapper>
+
           {hasActive && (
             <CardsWrap>
               <Column $gap={12}>
@@ -57,8 +59,9 @@ export default function RepairHomeTemplate() {
               </Column>
             </CardsWrap>
           )}
-          {/* ✅ 진행 중이 없을 때만 배너 표시 */}
-          {!hasActive && (
+
+          {/* ✅ 진행 중이 없을 때만 배너 표시 (디자인 변경 없음) */}
+          {!hasActive && !loading && (
             <div style={{ padding: '13px 20px' }}>
               <RequestBanner />
             </div>
@@ -104,10 +107,10 @@ const MoveRepairHistory = styled.div`
   ${typo('caption1')}
   color: ${color('grayscale.800')};
   cursor: pointer;
-  display: inline-flex; // ✅ 텍스트 + 이미지 줄바꿈 방지
+  display: inline-flex;
   align-items: center;
-  gap: 4px; // ✅ 아이콘 간격 조정
-  white-space: nowrap; // ✅ 전체 줄바꿈 방지
+  gap: 4px;
+  white-space: nowrap;
 `;
 
 const CardsWrap = styled.div`
@@ -181,7 +184,7 @@ const RequestFab = styled.div`
   bottom: calc(env(safe-area-inset-bottom, 0) + var(--bar-h, 56px) + 16px);
   z-index: 1000;
 
-  white-space: nowrap; // ✅ 줄바꿈 방지
+  white-space: nowrap;
   ${typo('button1')}
   display: flex;
   width: 132px;

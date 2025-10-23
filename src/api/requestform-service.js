@@ -1,12 +1,7 @@
 // src/api/requestform-service.js
 import client from './client';
-import api from './client';
 
-/**
- * Multipart 전송 규격(서버 요구)
- * - data: application/json  (텍스트 파트)
- * - images: 파일 파트(여러 장 가능, 같은 키로 여러 번 append)
- */
+// POST : 요청서 작성
 export async function apiCreateRequestFormMultipart(accessToken, payload, imageFiles = []) {
   const fd = new FormData();
 
@@ -39,7 +34,27 @@ export async function apiCreateRequestFormMultipart(accessToken, payload, imageF
   };
 }
 
-/// 📸 AI 수리요청서 자동작성 (여러 장 지원)
+// GET: 진행 중인 요청서 조회
+export async function apiGetInProgressRepairs(accessToken) {
+  try {
+    const { data } = await client.get('/requestform-service/in-progress', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    const success = data?.success === true || data?.status === 200 || data?.code === 'COMMON200';
+
+    return {
+      success,
+      data: data?.data ?? null,
+      message: data?.message ?? '',
+    };
+  } catch (e) {
+    console.error('[apiGetInProgressRepairs] Error:', e);
+    return { success: false, message: e?.response?.data?.message || e.message };
+  }
+}
+
+// POST: 요청서 AI 작성
 export async function apiGenerateRepairText(accessToken, images = []) {
   if (!images || images.length === 0) {
     return { success: false, message: '이미지 파일이 없습니다.' };

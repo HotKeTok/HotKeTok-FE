@@ -1,5 +1,72 @@
+// src/pages/tenant/repair/RepairHome.jsx
+import React, { useEffect, useMemo, useState } from 'react';
+import { getAccessToken } from '../../../utils/auth';
 import RepairHomeTemplate from '../../../templates/tenant/repair/RepairHomeTemplate';
+import { apiGetInProgressRepairs } from '../../../api/requestform-service';
+
+function formatSchedule(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const w = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()];
+  const yyyy = d.getFullYear();
+  const MM = String(d.getMonth() + 1).padStart(2, '0');
+  const DD = String(d.getDate()).padStart(2, '0');
+  const HH = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${yyyy}.${MM}.${DD} (${w}) ${HH}:${mm}`;
+}
+
+const STATUS_MAP = {
+  CHOOSING: '업체 선택 중',
+  QUOTING: '견적 수집 중',
+  SCHEDULED: '방문 예정',
+  IN_PROGRESS: '수리 중',
+  COMPLETED: '완료',
+  CANCELED: '취소됨',
+};
 
 export default function RepairHome() {
-  return <RepairHomeTemplate />;
+  const accessToken = useMemo(() => getAccessToken(), []);
+  const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await apiGetInProgressRepairs(accessToken);
+        if (!mounted) return;
+
+        if (res.success && Array.isArray(res.data?.list)) {
+          const mapped = res.data.list.map(item => {
+            const categoryLabel = String(item.category || '').replace('_', '/'); // "문_창문" → "문/창문"
+            const payerLabel = item.payType === 'RESIDENT' ? '본인 부담' : '집주인 부담';
+            const statusLabel = STATUS_MAP[item.status] || '진행 중';
+
+            return {
+              id: item.requestFormId,
+              categoryLabel,
+              schedule: formatSchedule(item.requestSchedule),
+              payerLabel,
+              statusLabel,
+            };
+          });
+          setList(mapped);
+        } else {
+          setList([]);
+        }
+      } catch (e) {
+        console.error(e);
+        setList([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [accessToken]);
+
+  return <RepairHomeTemplate list={list} loading={loading} />;
 }
