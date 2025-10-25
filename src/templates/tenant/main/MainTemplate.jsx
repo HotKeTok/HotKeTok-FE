@@ -18,10 +18,10 @@ import { formatNumberWithCommas } from '../../../utils/number';
  */
 export default function MainTemplate({
   utilityBill,
-  commonBill,
   noticeList,
   addressList,
   updateCurrentAddress,
+  commonBillTotal,
 }) {
   const navigate = useNavigate();
   const currentAddress = addressList
@@ -61,7 +61,7 @@ export default function MainTemplate({
 
           <Row $justify={'space-between'}>
             <Subtitle1 style={{ color: '#fff' }}>공동 관리비</Subtitle1>
-            <H3 style={{ color: '#fff' }}>{formatNumberWithCommas(commonBill)}원</H3>
+            <H3 style={{ color: '#fff' }}>{formatNumberWithCommas(commonBillTotal)}원</H3>
           </Row>
         </Content>
       </ColorBackground>
