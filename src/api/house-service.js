@@ -89,3 +89,24 @@ export async function getAddressList() {
     data: data?.data ?? [],
   };
 }
+
+// GET 입주민 상세 조회
+export async function getTenantDetail(houseNumber) {
+  const { data } = await api.get(`/house-service/tenant-info?number=${houseNumber}`);
+  return {
+    success: isOk(data),
+    data: data?.data ?? null,
+    message: data?.message ?? '',
+  };
+}
+
+// PATCH 입주민 정보 수정
+export async function patchTenantInfo(payload = {}) {
+  const { data } = await api.patch('house-service/tenant-info/change', payload);
+  console.log(data);
+  return {
+    success: isOk(data),
+    data: data?.data ?? null,
+    message: data?.message ?? '',
+  };
+}

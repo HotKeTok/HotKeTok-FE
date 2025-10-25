@@ -13,16 +13,14 @@ import TopBar from '../../../components/common/TopBar';
 import ConfirmModal from '../../../components/common/ConfirmModal';
 import { Column, Row } from '../../../styles/flex';
 import ProfileDefault from '../../../assets/common/icon-profile-default.svg?react';
+import { useNavigate } from 'react-router-dom';
+import { formatPhoneNumber } from '../../../utils/number';
 
-export default function AdminTenantsDetailTemplate({
-  tenantId,
-  tenantInfo,
-  deleteTenant,
-  updateTenantInfo,
-}) {
+export default function AdminTenantsDetailTemplate({ tenantNumber, tenantInfo, updateTenantInfo }) {
   const [deleteModal, setDeleteModal] = useState(false);
   const [callModal, setCallModal] = useState(false);
-  const [memo, setMemo] = useState(tenantInfo.memo || '');
+  const [memo, setMemo] = useState(tenantInfo?.houseMemo || '');
+  const navigate = useNavigate();
 
   const menuOptions = [
     {
@@ -34,25 +32,30 @@ export default function AdminTenantsDetailTemplate({
   const infoItems = [
     {
       label: '호수',
-      text: tenantInfo.unit,
+      text: tenantNumber,
     },
     {
       label: '이름',
-      text: tenantInfo.name,
+      text: tenantInfo?.tenantInfo?.name,
     },
     {
       label: '휴대폰 번호',
-      text: tenantInfo.phone,
+      text: formatPhoneNumber(tenantInfo?.tenantInfo?.phoneNumber),
     },
   ];
 
   const handleDeleteConfirm = () => {
-    deleteTenant(tenantId);
     setDeleteModal(false);
+    navigate(-1);
   };
 
-  const isMemoChanged = memo !== (tenantInfo.memo || '');
+  const isMemoChanged = memo !== (tenantInfo.houseMemo || '');
 
+  if (!tenantInfo) {
+    return null;
+  }
+
+  const { name, phoneNumber, profileImageUrl } = tenantInfo.tenantInfo;
   return (
     <>
       <PageWithoutBottomBar
@@ -61,7 +64,7 @@ export default function AdminTenantsDetailTemplate({
         {deleteModal && (
           <ConfirmModal
             isOpen={deleteModal}
-            title={`${tenantInfo.name} - ${tenantInfo.unit} 님을`}
+            title={`${name} - ${tenantNumber} 님을`}
             description="입주민 목록에서 삭제하시겠어요?"
             onClose={() => setDeleteModal(false)}
             onConfirm={handleDeleteConfirm}
@@ -71,10 +74,10 @@ export default function AdminTenantsDetailTemplate({
         {callModal && (
           <ConfirmModal
             isOpen={callModal}
-            title={`${tenantInfo.name} - ${tenantInfo.unit} 님에게\n 전화할까요?`}
+            title={`${name} - ${tenantNumber} 님에게\n 전화할까요?`}
             onClose={() => setCallModal(false)}
             onConfirm={() => {
-              window.location.href = `tel:${tenantInfo.phone}`;
+              window.location.href = `tel:${phoneNumber}`;
               setCallModal(false);
             }}
             confirmText="전화하기"
@@ -85,7 +88,17 @@ export default function AdminTenantsDetailTemplate({
           <Column>
             {/* 프로필 사진 */}
             <Row $justify="center" style={{ width: '100%', margin: '16px 0 34px 0' }}>
-              <ProfileDefault width={100} height={100} />
+              {profileImageUrl ? (
+                <img
+                  src={profileImageUrl}
+                  alt={`${name}의 프로필`}
+                  width={100}
+                  height={100}
+                  style={{ borderRadius: '50%' }}
+                />
+              ) : (
+                <ProfileDefault width={100} height={100} />
+              )}
             </Row>
             <Column $gap={24} style={{ width: '100%', padding: '0 24px' }}>
               {infoItems.map((item, index) => (
@@ -112,7 +125,7 @@ export default function AdminTenantsDetailTemplate({
                     text="편집 완료"
                     width={80}
                     active={isMemoChanged}
-                    onClick={() => updateTenantInfo(tenantId, { memo })}
+                    onClick={() => updateTenantInfo(tenantNumber, { houseMemo: memo })}
                   />
                 </Column>
               </Column>

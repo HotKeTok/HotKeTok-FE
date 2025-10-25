@@ -21,12 +21,11 @@ export default function BoxToggleTenant({ floorTenantsInfo }) {
     setIsOpen(prev => !prev);
   };
 
-  const handleTenantClick = id => {
-    navigate(`/admin/tenants/detail/${id}`);
+  const handleTenantClick = number => {
+    navigate(`/admin/tenants/detail/${number}`);
   };
 
   // TODO: api에서 받아온 호수 데이터 매핑, tag 여러개 처리
-
   return (
     <ToggleContainer>
       <ToggleHeader onClick={toggleHandler}>
@@ -41,13 +40,9 @@ export default function BoxToggleTenant({ floorTenantsInfo }) {
         isOpen={isOpen}
         maxHeight={contentRef.current?.scrollHeight}
       >
-        {floorTenantsInfo.residents.map(tenant => (
-          <ToggleContent
-            key={tenant.id}
-            onClick={() => handleTenantClick(tenant.id)}
-            state={tenant.state === 'APPROVED'}
-          >
-            <Body2>{tenant.unit}</Body2>
+        {floorTenantsInfo.units.map(tenant => (
+          <ToggleContent key={tenant.userId} onClick={() => handleTenantClick(tenant.unitNumber)}>
+            <Body2>{tenant.unitNumber}</Body2>
             <ArrowRightStyled />
           </ToggleContent>
         ))}
@@ -123,13 +118,6 @@ const ToggleContent = styled.div`
   align-items: center;
 
   cursor: pointer;
-
-  ${props =>
-    props.state
-      ? css`
-          border: 1.5px solid var(--Color-Primary, #01d281);
-        `
-      : css``}
 `;
 
 const Subtitle1 = styled.div`
