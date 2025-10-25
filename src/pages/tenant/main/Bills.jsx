@@ -12,12 +12,13 @@ export default function Bills() {
   const [billList, setBillList] = useState(null);
   const [billDetail, setBillDetail] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
 
   const fetchCommonBillsDetail = async (year, month) => {
     try {
       if (!accessToken) return;
 
-      setLoading(true);
+      setModalLoading(true);
       const response = await getCommonBillDetail(accessToken, year, month);
       if (response.success) {
         setBillDetail(response.data);
@@ -30,7 +31,7 @@ export default function Bills() {
         setBillDetail(null);
       }
     } finally {
-      setLoading(false);
+      setModalLoading(false);
     }
   };
 
@@ -77,6 +78,7 @@ export default function Bills() {
       fetchCommonBillsDetail={fetchCommonBillsDetail}
       commonBillDetail={billDetail}
       loading={loading}
+      modalLoading={modalLoading}
     />
   );
 }
