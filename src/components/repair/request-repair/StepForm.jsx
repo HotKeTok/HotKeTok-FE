@@ -43,6 +43,9 @@ import {
 } from './styles';
 import { color, typo } from '../../../styles/tokens';
 
+import ActionGuideModal from '../../../components/common/ActionGuideModal';
+import AISearchTitle from '../../../components/repair/request-repair/AISearchTitle';
+
 export default function StepForm({ draft, setDraft, days, onNext, onBack, onImageFilesSelected }) {
   const [open, setOpen] = useState(false);
   const [loadingAI, setLoadingAI] = useState(false);
@@ -266,10 +269,16 @@ export default function StepForm({ draft, setDraft, days, onNext, onBack, onImag
       </BottomButtonContainer>
 
       {loadingAI && (
-        <LoadingOverlay>
-          <Spinner />
-          <LoadingText>AI가 사진을 분석 중이에요...</LoadingText>
-        </LoadingOverlay>
+        <ActionGuideModal
+          isOpen
+          titleComponent={<AISearchTitle />}
+          description={''} // 본문 설명은 비워두기 (사진처럼 타이틀만)
+          onClose={() => {}} // 닫히지 않게 no-op
+          onConfirm={() => {}} // 버튼 숨길 거면 의미 없음
+          confirmText={''} // 3번 수정 반영 시 버튼 숨김
+          showClose={false} // X 버튼 숨김
+          width="70%"
+        />
       )}
     </PageWithoutBottomBar>
   );
