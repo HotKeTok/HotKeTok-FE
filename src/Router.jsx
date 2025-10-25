@@ -79,9 +79,12 @@ const Layout = ({ currentRole }) => {
     landlord: ['/repair', '/admin'],
   };
 
-  const startsWithAny = patterns => patterns.some(p => pathname === p || pathname.startsWith(p));
+  // 정확히 일치하는 경로만 흰 배경 적용
+  const matchesAnyExactly = patterns => patterns.some(p => pathname === p);
+
   const isWhiteBg =
-    startsWithAny(WHITE_BG_ROUTES.common) || startsWithAny(WHITE_BG_ROUTES[currentRole] || []);
+    matchesAnyExactly(WHITE_BG_ROUTES.common) ||
+    matchesAnyExactly(WHITE_BG_ROUTES[currentRole] || []);
   const bgColor = isWhiteBg ? '#ffffff' : '#f9f9f9';
 
   const hideBar =
