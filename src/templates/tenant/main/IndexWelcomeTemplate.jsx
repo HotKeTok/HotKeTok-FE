@@ -1,11 +1,8 @@
 import styled from 'styled-components';
-import PageHeader from '../../../components/common/PageHeader';
-import SelectHome from '../../../components/main/index/SelectHome';
 import AddressBox from '../../../components/main/index/AddressBox';
 import { Column } from '../../../styles/flex';
 import WelcomeHouse from '../../../assets/main/icn-welcome-house.svg?react';
 import { typo, color } from '../../../styles/tokens';
-import { ScrollableContent } from '../../../styles/layout';
 import { useAuthStore } from '../../../store/useAuthStore';
 
 export default function IndexWelcomeTemplate() {
@@ -60,7 +57,9 @@ export default function IndexWelcomeTemplate() {
   );
 }
 
-const Container = styled(ScrollableContent)`
+const Container = styled.div`
+  flex: 1 1 auto;
+  height: 100%;
   padding: 12px 16px;
   background: linear-gradient(180deg, #d8f4ea 0%, #fff 100%);
 `;
