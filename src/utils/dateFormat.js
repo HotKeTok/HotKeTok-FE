@@ -1,4 +1,4 @@
-// YYYY.MM.DD
+// YYYY.MM.DD 형식으로 변경
 export function formatDateToYMD(isoString) {
   if (!isoString) return '';
   try {
