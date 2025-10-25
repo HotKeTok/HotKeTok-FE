@@ -17,14 +17,11 @@ function formatSchedule(iso) {
 }
 
 const STATUS_MAP = {
-  CHOOSING: '업체 선택 중',
-  QUOTING: '견적 수집 중',
-  SCHEDULED: '방문 예정',
-  IN_PROGRESS: '수리 중',
-  COMPLETED: '완료',
-  CANCELED: '취소됨',
+  SEARCHING: '업체 찾는 중',
+  CHOOSING: '견적서 선택',
+  MATCHING: '업체 매칭',
+  COMPLETED: '처리 완료',
 };
-
 export default function RepairHome() {
   const accessToken = useMemo(() => getAccessToken(), []);
   const [loading, setLoading] = useState(false);

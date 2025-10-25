@@ -106,6 +106,7 @@ export default function RepairProgressTemplate({
             setSelectedQuoteId={setSelectedQuoteId}
             canProceed={canProceed}
             onProceed={() => setStep(STEP.MATCHED)}
+            isLandlordView={isLandlordView}
           />
         )}
 
