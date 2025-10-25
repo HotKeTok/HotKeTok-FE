@@ -23,9 +23,10 @@ export default function MainTemplate({
   updateCurrentAddress,
   commonBillTotal,
 }) {
+  const sortedAddressList = addressList.filter(addr => addr?.state !== 'NONE');
   const navigate = useNavigate();
-  const currentAddress = addressList
-    ? addressList.find(item => item.isCurrent)
+  const currentAddress = sortedAddressList
+    ? sortedAddressList.find(item => item.isCurrent)
     : '주소가 설정되지 않았습니다.';
 
   return (
@@ -34,7 +35,7 @@ export default function MainTemplate({
         <PageHeader
           isLightVersion={true}
           leftComponent={
-            <SelectHome addresses={addressList} onSelectAddress={updateCurrentAddress} />
+            <SelectHome addresses={sortedAddressList} onSelectAddress={updateCurrentAddress} />
           }
         />
         <Content>
