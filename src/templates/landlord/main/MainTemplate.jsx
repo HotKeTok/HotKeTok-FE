@@ -119,7 +119,6 @@ export default function MainTemplate({ updateCurrentAddress, authRequestCount })
 }
 
 const Content = styled.div`
-  flex: 1;
   background: #fff;
   padding: 24px;
   padding-top: 6px;

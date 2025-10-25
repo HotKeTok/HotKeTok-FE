@@ -79,6 +79,7 @@ const Layout = ({ currentRole, onBoardingStageFlag }) => {
       '/address/add',
       '/repair-history',
       '/write-review',
+      '/',
     ],
     tenant: ['/request-repair'],
     landlord: ['/repair', '/admin'],

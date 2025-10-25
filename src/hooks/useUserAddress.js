@@ -37,7 +37,7 @@ export default function useUserAddress() {
   const updateAddress = async (newAddress, newNumber) => {
     const response = await changeCurrentAddress(accessToken, {
       currentAddress: newAddress,
-      currentNumber: newNumber,
+      currentNumber: newNumber || '',
     });
     if (response.success) {
       setCurrentAddress(newAddress);
