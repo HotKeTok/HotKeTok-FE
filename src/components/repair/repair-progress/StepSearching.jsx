@@ -1,9 +1,9 @@
-// src/components/repair/repair-progress/StepFinding.jsx
+// src/components/repair/repair-progress/StepSearching.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
 
-export default function StepFinding() {
+export default function StepSearching() {
   return (
     <Box>
       <Title>받은 견적</Title>
