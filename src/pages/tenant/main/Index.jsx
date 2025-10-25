@@ -3,11 +3,10 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import { useState, useEffect } from 'react';
 import { getNoticeList } from '../../../api/notice-service';
 import { getFixedNoticeList } from '../../../utils/notice';
+import useUserAddress from '../../../hooks/useUserAddress';
 
 export default function Index() {
-  // TODO: 인증 상태 확인 후 미인증 상태시 인증전 페이지로 리다이렉트
-
-  // todo: 사용자 address, 공동 관리비 api 연동 후 props로 전달
+  const { addressList } = useUserAddress();
 
   const accessToken = useAuthStore(state => state.accessToken);
   const [noticeList, setNoticeList] = useState([]);
