@@ -79,3 +79,13 @@ export async function rejectTenant(houseId, body = {}) {
   const { data } = await api.post(`/house-service/tenant-reject/${houseId}`, body);
   return { success: isOk(data), data: data?.data ?? null, message: data?.message ?? '' };
 }
+
+// GET 주소 리스트 조회
+export async function getAddressList() {
+  const { data } = await api.get('/house-service/house-list');
+  return {
+    success: data.success,
+    status: data.status,
+    data: data?.data ?? [],
+  };
+}

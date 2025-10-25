@@ -31,7 +31,7 @@ export function fetchCurrentAddress(accessToken) {
 
 // 사용자 현재 주소 조회
 export function changeCurrentAddress(accessToken, payload) {
-  return client.patch('/user-service/change-currentAddress', payload, {
+  return client.put('/user-service/change/current-address-and-number', payload, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 }

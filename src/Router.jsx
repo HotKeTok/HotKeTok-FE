@@ -116,7 +116,6 @@ export default function AppRouter() {
   // ✅ persist 복원 완료 전에는 렌더 지연(초기 깜빡임 방지)
   if (!hydrated) return null;
 
-  console.log('현재 role:', currentRole);
   return (
     <BrowserRouter>
       <Routes>
