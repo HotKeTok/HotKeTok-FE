@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
 import { Row } from '../../../styles/flex';
 import iconYellowStar from '../../../assets/repair/vendor-profile/icon-star-yellow.svg';
+import iconChevron from '../../../assets/repair/icon-chevron.svg';
 
 // 샘플(없으면 이걸로 렌더)
 const MOCK_ITEMS = [
@@ -55,7 +56,7 @@ function ReviewCard({
           <Avatar src={reviewerAvatar} />
           <CompanyName>{companyName}</CompanyName>
         </Row>
-        <Chevron aria-hidden />
+        <Chevron src={iconChevron} />
       </HeaderRow>
 
       {/* 사진 2장 그리드 */}
@@ -143,12 +144,8 @@ const CompanyName = styled.div`
   color: ${color('grayscale.800')};
 `;
 
-const Chevron = styled.span`
+const Chevron = styled.img`
   width: 4px;
-  height: 6px;
-  border-right: 2px solid ${color('grayscale.500')};
-  border-bottom: 2px solid ${color('grayscale.500')};
-  transform: rotate(-45deg);
 `;
 
 const PhotoGrid = styled.div`
