@@ -1,4 +1,4 @@
-// src/components/repair/repair-progress/StepChoose.jsx
+// src/components/repair/repair-progress/StepChoosing.jsx
 import React from 'react';
 import styled from 'styled-components';
 import ModeItem from '../../common/ModeItem';
@@ -7,7 +7,7 @@ import { Row, Column } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
 
-export default function StepChoose({
+export default function StepChoosing({
   mode,
   quotes,
   selectedQuoteId,

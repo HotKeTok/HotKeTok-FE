@@ -1,11 +1,11 @@
-// src/components/repair/repair-progress/StepDone.jsx
+// src/components/repair/repair-progress/StepCompleted.jsx
 import React from 'react';
 import styled from 'styled-components';
 import Button from '../../common/Button';
 import RepairDetailRows from '../repair-progress/RepairDetailRows';
 import { color, typo } from '../../../styles/tokens';
 
-export default function StepDone({ selectedQuote, onWriteReview }) {
+export default function StepCompleted({ selectedQuote, onWriteReview }) {
   if (!selectedQuote) return null;
 
   return (

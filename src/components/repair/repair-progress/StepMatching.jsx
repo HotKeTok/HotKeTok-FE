@@ -1,11 +1,11 @@
-// src/components/repair/repair-progress/StepMatched.jsx
+// src/components/repair/repair-progress/StepMatching.jsx
 import React from 'react';
 import styled from 'styled-components';
 import ButtonSmall from '../../common/ButtonSmall';
 import RepairDetailRows from '../repair-progress/RepairDetailRows';
 import { color, typo } from '../../../styles/tokens';
 
-export default function StepMatched({ mode, selectedQuote, onCancel }) {
+export default function StepMatching({ mode, selectedQuote, onCancel }) {
   if (!selectedQuote) return null;
 
   return (

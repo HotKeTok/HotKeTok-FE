@@ -10,10 +10,10 @@ import ButtonSmall from '../../../components/common/ButtonSmall';
 
 // ✅ 분리된 컴포넌트들
 import RequestAccordion from '../../../components/repair/repair-progress/RequestAccordion';
-import StepFinding from '../../../components/repair/repair-progress/StepFinding';
-import StepChoose from '../../../components/repair/repair-progress/StepChoose';
-import StepMatched from '../../../components/repair/repair-progress/StepMatched';
-import StepDone from '../../../components/repair/repair-progress/StepDone';
+import StepSearching from '../../../components/repair/repair-progress/StepSearching';
+import StepChoosing from '../../../components/repair/repair-progress/StepChoosing';
+import StepMatching from '../../../components/repair/repair-progress/StepMatching';
+import StepCompleted from '../../../components/repair/repair-progress/StepCompleted';
 
 import { formatCategoryName } from '../../../utils/format';
 
@@ -97,10 +97,10 @@ export default function RepairProgressTemplate({
         <RequestAccordion request={request} mode={mode} />
 
         {/* ===== 단계별 섹션 ===== */}
-        {step === STEP.FINDING && <StepFinding />}
+        {step === STEP.FINDING && <StepSearching />}
 
         {step === STEP.CHOOSE && (
-          <StepChoose
+          <StepChoosing
             mode={mode}
             quotes={quotes}
             selectedQuoteId={selectedQuoteId}
@@ -111,7 +111,7 @@ export default function RepairProgressTemplate({
         )}
 
         {step === STEP.MATCHED && (
-          <StepMatched
+          <StepMatching
             mode={mode}
             selectedQuote={selectedQuote}
             onCancel={() => setStep(STEP.CHOOSE)}
@@ -119,7 +119,7 @@ export default function RepairProgressTemplate({
         )}
 
         {step === STEP.DONE && (
-          <StepDone selectedQuote={selectedQuote} onWriteReview={() => alert('후기 작성')} />
+          <StepCompleted selectedQuote={selectedQuote} onWriteReview={() => alert('후기 작성')} />
         )}
 
         {/* 데모 전환용 UI 유지 */}
