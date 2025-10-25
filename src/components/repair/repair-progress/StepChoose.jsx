@@ -50,7 +50,7 @@ export default function StepChoose({
         </Column>
         <Footer>
           <Button
-            active={canProceed}
+            active={isLandlordView || canProceed} // 🔹 집주인 뷰일 땐 무조건 활성화
             onClick={onProceed}
             text={mode === 'LANDLORD' ? '집주인이 선택합니다' : '견적서 선택'}
           />

@@ -1,85 +1,61 @@
-// src/templates/landlord/repair/L_RepairHomeTemplate.jsx
-import React, { useMemo } from 'react';
-import PageHeader from '../../../components/common/PageHeader';
+import React from 'react';
 import styled from 'styled-components';
-import { color, typo } from '../../../styles/tokens';
-import { Column, Row } from '../../../styles/flex';
 import { Page, ScrollableContent } from '../../../styles/layout';
-import { useNavigate } from 'react-router-dom';
+import { Row, Column } from '../../../styles/flex';
+import { color, typo } from '../../../styles/tokens';
 
-// ✅ 입주민용 목데이터 그대로 사용
-import { getActiveRepairs, getHistoryItems, REPAIR_REQUESTS } from '../../../mocks';
-
+import PageHeader from '../../../components/common/PageHeader';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
 import iconDrill from '../../../assets/landlord/repair/one-drill.png';
 
-/* 호수 파싱: 주소의 마지막 토큰이 `###호` 형태면 그걸 사용 */
-const getRoomFromAddress = addr => {
-  if (!addr || typeof addr !== 'string') return '';
-  const parts = addr.trim().split(/\s+/);
-  const last = parts[parts.length - 1] || '';
-  return /호$/.test(last) ? last : '';
-};
+import { formatCategoryName } from '../../../utils/format';
 
-export default function L_RepairHomeTemplate() {
-  const nav = useNavigate();
-
-  // 전체 진행중/지난내역 원본
-  const activeRaw = useMemo(() => getActiveRepairs() ?? [], []);
-  const historyRaw = useMemo(() => getHistoryItems() ?? [], []);
-
-  // 집주인 부담만 필터 (없으면 폴백으로 전체 노출)
-  const activeOwnerOnly = useMemo(() => {
-    const owner = activeRaw.filter(
-      r =>
-        r.payerLabel === '집주인 부담' ||
-        (typeof r.payer === 'string' && ['LANDLORD', 'OWNER'].includes(r.payer))
-    );
-    return owner.length ? owner : activeRaw;
-  }, [activeRaw]);
-
-  // 우측 “304호” 표기를 위해 REPAIR_REQUESTS에서 address 찾아 합치기
-  const active = useMemo(() => {
-    const byId = new Map(REPAIR_REQUESTS.map(r => [r.id, r]));
-    return activeOwnerOnly.map(item => {
-      const raw = byId.get(item.id);
-      const room = (raw && getRoomFromAddress(raw.request?.address)) || ''; // 없으면 빈 문자열
-      return { ...item, room };
-    });
-  }, [activeOwnerOnly]);
-
-  const hasActive = active.length > 0;
-
-  const goHistory = () => nav('/repair-history');
-  const goProgress = id => nav(`/repair-progress?id=${encodeURIComponent(id)}`);
+/**
+ * props
+ * - loading: boolean
+ * - activeList: Array<{ id, category, scheduleLabel, currentNumber, statusLabel }>
+ * - historyList: Array<any>  // 현재는 미사용(추후 API 연동시 사용)
+ * - onClickProgress: (id) => void
+ * - onClickHistoryMore: () => void
+ */
+export default function L_RepairHomeTemplate({
+  loading = false,
+  activeList = [],
+  historyList = [],
+  onClickProgress,
+  onClickHistoryMore,
+}) {
+  const hasActive = activeList.length > 0;
 
   return (
     <Page>
       <PageHeader leftComponent="뚝딱" background="#fff" />
       <ScrollableContent>
-        {/* ===== 상단 진행중 영역 ===== */}
-        <div style={{ padding: '0px 24px' }}>
+        <div style={{ padding: '0 24px' }}>
+          {/* ===== 진행중 영역 ===== */}
           <TopSurface>
             <RowBetween>
               <Title>진행 중인 수리 확인하기</Title>
               <Drill src={iconDrill} alt="" />
             </RowBetween>
 
-            {hasActive ? (
+            {loading ? (
+              <NoActive>불러오는 중...</NoActive>
+            ) : hasActive ? (
               <>
                 <div style={{ padding: '0px 24px', marginTop: '4px', marginBottom: '20px' }}>
-                  <ActiveStatus>{active.length}건 진행중</ActiveStatus>
+                  <ActiveStatus>{activeList.length}건 진행중</ActiveStatus>
                 </div>
                 <Column $gap={10} style={{ padding: '0px 16px' }}>
-                  {active.map(item => (
-                    <ActiveCard key={item.id} onClick={() => goProgress(item.id)}>
+                  {activeList.map(item => (
+                    <ActiveCard key={item.id} onClick={() => onClickProgress?.(item.id)}>
                       <Row $justify="space-between" style={{ alignItems: 'flex-start' }}>
                         <div>
-                          <CardTitle>{item.categoryLabel}</CardTitle>
-                          <CardMeta>{item.schedule}</CardMeta>
+                          <CardTitle>{formatCategoryName(item.category)}</CardTitle>
+                          <CardMeta>{item.scheduleLabel}</CardMeta>
                         </div>
                         <RightCol>
-                          <RoomNo>{item.room || ' '}</RoomNo>
+                          <RoomNo>{item.currentNumber || '-'}</RoomNo>
                           <StatusCTA>
                             {item.statusLabel}
                             <Chevron src={iconChevron} alt="" />
@@ -95,41 +71,33 @@ export default function L_RepairHomeTemplate() {
             )}
           </TopSurface>
 
-          {/* ===== 지난 수리 내역 ===== -> 일단 에비로 띄워둠. 디자인 확정되면 수정 예정 */}
+          {/* ===== 지난 수리 내역 (API 준비 전: 빈 리스트 표시/스켈레톤) ===== */}
           <HistoryWrap>
             <RowBetween>
               <HistoryHeading>지난 수리 내역</HistoryHeading>
-              <HistoryMore onClick={goHistory}>
+              <HistoryMore onClick={onClickHistoryMore}>
                 더보기 <Chevron src={iconChevron} alt="" />
               </HistoryMore>
             </RowBetween>
 
-            <Column $gap={12}>
-              {historyRaw.slice(0, 3).map(item => {
-                // 완료 항목도 호수 표기 시도
-                const raw = REPAIR_REQUESTS.find(r => r.id === item.id);
-                const room = getRoomFromAddress(raw?.request?.address);
-                const price =
-                  typeof item.price === 'number'
-                    ? item.price.toLocaleString() + '원'
-                    : item.price || '';
-                const date =
-                  item.date || item.completedAt || (raw ? raw.request?.requestedAt : '') || '';
-
-                return (
+            {historyList.length === 0 ? (
+              <NoActive style={{ padding: '8px 0 0 0' }}>지난 내역이 없어요.</NoActive>
+            ) : (
+              <Column $gap={12}>
+                {historyList.slice(0, 3).map(item => (
                   <HistoryCard key={item.id}>
                     <Column $gap={4}>
-                      <HistoryItemTitle>{item.categoryLabel}</HistoryItemTitle>
-                      <HistoryMeta>{date}</HistoryMeta>
+                      <HistoryItemTitle>{item.category || '기타'}</HistoryItemTitle>
+                      <HistoryMeta>{item.dateLabel || ''}</HistoryMeta>
                     </Column>
                     <RoomPrice>
-                      <div>{room || ' '}</div>
-                      <div>{price}</div>
+                      <div>{item.currentNumber || '-'}</div>
+                      <div>{item.priceLabel || ''}</div>
                     </RoomPrice>
                   </HistoryCard>
-                );
-              })}
-            </Column>
+                ))}
+              </Column>
+            )}
           </HistoryWrap>
         </div>
       </ScrollableContent>
@@ -137,7 +105,7 @@ export default function L_RepairHomeTemplate() {
   );
 }
 
-/* ===== styles ===== */
+/* ===== styles (기존 유지) ===== */
 const TopSurface = styled.div`
   background: #f5f6f6;
   border-radius: 20px;
@@ -213,9 +181,10 @@ const Chevron = styled.img`
 `;
 
 const NoActive = styled.div`
-  ${typo('caption1')}
-  color: ${color('grayscale.600')};
-  padding: 12px 20px;
+  ${typo('cbody2')}
+  color: ${color('grayscale.500')};
+  padding: 80px 0px;
+  text-align: center;
 `;
 
 const HistoryWrap = styled.div`
