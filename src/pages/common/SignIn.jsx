@@ -28,13 +28,14 @@ export default function SignIn() {
     try {
       setLoading(true);
       const res = await apiLogin({ logInId, password, role });
-      const { jwtToken, role: serverRole, onBoardingStageFlag } = res.data;
+      const { jwtToken, role: serverRole, onBoardingStageFlag, userId } = res.data;
 
       const tokens = {
         accessToken: jwtToken.accessToken,
         refreshToken: jwtToken.refreshToken,
       };
 
+      useAuthStore.getState().setUserId(userId);
       setStoreTokens(tokens); // ✅ Zustand
       setLegacyTokens(tokens); // ✅ utils/auth (HK_ACCESS_TOKEN/REFRESH_TOKEN 동기화)
       setOnBoardingStageFlag(onBoardingStageFlag);

@@ -6,6 +6,7 @@ const initialState = {
   role: 'guest', // 'tenant' | 'landlord' | 'guest'
   accessToken: '',
   refreshToken: '',
+  userId: '',
   hydrated: false, // persist 복원 완료 플래그
   onBoardingStageFlag: false, // 온보딩 진행 여부
 };
@@ -18,6 +19,9 @@ export const useAuthStore = create(
 
         setRole: role => set({ role }),
         clearRole: () => set({ role: 'guest' }),
+
+        setUserId: userId => set({ userId }),
+        clearUserId: () => set({ userId: '' }),
 
         setTokens: ({ accessToken = '', refreshToken = '' }) => set({ accessToken, refreshToken }),
         clearTokens: () => set({ accessToken: '', refreshToken: '' }),
@@ -36,6 +40,7 @@ export const useAuthStore = create(
           accessToken: state.accessToken,
           refreshToken: state.refreshToken,
           onBoardingStageFlag: state.onBoardingStageFlag,
+          userId: state.userId,
         }),
         onRehydrateStorage: () => state => {
           if (state?._setHydrated) state._setHydrated(true);
