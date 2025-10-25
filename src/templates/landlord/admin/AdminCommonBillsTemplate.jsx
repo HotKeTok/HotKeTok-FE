@@ -69,7 +69,7 @@ export default function AdminCommonBillsTemplate({
     if (loading) {
       return (
         <Column $justify="center" $align="center" style={{ width: '100%', height: '90%' }}>
-          <div>데이터를 불러오는 중입니다...</div>
+          <div style={{ textAlign: 'center', padding: '20px' }}>데이터를 불러오는 중입니다..</div>
         </Column>
       );
     } else if (billsList) {
