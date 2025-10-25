@@ -9,6 +9,7 @@ import {
   NewsBody,
   ScrollWrapper,
 } from './Styles';
+import { formatDateToYMD } from '../../../utils/dateFormat';
 
 export default function NewsTab({ news, vendor }) {
   const hasNews = Array.isArray(news) && news.length > 0;
@@ -38,7 +39,7 @@ export default function NewsTab({ news, vendor }) {
                   </div>
                   <NewsVendorName>{vendor.name}</NewsVendorName>
                 </Row>
-                <NewsDate>{n.date}</NewsDate>
+                <NewsDate>{formatDateToYMD(n.date)}</NewsDate>
               </Row>
               <NewsTitle>{n.title}</NewsTitle>
               <NewsBody>{n.body}</NewsBody>

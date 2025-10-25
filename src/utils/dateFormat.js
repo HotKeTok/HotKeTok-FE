@@ -1,3 +1,4 @@
+// YYYY.MM.DD
 export function formatDateToYMD(isoString) {
   if (!isoString) return '';
   try {
