@@ -87,7 +87,7 @@ export default function ModalBillDetail({
     ];
     renderList = chartData;
   } else {
-    renderList = commonBillData.details;
+    renderList = commonBillData.details.sort((a, b) => new Date(b.date) - new Date(a.date));
   }
 
   return (
