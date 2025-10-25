@@ -9,6 +9,7 @@ import iconChevron from '../../../assets/repair/icon-chevron.svg';
 import iconDrill from '../../../assets/landlord/repair/one-drill.png';
 
 import { formatCategoryName } from '../../../utils/format';
+import ReviewCarousel from '../../../components/repair/repair-home/ReviewCarousel';
 
 /**
  * props
@@ -21,9 +22,7 @@ import { formatCategoryName } from '../../../utils/format';
 export default function L_RepairHomeTemplate({
   loading = false,
   activeList = [],
-  historyList = [],
   onClickProgress,
-  onClickHistoryMore,
 }) {
   const hasActive = activeList.length > 0;
 
@@ -31,9 +30,9 @@ export default function L_RepairHomeTemplate({
     <Page>
       <PageHeader leftComponent="뚝딱" background="#fff" />
       <ScrollableContent>
-        <div style={{ padding: '0 24px' }}>
+        <Column $gap={10} style={{ padding: '0 24px' }}>
           {/* ===== 진행중 영역 ===== */}
-          <TopSurface>
+          <GrayBox>
             <RowBetween>
               <Title>진행 중인 수리 확인하기</Title>
               <Drill src={iconDrill} alt="" />
@@ -43,10 +42,10 @@ export default function L_RepairHomeTemplate({
               <NoActive>불러오는 중...</NoActive>
             ) : hasActive ? (
               <>
-                <div style={{ padding: '0px 24px', marginTop: '4px', marginBottom: '20px' }}>
+                <div style={{ marginTop: '4px', marginBottom: '20px' }}>
                   <ActiveStatus>{activeList.length}건 진행중</ActiveStatus>
                 </div>
-                <Column $gap={10} style={{ padding: '0px 16px' }}>
+                <Column $gap={10}>
                   {activeList.map(item => (
                     <ActiveCard key={item.id} onClick={() => onClickProgress?.(item.id)}>
                       <Row $justify="space-between" style={{ alignItems: 'flex-start' }}>
@@ -69,55 +68,33 @@ export default function L_RepairHomeTemplate({
             ) : (
               <NoActive>진행 중인 수리가 없어요.</NoActive>
             )}
-          </TopSurface>
+          </GrayBox>
 
-          {/* ===== 지난 수리 내역 (API 준비 전: 빈 리스트 표시/스켈레톤) ===== */}
-          <HistoryWrap>
-            <RowBetween>
-              <HistoryHeading>지난 수리 내역</HistoryHeading>
-              <HistoryMore onClick={onClickHistoryMore}>
-                더보기 <Chevron src={iconChevron} alt="" />
-              </HistoryMore>
-            </RowBetween>
-
-            {historyList.length === 0 ? (
-              <NoActive style={{ padding: '8px 0 0 0' }}>지난 내역이 없어요.</NoActive>
-            ) : (
-              <Column $gap={12}>
-                {historyList.slice(0, 3).map(item => (
-                  <HistoryCard key={item.id}>
-                    <Column $gap={4}>
-                      <HistoryItemTitle>{item.category || '기타'}</HistoryItemTitle>
-                      <HistoryMeta>{item.dateLabel || ''}</HistoryMeta>
-                    </Column>
-                    <RoomPrice>
-                      <div>{item.currentNumber || '-'}</div>
-                      <div>{item.priceLabel || ''}</div>
-                    </RoomPrice>
-                  </HistoryCard>
-                ))}
-              </Column>
-            )}
-          </HistoryWrap>
-        </div>
+          <GrayBox>
+            <Title>지난 수리 후기</Title>
+            <Caption1_600>입주민들이 작성했어요.</Caption1_600>
+            <ReviewCarousel />
+          </GrayBox>
+        </Column>
       </ScrollableContent>
     </Page>
   );
 }
 
 /* ===== styles (기존 유지) ===== */
-const TopSurface = styled.div`
+const GrayBox = styled.div`
   background: #f5f6f6;
+  padding: 16px 24px;
+
   border-radius: 20px;
-  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.02);
-  padding: 16px 0 16px;
+  border: 1px solid ${color('grayscale.200')};
+  background: ${color('grayscale.100')};
 `;
 
 const RowBetween = styled(Row)`
   position: relative;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
 `;
 
 const Title = styled.div`
@@ -125,10 +102,16 @@ const Title = styled.div`
   color: ${color('grayscale.800')};
 `;
 
+const Caption1_600 = styled.div`
+  margin: 2px 0 10px 0;
+  ${typo('caption1')}
+  color: ${color('grayscale.600')};
+`;
+
 const Drill = styled.img`
   position: absolute;
   width: 60px;
-  right: 20px;
+  right: 0px;
   top: 1px;
 `;
 
@@ -185,49 +168,4 @@ const NoActive = styled.div`
   color: ${color('grayscale.500')};
   padding: 80px 0px;
   text-align: center;
-`;
-
-const HistoryWrap = styled.div`
-  padding: 24px 20px;
-`;
-
-const HistoryHeading = styled.div`
-  ${typo('subtitle1')}
-  color: ${color('grayscale.800')};
-`;
-
-const HistoryMore = styled.div`
-  ${typo('caption1')}
-  color: ${color('grayscale.800')};
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-`;
-
-const HistoryCard = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const HistoryItemTitle = styled.div`
-  ${typo('subtitle1')}
-  color: ${color('grayscale.800')};
-`;
-
-const HistoryMeta = styled.div`
-  ${typo('caption2')}
-  color: ${color('grayscale.600')};
-`;
-
-const RoomPrice = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  ${typo('caption1')}
-  color: ${color('grayscale.800')};
 `;

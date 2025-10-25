@@ -1,31 +1,23 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import TopBar from '../../../components/common/TopBar';
-import ButtonRound from '../../../components/common/ButtonRound';
-
 import { color, typo } from '../../../styles/tokens';
 import { Column, Row } from '../../../styles/flex';
-import { getHistoryItems } from '../../../mocks';
 import { useNavigate } from 'react-router-dom';
 
-export default function RepairHistorTemplate() {
+export default function RepairHistoryTemplate({ items = [] }) {
   const navigate = useNavigate();
-  const items = useMemo(() => getHistoryItems(), []);
 
   // 1) 연도 목록 만들기 (내림차순)
   const years = useMemo(() => {
-    const ys = Array.from(
-      new Set(
-        items
-          .map(it => extractYear(it.schedule)) // "2024" 같은 문자열
-          .filter(Boolean)
-      )
-    ).sort((a, b) => Number(b) - Number(a));
-    return ys;
+    const ys = Array.from(new Set(items.map(it => extractYear(it.schedule)).filter(Boolean))).sort(
+      (a, b) => Number(b) - Number(a)
+    );
+    return ys.length > 0 ? ys : [String(new Date().getFullYear())];
   }, [items]);
 
   // 2) 기본 선택 연도: 가장 최신 연도
-  const [selectedYear, setSelectedYear] = useState(years[0] || String(new Date().getFullYear()));
+  const [selectedYear, setSelectedYear] = useState(years[0]);
   const [open, setOpen] = useState(false);
 
   // 3) 선택된 연도만 필터링
@@ -68,6 +60,7 @@ export default function RepairHistorTemplate() {
         </YearFilter>
       </Header>
 
+      {/* 리스트 */}
       <ListWrap>
         <Column $gap={10}>
           {filtered.map(item => (
@@ -78,7 +71,7 @@ export default function RepairHistorTemplate() {
                   <Meta>{item.schedule}</Meta>
                   <Price>{comma(item.price)}원</Price>
                 </div>
-                <ButtonRound text="처리완료" />
+                <StatusBadge>처리 완료</StatusBadge>
               </Row>
             </Card>
           ))}
@@ -91,7 +84,6 @@ export default function RepairHistorTemplate() {
 
 /* utils */
 function extractYear(schedule) {
-  // "2024.11.20 / 오전 12:30" 형태에서 앞 4자리 연도 추출
   const m = /^(\d{4})/.exec(schedule?.trim() || '');
   return m ? m[1] : null;
 }
@@ -114,10 +106,22 @@ const TitleH1 = styled.div`
   ${typo('h2')};
   color: black;
 `;
-
+const StatusBadge = styled.div`
+  ${typo('button3')};
+  color: ${color('white')};
+  border-radius: 30px;
+  border: 1.5px solid rgba(1, 210, 129, 0.3);
+  background: ${color('brand.primary')};
+  display: flex;
+  height: 24px;
+  padding: 0 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+`;
 const YearFilter = styled.div`
   position: relative;
-  outline: none; /* onBlur용 focus 컨테이너 */
+  outline: none;
 `;
 const YearTrigger = styled.button`
   ${typo('button2')};
@@ -139,7 +143,6 @@ const Caret = styled.span`
   transform: rotate(${p => (p.$open ? '-135deg' : '45deg')});
   transition: transform 0.15s ease;
 `;
-
 const Menu = styled.div`
   position: absolute;
   right: 0;
@@ -165,7 +168,6 @@ const MenuItem = styled.div`
     background: ${color('grayscale.200')};
   }
 `;
-
 const ListWrap = styled.div`
   padding: 0px 24px;
 `;

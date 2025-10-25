@@ -74,6 +74,31 @@ export async function apiGetInProgressRepairs(accessToken) {
   }
 }
 
+// GET: 완료된 요청서 조회 (연도별, 인증 필요)
+export async function apiGetCompletedRepairs(accessToken, year) {
+  try {
+    const { data } = await client.get(`/requestform-service/completed`, {
+      headers: { Authorization: `Bearer ${accessToken}` }, // ✅ 토큰 포함
+      params: { year }, // ?year=YYYY
+    });
+
+    const success = data?.success === true || data?.status === 200 || data?.code === 'COMMON200';
+
+    return {
+      success,
+      data: data?.data ?? [],
+      message: data?.message ?? '',
+    };
+  } catch (e) {
+    console.error('[apiGetCompletedRepairs] Error:', e);
+    return {
+      success: false,
+      message: e?.response?.data?.message || e.message,
+      data: [],
+    };
+  }
+}
+
 // POST: 요청서 AI 작성
 export async function apiGenerateRepairText(accessToken, images = []) {
   if (!images || images.length === 0) {

@@ -1,4 +1,4 @@
-// src/components/repair/repair-home/RepairCompanyCarousel.jsx
+// src/components/repair/repair-home/VendorAd.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
