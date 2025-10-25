@@ -7,7 +7,6 @@ import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../sty
 
 import TopBar from '../../../components/common/TopBar';
 import ButtonSmall from '../../../components/common/ButtonSmall';
-import ButtonRound from '../../../components/common/ButtonRound';
 
 // ✅ 분리된 컴포넌트들
 import RequestAccordion from '../../../components/repair/repair-progress/RequestAccordion';
@@ -15,6 +14,8 @@ import StepFinding from '../../../components/repair/repair-progress/StepFinding'
 import StepChoose from '../../../components/repair/repair-progress/StepChoose';
 import StepMatched from '../../../components/repair/repair-progress/StepMatched';
 import StepDone from '../../../components/repair/repair-progress/StepDone';
+
+import { formatCategoryName } from '../../../utils/format';
 
 const COST_MODE = { SELF: 'SELF', LANDLORD: 'LANDLORD' };
 const STEP = { FINDING: 1, CHOOSE: 2, MATCHED: 3, DONE: 4 };
@@ -57,13 +58,13 @@ export default function RepairProgressTemplate({
         {/* ===== 상단 상태 + 스텝 인디케이터 (복구) ===== */}
         <WhiteSection>
           <Row $justify="space-between" style={{ marginBottom: '15px' }}>
-            <ButtonRound text={isDone ? '처리 완료' : '진행중'} />
+            <StatusBadge>{isDone ? '처리 완료' : '진행중'}</StatusBadge>
           </Row>
 
           <Column $gap={20}>
             {/* 카테고리/요청일 */}
             <Column $gap={6}>
-              <Category>{request?.categoryLabel || '-'}</Category>
+              <Category>{formatCategoryName(request?.categoryLabel || '-')}</Category>
               <RequestDate>{request?.requestedAt || ''}</RequestDate>
             </Column>
 
@@ -135,6 +136,21 @@ const WhiteSection = styled.div`
   padding: 20px 24px;
   width: 100%;
   background-color: white;
+`;
+
+const StatusBadge = styled.div`
+  ${typo('button3')}
+  color: ${color('white')};
+  display: flex;
+  height: 24px;
+  padding: 0 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  border-radius: 30px;
+  border: 1.5px solid rgba(1, 210, 129, 0.3);
+  background: ${color('brand.primary')};
 `;
 
 const Category = styled.div`

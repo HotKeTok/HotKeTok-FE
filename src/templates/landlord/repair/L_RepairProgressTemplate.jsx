@@ -1,6 +1,6 @@
 import React from 'react';
 import RepairProgressTemplate from '../../../templates/tenant/repair/RepairProgressTemplate';
-
+import styled from 'styled-components';
 /**
  * L_RepairProgressTemplate
  * - 집주인 UI용 상세 페이지
