@@ -13,6 +13,7 @@ import Button from './Button';
  * @param {function} onConfirm - 확인 버튼 클릭 핸들러
  * @param {string} [confirmText='네, 보낼게요'] - 확인 버튼 텍스트
  * @param {boolean} [showClose=true] - 우상단 X 버튼 표시 여부
+ * @param {string|number} [width='85%'] - 모달 너비(예: '320px', '90%', 340)
  */
 export default function ActionGuideModal({
   isOpen,
@@ -22,12 +23,20 @@ export default function ActionGuideModal({
   onConfirm,
   confirmText = '확인',
   showClose = true,
+  width = '85%',
 }) {
   if (!isOpen) return null;
 
+  const computedWidth = typeof width === 'number' ? `${width}px` : width;
+
   return (
     <Dim onClick={onClose}>
-      <Modal role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+      <Modal
+        role="dialog"
+        aria-modal="true"
+        onClick={e => e.stopPropagation()}
+        $width={computedWidth}
+      >
         {showClose && (
           <CloseButton aria-label="닫기" onClick={onClose}>
             <svg
@@ -58,7 +67,7 @@ export default function ActionGuideModal({
         <TitleWrapper>{titleComponent}</TitleWrapper>
         <ModalDesc>{description}</ModalDesc>
 
-        <Button text={confirmText} onClick={onConfirm} />
+        {confirmText && <Button text={confirmText} onClick={onConfirm} />}
       </Modal>
     </Dim>
   );
@@ -92,7 +101,7 @@ const Dim = styled.div`
 
 const Modal = styled.div`
   position: relative;
-  width: 85%;
+  width: ${({ $width }) => $width || '85%'};
   border-radius: 15px;
   background: #fff;
   padding: 18px;
