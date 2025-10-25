@@ -6,10 +6,10 @@ import { color, typo } from '../../../styles/tokens';
 
 import PageHeader from '../../../components/common/PageHeader';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
-import iconDrill from '../../../assets/landlord/repair/one-drill.png';
 
 import { formatCategoryName } from '../../../utils/format';
 import ReviewCarousel from '../../../components/repair/repair-home/ReviewCarousel';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * props
@@ -26,6 +26,8 @@ export default function L_RepairHomeTemplate({
 }) {
   const hasActive = activeList.length > 0;
 
+  const nav = useNavigate();
+  const goHistory = () => nav('/repair-history');
   return (
     <Page>
       <PageHeader leftComponent="뚝딱" background="#fff" />
@@ -35,7 +37,9 @@ export default function L_RepairHomeTemplate({
           <GrayBox>
             <RowBetween>
               <Title>진행 중인 수리 확인하기</Title>
-              <Drill src={iconDrill} alt="" />
+              <MoveRepairHistory onClick={goHistory}>
+                지난 수리내역 <Chevron src={iconChevron} />
+              </MoveRepairHistory>
             </RowBetween>
 
             {loading ? (
@@ -108,13 +112,6 @@ const Caption1_600 = styled.div`
   color: ${color('grayscale.600')};
 `;
 
-const Drill = styled.img`
-  position: absolute;
-  width: 60px;
-  right: 0px;
-  top: 1px;
-`;
-
 const ActiveStatus = styled.div`
   ${typo('body2')}
   color: ${color('grayscale.600')};
@@ -168,4 +165,14 @@ const NoActive = styled.div`
   color: ${color('grayscale.500')};
   padding: 80px 0px;
   text-align: center;
+`;
+
+const MoveRepairHistory = styled.div`
+  ${typo('caption1')}
+  color: ${color('grayscale.800')};
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 `;

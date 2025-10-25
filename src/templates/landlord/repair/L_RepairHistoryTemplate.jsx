@@ -3,41 +3,23 @@ import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import TopBar from '../../../components/common/TopBar';
 import ButtonRound from '../../../components/common/ButtonRound';
-
 import { color, typo } from '../../../styles/tokens';
 import { Column, Row } from '../../../styles/flex';
-import { getHistoryItems, REPAIR_REQUESTS } from '../../../mocks';
 import { useNavigate } from 'react-router-dom';
 
-export default function L_RepairHistoryTemplate() {
+export default function L_RepairHistoryTemplate({ items = [] }) {
   const navigate = useNavigate();
 
-  // 전체 완료 내역
-  const all = useMemo(() => getHistoryItems() ?? [], []);
-
-  // ✅ 집주인 부담(LANDLORD)만 필터링
-  const items = useMemo(() => {
-    const byId = new Map(REPAIR_REQUESTS.map(r => [r.id, r]));
-    return all.filter(it => {
-      const raw = byId.get(it.id);
-      return raw && (raw.mode === 'LANDLORD' || raw.request?.payerLabel === '집주인 부담');
-    });
-  }, [all]);
-
-  // 1) 연도 목록 (내림차순)
+  // 1) 연도 목록 (내림차순) — items의 schedule에서 연도 추출
   const years = useMemo(() => {
-    const ys = Array.from(
-      new Set(
-        items
-          .map(it => extractYear(it.schedule)) // "2024" 같은 문자열
-          .filter(Boolean)
-      )
-    ).sort((a, b) => Number(b) - Number(a));
-    return ys;
+    const ys = Array.from(new Set(items.map(it => extractYear(it.schedule)).filter(Boolean))).sort(
+      (a, b) => Number(b) - Number(a)
+    );
+    return ys.length > 0 ? ys : [String(new Date().getFullYear())];
   }, [items]);
 
-  // 2) 기본 선택 연도: 최신 연도
-  const [selectedYear, setSelectedYear] = useState(years[0] || String(new Date().getFullYear()));
+  // 2) 기본 선택 연도: 최신
+  const [selectedYear, setSelectedYear] = useState(years[0]);
   const [open, setOpen] = useState(false);
 
   // 3) 선택 연도 필터
@@ -46,7 +28,7 @@ export default function L_RepairHistoryTemplate() {
     [items, selectedYear]
   );
 
-  // ✅ 집주인 진행 상세로 이동
+  // 상세로 이동 (집주인 상세 경로 동일)
   const goDetail = id => navigate(`/repair-progress?id=${encodeURIComponent(id)}`);
 
   return (
@@ -104,7 +86,6 @@ export default function L_RepairHistoryTemplate() {
 
 /* utils */
 function extractYear(schedule) {
-  // "2024.11.20 / 오전 12:30" 형태에서 앞 4자리 연도 추출
   const m = /^(\d{4})/.exec(schedule?.trim() || '');
   return m ? m[1] : null;
 }
@@ -127,10 +108,9 @@ const TitleH1 = styled.div`
   ${typo('h2')};
   color: black;
 `;
-
 const YearFilter = styled.div`
   position: relative;
-  outline: none; /* onBlur용 focus 컨테이너 */
+  outline: none;
 `;
 const YearTrigger = styled.button`
   ${typo('button2')};
@@ -152,7 +132,6 @@ const Caret = styled.span`
   transform: rotate(${p => (p.$open ? '-135deg' : '45deg')});
   transition: transform 0.15s ease;
 `;
-
 const Menu = styled.div`
   position: absolute;
   right: 0;
@@ -178,7 +157,6 @@ const MenuItem = styled.div`
     background: ${color('grayscale.200')};
   }
 `;
-
 const ListWrap = styled.div`
   padding: 0px 24px;
 `;
