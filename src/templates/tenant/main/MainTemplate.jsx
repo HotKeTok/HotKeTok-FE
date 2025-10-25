@@ -96,7 +96,7 @@ const BottomContent = styled(Column)`
   border-radius: 30px 30px 0 0;
   background: #fff;
 
-  height: 70vh; // 높이를 정확히 명시
+  height: 60vh; // 높이를 정확히 명시
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 바텀바 높이만큼 하단 패딩
   overflow-y: scroll; // scroll
 `;

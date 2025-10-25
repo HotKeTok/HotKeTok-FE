@@ -26,11 +26,11 @@ export default function useUserAddress() {
   };
 
   const updateAddress = async (newAddress, newNumber) => {
-    const response = await changeCurrentAddress(accessToken, {
+    const { data } = await changeCurrentAddress(accessToken, {
       currentAddress: newAddress,
       currentNumber: newNumber || '',
     });
-    return response.success;
+    return data.success;
   };
 
   useEffect(() => {
