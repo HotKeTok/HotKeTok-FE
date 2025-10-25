@@ -1,4 +1,4 @@
-// src/mocks/contractors.js
+// src/mocks/vendors.js
 function makeThumb({ w = 320, h = 240, text = 'IMAGE' } = {}) {
   const svg = encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
@@ -11,7 +11,7 @@ function makeThumb({ w = 320, h = 240, text = 'IMAGE' } = {}) {
   return `data:image/svg+xml;utf8,${svg}`;
 }
 
-export const MOCK_CONTRACTORS = [
+export const MOCK_VENDORS = [
   {
     id: '916',
     name: '메종 인테리어',
@@ -40,6 +40,12 @@ export const MOCK_CONTRACTORS = [
       },
       {
         id: 'n2',
+        date: '2023.03.03',
+        title: '임시 휴무 (05/08)',
+        body: '어버이날 맞이하여 고향에 내려갑니다 🙂 잠시 휴무입니다. 모두 즐거운 하루 되세요!',
+      },
+      {
+        id: 'n3',
         date: '2023.03.03',
         title: '임시 휴무 (05/08)',
         body: '어버이날 맞이하여 고향에 내려갑니다 🙂 잠시 휴무입니다. 모두 즐거운 하루 되세요!',

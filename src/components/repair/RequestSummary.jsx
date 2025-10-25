@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { Row, Column } from '../../styles/flex';
 import { color, typo } from '../../styles/tokens';
+import { formatCategoryName } from '../../utils/format';
 
 /**
  * RequestSummary
@@ -31,6 +32,7 @@ export default function RequestSummary({ context, address, repairTypes = [] }) {
   }, [context?.typeKey, context?.useAI, repairTypes]);
 
   const dateTimeLabel = useMemo(() => {
+    if (context?.fullDateLabel) return context.fullDateLabel;
     if (context?.dateKey && context?.time) {
       const d = new Date(context.dateKey);
       const y = d.getFullYear();
@@ -55,7 +57,7 @@ export default function RequestSummary({ context, address, repairTypes = [] }) {
       <Column $gap={24}>
         <Row $justify="space-between">
           <ItemLabel>수리 분야</ItemLabel>
-          <ItemValue>{typeLabel}</ItemValue>
+          <ItemValue>{formatCategoryName(typeLabel)}</ItemValue>
         </Row>
 
         <Row $justify="space-between">
@@ -130,8 +132,8 @@ const ThumbRow = styled.div`
 `;
 
 const Thumb = styled.div`
-  width: 80px;
-  height: 80px;
+  width: calc((100% - 6px * 3) / 4);
+  aspect-ratio: 1 / 1;
   background-size: cover;
   background-position: center;
   border-radius: 6px;
