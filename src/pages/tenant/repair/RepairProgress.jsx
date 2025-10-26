@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import TopBar from '../../../components/common/TopBar';
 import RepairProgressTemplate from '../../../templates/tenant/repair/RepairProgressTemplate';
 import { apiGetRepairDetail } from '../../../api/requestform-service';
-import { apiGetEstimateList } from '../../../api/estimate-service';
+import { apiGetEstimateList, apiGetEstimateInfo } from '../../../api/estimate-service';
 import { getAccessToken } from '../../../utils/auth';
 import { formatYMDWithKoreanTime } from '../../../utils/dateFormat';
 
@@ -18,21 +18,37 @@ const STATUS_TO_STEP = {
 // 서버 payType → 비용모드 매핑
 function mapPayTypeToMode(payType) {
   if (payType === 'LANDLORD' || payType === 'PROPRIETORSHIP') return 'LANDLORD';
-  return 'SELF'; // 기본: 본인부담
+  return 'SELF';
 }
 
-// 견적서 API 응답 → 화면 모델로 매핑
+// 목록 응답 → 화면 모델 (id 문자열 통일)
 function mapEstimateToQuote(e) {
   return {
-    id: e.estimateId,
+    id: String(e.estimateId),
     vendorId: e.vendorId,
     companyName: e.vendorName,
     avatar: e.vendorProfileImage,
     phone: e.vendorNumber,
     content: e.content,
-    price: e.price, // number | null
-    schedule: e.estimateTime, // "2025.10.05 / 오후 08:45"
-    decisionLater: e.decisionLater ?? e.discisionLater ?? false, // ✅ 추가(오타 대비)
+    price: e.price,
+    schedule: e.estimateTime,
+    decisionLater: e.decisionLater ?? e.discisionLater ?? false,
+  };
+}
+
+// 단건 응답 → 화면 모델 (id 문자열 통일)
+function mapEstimateInfoToQuote(r) {
+  if (!r) return null;
+  return {
+    id: String(r.estimateId),
+    vendorId: r.vendorId,
+    companyName: r.vendorName,
+    avatar: r.vendorProfileImage,
+    phone: r.phoneNumber,
+    content: r.content,
+    price: r.estimatePrice,
+    schedule: r.estimateTime,
+    decisionLater: false,
   };
 }
 
@@ -58,18 +74,44 @@ export default function RepairProgress() {
         }
         const d = res.data;
 
-        // 2) 견적서 목록 조회
+        // 2) 견적서 목록
         const listRes = await apiGetEstimateList(token, requestFormId);
-        const quotes = (listRes?.data ?? []).map(mapEstimateToQuote);
+        let quotes = (listRes?.data ?? []).map(mapEstimateToQuote);
 
-        // 초기 스텝/모드 매핑
+        // 3) 서버가 보관 중인 "선택된 견적 id" (여러 필드 대비) → 문자열 통일
+        const selectedIdRaw =
+          d.selectedEstimateId ?? d.matchedEstimateId ?? d.selectedQuoteId ?? d.estimateId ?? null;
+        let selectedId = selectedIdRaw != null ? String(selectedIdRaw) : null;
+
+        // ✅ Fallback: MATCHING/COMPLETED 상태인데 서버가 선택 ID를 안 줄 때
+        //    목록이 1건이면 그걸 선택된 견적으로 간주
+        if (
+          !selectedId &&
+          (d.status === 'MATCHING' || d.status === 'COMPLETED') &&
+          Array.isArray(quotes) &&
+          quotes.length === 1
+        ) {
+          selectedId = quotes[0]?.id ?? null;
+        }
+        // 4) 선택된 견적 단건을 조회해 목록에 반영 (없으면 prepend, 있으면 merge)
+        if (selectedId) {
+          const infoRes = await apiGetEstimateInfo(token, selectedId);
+          if (infoRes.success && infoRes.data) {
+            const selectedQuote = mapEstimateInfoToQuote(infoRes.data);
+            const idx = quotes.findIndex(q => q.id === selectedId);
+            if (idx === -1) quotes = [selectedQuote, ...quotes];
+            else quotes[idx] = { ...quotes[idx], ...selectedQuote };
+          }
+        }
+
+        // 5) 초기 스텝/모드
         const initialStep = STATUS_TO_STEP[d.status] ?? 1;
         const initialMode = mapPayTypeToMode(d.payType);
 
-        const mapped = {
+        setData({
           initialStep,
           initialMode,
-          initialSelectedQuoteId: d.selectedQuoteId ?? null,
+          initialSelectedQuoteId: selectedId, // ✅ 반드시 세팅: MATCHING에서 렌더 트리거
           initialRequest: {
             categoryLabel: d.category,
             requestedAt: formatYMDWithKoreanTime(d.requestSchedule),
@@ -79,9 +121,7 @@ export default function RepairProgress() {
             images: d.imagesUrl || [],
           },
           initialQuotes: quotes,
-        };
-
-        setData(mapped);
+        });
       } catch (e) {
         console.error(e);
         setData(null);

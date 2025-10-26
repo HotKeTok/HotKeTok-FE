@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { Row, Column, Spacer } from '../../../styles/flex';
+import { Row, Column } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../styles/layout';
 
 import TopBar from '../../../components/common/TopBar';
-import ButtonSmall from '../../../components/common/ButtonSmall';
 
-// ✅ 분리된 컴포넌트들
+// 분리 컴포넌트
 import RequestAccordion from '../../../components/repair/repair-progress/RequestAccordion';
 import StepSearching from '../../../components/repair/repair-progress/StepSearching';
 import StepChoosing from '../../../components/repair/repair-progress/StepChoosing';
@@ -28,7 +27,8 @@ export default function RepairProgressTemplate({
   initialRequest,
   initialQuotes,
 } = {}) {
-  const [mode, setMode] = useState(initialMode ?? COST_MODE.SELF);
+  // 서버에서 받은 초기값들만 사용 (데모 스위치 제거)
+  const [mode] = useState(initialMode ?? COST_MODE.SELF);
   const [step, setStep] = useState(initialStep ?? STEP.FINDING);
   const [selectedQuoteId, setSelectedQuoteId] = useState(initialSelectedQuoteId ?? null);
 
@@ -39,7 +39,7 @@ export default function RepairProgressTemplate({
   const isDone = step === STEP.DONE;
   const canProceed = mode !== COST_MODE.LANDLORD && !!selectedQuoteId;
 
-  // 진행 버튼 동작: 본인부담 모드에서만 매칭 API 호출 후 스텝 전환
+  // 진행 버튼: 본인부담 모드에서만 매칭 API 호출
   const handleProceed = async () => {
     if (mode === COST_MODE.SELF && selectedQuoteId) {
       const token = getAccessToken();
@@ -49,28 +49,14 @@ export default function RepairProgressTemplate({
         return;
       }
     }
-    // API 성공(또는 LANDLORD 모드) → 매칭 스텝으로 이동
     setStep(STEP.MATCHED);
   };
-
-  // 데모 전환용 UI(유지)
-  const DemoSwitch = () => (
-    <Row $gap={8} style={{ padding: '10px 16px' }}>
-      <ButtonSmall active text="본인부담 모드" onClick={() => setMode(COST_MODE.SELF)} />
-      <ButtonSmall active text="집주인부담 모드" onClick={() => setMode(COST_MODE.LANDLORD)} />
-      <Spacer x={8} />
-      <ButtonSmall active text="STEP1" onClick={() => setStep(STEP.FINDING)} />
-      <ButtonSmall active text="STEP2" onClick={() => setStep(STEP.CHOOSE)} />
-      <ButtonSmall active text="STEP3" onClick={() => setStep(STEP.MATCHED)} />
-      <ButtonSmall active text="STEP4" onClick={() => setStep(STEP.DONE)} />
-    </Row>
-  );
 
   return (
     <PageWithoutBottomBar>
       <TopBar title={isDone ? '완료된 수리' : '진행중인 수리'} />
       <ScrollableNoBottomBarContent>
-        {/* ===== 상단 상태 + 스텝 인디케이터 (복구) ===== */}
+        {/* 상단 상태 + 스텝 인디케이터 */}
         <WhiteSection>
           <Row $justify="space-between" style={{ marginBottom: '15px' }}>
             <StatusBadge>{isDone ? '처리 완료' : '진행중'}</StatusBadge>
@@ -108,10 +94,10 @@ export default function RepairProgressTemplate({
           </Column>
         </WhiteSection>
 
-        {/* ===== 요청서 요약 아코디언 ===== */}
+        {/* 요청서 아코디언 */}
         <RequestAccordion request={request} mode={mode} />
 
-        {/* ===== 단계별 섹션 ===== */}
+        {/* 단계별 섹션 */}
         {step === STEP.FINDING && <StepSearching />}
 
         {step === STEP.CHOOSE && (
@@ -126,12 +112,7 @@ export default function RepairProgressTemplate({
         )}
 
         {step === STEP.MATCHED && (
-          <StepMatching
-            mode={mode}
-            selectedQuote={selectedQuote}
-            hopeAt={request?.hopeAt}
-            onCancel={() => setStep(STEP.CHOOSE)}
-          />
+          <StepMatching mode={mode} selectedQuote={selectedQuote} hopeAt={request?.hopeAt} />
         )}
 
         {step === STEP.DONE && (
@@ -141,15 +122,12 @@ export default function RepairProgressTemplate({
             onWriteReview={() => alert('후기 작성')}
           />
         )}
-
-        {/* 데모 전환용 UI 유지 */}
-        <DemoSwitch />
       </ScrollableNoBottomBarContent>
     </PageWithoutBottomBar>
   );
 }
 
-/* ===== styles (복구된 상단 UI용) ===== */
+/* ===== styles ===== */
 const WhiteSection = styled.div`
   box-sizing: border-box;
   padding: 20px 24px;
@@ -166,7 +144,6 @@ const StatusBadge = styled.div`
   justify-content: center;
   align-items: center;
   gap: 10px;
-
   border-radius: 30px;
   border: 1.5px solid rgba(1, 210, 129, 0.3);
   background: ${color('brand.primary')};
@@ -197,13 +174,11 @@ const StepDot = styled.div`
   box-sizing: border-box;
   width: 56px;
   height: 56px;
-
   ${typo('button3')}
   white-space: pre-line;
   text-align: center;
   justify-content: center;
   align-items: center;
-
   color: ${color('grayscale.800')};
   background: ${color('grayscale.100')};
   border: 1px ${({ $active }) => ($active ? 'solid' : 'dashed')} ${color('brand.primary')};

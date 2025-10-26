@@ -49,3 +49,22 @@ export async function apiSelectEstimate(accessToken, estimateId) {
     return { success: false, data: null, message: e?.response?.data?.message || e.message };
   }
 }
+
+// 선택한 견적서
+export async function apiGetEstimateInfo(accessToken, estimateId) {
+  try {
+    const { data } = await client.get('/estimate-service/info', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      params: { estimateId },
+    });
+    const success = data?.isSuccess === true || data?.status === 200 || data?.code === 'COMMON200';
+    return {
+      success,
+      data: data?.result ?? null,
+      message: data?.message ?? '',
+    };
+  } catch (e) {
+    console.error('[apiGetEstimateInfo] Error:', e);
+    return { success: false, data: null, message: e?.response?.data?.message || e.message };
+  }
+}

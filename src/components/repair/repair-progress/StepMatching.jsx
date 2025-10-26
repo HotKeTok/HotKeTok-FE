@@ -1,13 +1,17 @@
 // src/components/repair/repair-progress/StepMatching.jsx
 import React from 'react';
 import styled from 'styled-components';
-import ButtonSmall from '../../common/ButtonSmall';
 import RepairDetailRows from '../repair-progress/RepairDetailRows';
 import { color, typo } from '../../../styles/tokens';
 import { useNavigate } from 'react-router-dom';
+import Button from '../../common/Button';
 
-export default function StepMatching({ mode, selectedQuote, hopeAt, onCancel }) {
+export default function StepMatching({ mode, selectedQuote, hopeAt }) {
   const nav = useNavigate();
+
+  const handleChat = () => {
+    alert('채팅페이지로 이동처리해야함');
+  };
 
   if (!selectedQuote) return null;
 
@@ -15,7 +19,6 @@ export default function StepMatching({ mode, selectedQuote, hopeAt, onCancel }) 
     <Wrap>
       <Header>
         <Title>선택한 견적</Title>
-        {mode === 'SELF' && <ButtonSmall width={60} text="취소" onClick={onCancel} />}
       </Header>
       <Body>
         <RepairDetailRows
@@ -34,6 +37,9 @@ export default function StepMatching({ mode, selectedQuote, hopeAt, onCancel }) 
             })
           }
         />
+        <Footer>
+          <Button onClick={handleChat} text="1:1 문의하기" />
+        </Footer>
       </Body>
     </Wrap>
   );
@@ -54,4 +60,8 @@ const Title = styled.div`
 `;
 const Body = styled.div`
   padding: 16px 24px;
+`;
+
+const Footer = styled.div`
+  margin-top: 30px;
 `;
