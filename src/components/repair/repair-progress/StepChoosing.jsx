@@ -1,4 +1,3 @@
-// src/components/repair/repair-progress/StepChoosing.jsx
 import React from 'react';
 import styled from 'styled-components';
 import ModeItem from '../../common/ModeItem';
@@ -11,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function StepChoosing({
   mode,
+  isLandlordView = false, // ✅ 추가
   quotes,
   selectedQuoteId,
   setSelectedQuoteId,
@@ -20,14 +20,15 @@ export default function StepChoosing({
   const nav = useNavigate();
 
   const goVendor = (e, vendorId) => {
-    e.stopPropagation(); // 카드 선택과 충돌 방지
+    e.stopPropagation();
     if (vendorId == null) return;
-    // ✅ 쿼리파라미터로 라우팅
     nav({
       pathname: '/vendor-profile',
       search: `?vendorId=${encodeURIComponent(String(vendorId))}`,
     });
   };
+
+  const allowSelect = isLandlordView || mode === 'SELF'; // ✅ 집주인은 선택 가능
 
   return (
     <Wrap>
@@ -46,7 +47,7 @@ export default function StepChoosing({
             <ModeItem
               key={q.id}
               selected={selectedQuoteId === q.id}
-              onClick={() => (mode === 'SELF' ? setSelectedQuoteId(q.id) : null)}
+              onClick={() => (allowSelect ? setSelectedQuoteId(q.id) : null)} // ✅ 선택 허용
               height="auto"
               padding="18px 24px"
             >
@@ -77,9 +78,15 @@ export default function StepChoosing({
         </Column>
         <Footer>
           <Button
-            active={canProceed} // 🔹 집주인 뷰일 땐 무조건 활성화
+            active={canProceed} // ✅ 부모 계산값 사용
             onClick={onProceed}
-            text={mode === 'LANDLORD' ? '집주인이 선택합니다' : '견적서 선택'}
+            text={
+              isLandlordView
+                ? '견적서 선택'
+                : mode === 'LANDLORD'
+                ? '집주인이 선택합니다'
+                : '견적서 선택'
+            }
           />
         </Footer>
       </Body>

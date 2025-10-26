@@ -26,8 +26,8 @@ export default function RepairProgressTemplate({
   initialSelectedQuoteId,
   initialRequest,
   initialQuotes,
+  isLandlordView = false, // ✅ 집주인 화면 여부
 } = {}) {
-  // 서버에서 받은 초기값들만 사용 (데모 스위치 제거)
   const [mode] = useState(initialMode ?? COST_MODE.SELF);
   const [step, setStep] = useState(initialStep ?? STEP.FINDING);
   const [selectedQuoteId, setSelectedQuoteId] = useState(initialSelectedQuoteId ?? null);
@@ -37,17 +37,18 @@ export default function RepairProgressTemplate({
   const selectedQuote = quotes.find(q => q.id === selectedQuoteId) || null;
 
   const isDone = step === STEP.DONE;
-  const canProceed = mode !== COST_MODE.LANDLORD && !!selectedQuoteId;
 
-  // 진행 버튼: 본인부담 모드에서만 매칭 API 호출
+  // ✅ 집주인 뷰이거나(=LANDLORD가 선택 권한), 입주민 뷰에서 SELF일 때만 진행 가능
+  const canProceed = !!selectedQuoteId && (isLandlordView || mode !== COST_MODE.LANDLORD);
+
+  // ✅ 권한 있으면 항상 선택 API 호출
   const handleProceed = async () => {
-    if (mode === COST_MODE.SELF && selectedQuoteId) {
-      const token = getAccessToken();
-      const res = await apiSelectEstimate(token, selectedQuoteId);
-      if (!res.success) {
-        alert(res.message || '견적서 선택에 실패했습니다.');
-        return;
-      }
+    if (!canProceed) return;
+    const token = getAccessToken();
+    const res = await apiSelectEstimate(token, selectedQuoteId);
+    if (!res.success) {
+      alert(res.message || '견적서 선택에 실패했습니다.');
+      return;
     }
     setStep(STEP.MATCHED);
   };
@@ -85,7 +86,9 @@ export default function RepairProgressTemplate({
               <GuideBubble>
                 {step === STEP.FINDING && '수리업체에서 요청서를 확인하고 있어요.'}
                 {step === STEP.CHOOSE &&
-                  (mode === COST_MODE.SELF
+                  (isLandlordView
+                    ? '도착한 견적서 중 수리를 진행할 업체를 선택하세요.'
+                    : mode === COST_MODE.SELF
                     ? '마음에 드는 견적서를 선택해주세요!'
                     : '집주인이 견적서를 선택하는 중이에요.')}
                 {step === STEP.MATCHED && '업체가 매칭되었어요!'}
@@ -95,14 +98,15 @@ export default function RepairProgressTemplate({
         </WhiteSection>
 
         {/* 요청서 아코디언 */}
-        <RequestAccordion request={request} mode={mode} />
+        <RequestAccordion request={request} mode={isLandlordView ? COST_MODE.LANDLORD : mode} />
 
         {/* 단계별 섹션 */}
         {step === STEP.FINDING && <StepSearching />}
 
         {step === STEP.CHOOSE && (
           <StepChoosing
-            mode={mode}
+            mode={isLandlordView ? COST_MODE.LANDLORD : mode}
+            isLandlordView={isLandlordView} // ✅ 전달
             quotes={quotes}
             selectedQuoteId={selectedQuoteId}
             setSelectedQuoteId={setSelectedQuoteId}
@@ -112,7 +116,12 @@ export default function RepairProgressTemplate({
         )}
 
         {step === STEP.MATCHED && (
-          <StepMatching mode={mode} selectedQuote={selectedQuote} hopeAt={request?.hopeAt} />
+          <StepMatching
+            mode={isLandlordView ? COST_MODE.LANDLORD : mode}
+            selectedQuote={selectedQuote}
+            hopeAt={request?.hopeAt}
+            onCancel={() => setStep(STEP.CHOOSE)}
+          />
         )}
 
         {step === STEP.DONE && (
@@ -134,7 +143,6 @@ const WhiteSection = styled.div`
   width: 100%;
   background-color: white;
 `;
-
 const StatusBadge = styled.div`
   ${typo('button3')}
   color: ${color('white')};
@@ -148,17 +156,14 @@ const StatusBadge = styled.div`
   border: 1.5px solid rgba(1, 210, 129, 0.3);
   background: ${color('brand.primary')};
 `;
-
 const Category = styled.div`
   ${typo('h3')}
   color: ${color('grayscale.600')};
 `;
-
 const RequestDate = styled.div`
   ${typo('caption1')}
   color: ${color('grayscale.500')};
 `;
-
 const StepBar = styled.div`
   display: grid;
   grid-template-columns:
@@ -168,7 +173,6 @@ const StepBar = styled.div`
     max-content;
   align-items: center;
 `;
-
 const StepDot = styled.div`
   display: flex;
   box-sizing: border-box;
@@ -186,14 +190,12 @@ const StepDot = styled.div`
   padding: 10px;
   border-radius: 50%;
 `;
-
 const StepDivider = styled.div`
   height: 1px;
   margin: 0 8px;
   background: ${color('brand.primary')};
   opacity: 0.4;
 `;
-
 const GuideBubble = styled.div`
   display: flex;
   justify-content: center;
