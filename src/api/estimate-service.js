@@ -32,11 +32,10 @@ export async function apiGetEstimateList(accessToken, requestFormId) {
  */
 export async function apiSelectEstimate(accessToken, estimateId) {
   try {
-    const { data } = await client.post(
-      '/estimate-service/matching',
-      { estimateId },
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    const { data } = await client.post('/estimate-service/matching', null, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      params: { estimateId },
+    });
 
     const success = data?.success === true || data?.status === 200 || data?.code === 'COMMON200';
 

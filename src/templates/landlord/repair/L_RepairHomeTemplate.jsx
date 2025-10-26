@@ -1,3 +1,4 @@
+// src/templates/landlord/repair/L_RepairHomeTemplate.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { Page, ScrollableContent } from '../../../styles/layout';
@@ -15,19 +16,26 @@ import { useNavigate } from 'react-router-dom';
  * props
  * - loading: boolean
  * - activeList: Array<{ id, category, scheduleLabel, currentNumber, statusLabel }>
- * - historyList: Array<any>  // 현재는 미사용(추후 API 연동시 사용)
  * - onClickProgress: (id) => void
- * - onClickHistoryMore: () => void
+ * - (신규) reviewLoading: boolean
+ * - (신규) reviewItems: Array<ReviewCarouselItem>
+ * - (신규) onReviewClick: (item) => void
+ * - onClickHistoryMore?: () => void
  */
 export default function L_RepairHomeTemplate({
   loading = false,
   activeList = [],
   onClickProgress,
+  reviewLoading = false,
+  reviewItems = [],
+  onReviewClick,
+  onClickHistoryMore,
 }) {
   const hasActive = activeList.length > 0;
 
   const nav = useNavigate();
-  const goHistory = () => nav('/repair-history');
+  const goHistory = onClickHistoryMore ?? (() => nav('/repair-history'));
+
   return (
     <Page>
       <PageHeader leftComponent="뚝딱" background="#fff" />
@@ -74,10 +82,18 @@ export default function L_RepairHomeTemplate({
             )}
           </GrayBox>
 
+          {/* ===== 지난 수리 후기 ===== */}
           <GrayBox>
             <Title>지난 수리 후기</Title>
             <Caption1_600>입주민들이 작성했어요.</Caption1_600>
-            <ReviewCarousel />
+
+            {reviewLoading ? (
+              <NoActive>후기를 불러오는 중...</NoActive>
+            ) : reviewItems.length === 0 ? (
+              <NoActive>작성된 후기가 없어요.</NoActive>
+            ) : (
+              <ReviewCarousel items={reviewItems} onItemClick={onReviewClick} />
+            )}
           </GrayBox>
         </Column>
       </ScrollableContent>
@@ -89,7 +105,6 @@ export default function L_RepairHomeTemplate({
 const GrayBox = styled.div`
   background: #f5f6f6;
   padding: 16px 24px;
-
   border-radius: 20px;
   border: 1px solid ${color('grayscale.200')};
   background: ${color('grayscale.100')};
