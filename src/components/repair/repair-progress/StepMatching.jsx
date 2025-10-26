@@ -16,38 +16,40 @@ export default function StepMatching({ mode, selectedQuote, hopeAt }) {
   if (!selectedQuote) return null;
 
   return (
-    <Wrap>
-      <Header>
-        <Title>선택한 견적</Title>
-      </Header>
-      <Body>
-        <RepairDetailRows
-          companyName={selectedQuote.companyName}
-          phone={selectedQuote.phone}
-          price={selectedQuote.price}
-          schedule={hopeAt}
-          content={selectedQuote.content}
-          avatar={selectedQuote.avatar}
-          decisionLater={selectedQuote.decisionLater}
-          onCompanyClick={() =>
-            selectedQuote.vendorId &&
-            nav({
-              pathname: '/vendor-profile',
-              search: `?vendorId=${encodeURIComponent(String(selectedQuote.vendorId))}`,
-            })
-          }
-        />
-        <Footer>
-          <Button onClick={handleChat} text="1:1 문의하기" />
-        </Footer>
-      </Body>
-    </Wrap>
+    <>
+      <div style={{ height: '10px', backgroundColor: '#F5F6F6' }} />
+      <Wrap>
+        <Header>
+          <Title>선택한 견적</Title>
+        </Header>
+        <Body>
+          <RepairDetailRows
+            companyName={selectedQuote.companyName}
+            phone={selectedQuote.phone}
+            price={selectedQuote.price}
+            schedule={hopeAt}
+            content={selectedQuote.content}
+            avatar={selectedQuote.avatar}
+            decisionLater={selectedQuote.decisionLater}
+            onCompanyClick={() =>
+              selectedQuote.vendorId &&
+              nav({
+                pathname: '/vendor-profile',
+                search: `?vendorId=${encodeURIComponent(String(selectedQuote.vendorId))}`,
+              })
+            }
+          />
+          <Footer>
+            <Button onClick={handleChat} text="1:1 문의하기" />
+          </Footer>
+        </Body>
+      </Wrap>
+    </>
   );
 }
 
 const Wrap = styled.div`
   background: #fff;
-  margin-top: 10px;
 `;
 const Header = styled.div`
   display: flex;

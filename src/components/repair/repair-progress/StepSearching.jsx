@@ -5,15 +5,17 @@ import { color, typo } from '../../../styles/tokens';
 
 export default function StepSearching() {
   return (
-    <Box>
-      <Title>받은 견적</Title>
-      <Desc>아직 견적서가 도착하지 않았어요.</Desc>
-    </Box>
+    <>
+      <div style={{ height: '10px', backgroundColor: '#F5F6F6' }} />
+      <Box>
+        <Title>받은 견적</Title>
+        <Desc>아직 견적서가 도착하지 않았어요.</Desc>
+      </Box>
+    </>
   );
 }
 
 const Box = styled.div`
-  margin-top: 10px;
   background: #fff;
   padding: 16px 24px;
 `;
