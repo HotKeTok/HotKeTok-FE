@@ -21,7 +21,8 @@ import TagPet from '../../../assets/my/address-admin/Tag_Pet.svg';
 
 import iconSpeechBubble from '../../../assets/my/address-admin/icon-speech-bubble.svg';
 
-import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../../mocks/my/addresses';
+// ✅ 목데이터/상수 데이터 import 제거 (디자인 관련 아이콘/색상은 유지)
+// import { ADDRESS_LIST_MOCK, ALLOWED_NOTES } from '../../../mocks/my/addresses';
 
 // ----------------------------------------------------------
 // 상수
@@ -52,16 +53,23 @@ const NOTE_ICONS = {
 // ----------------------------------------------------------
 // 메인 컴포넌트
 // ----------------------------------------------------------
-export default function AddressAdminTemplate() {
-  const [items, setItems] = useState(ADDRESS_LIST_MOCK);
+// ✅ 페이지에서 내려주는 items만 사용 (디자인/마크업 변경 없음)
+export default function AddressAdminTemplate({ items: itemsProp = [] }) {
+  // 로컬 상태는 UI 상호작용(현재주소 토글, 상세/추가에서 온 패치)을 위해 유지
+  const [items, setItems] = useState(itemsProp);
   const nav = useNavigate();
   const location = useLocation();
+
+  // 페이지에서 내려준 최신 데이터로 동기화
+  useEffect(() => {
+    setItems(itemsProp);
+  }, [itemsProp]);
 
   const setCurrentAddress = id => {
     setItems(prev => prev.map(it => ({ ...it, isCurrent: it.id === id })));
   };
 
-  // ✅ 상세/추가에서 온 patch/remove/add를 목록에 즉시 반영
+  // ✅ 상세/추가에서 온 patch/remove/add를 목록에 즉시 반영 (기존 동작 유지)
   useEffect(() => {
     const patch = location.state?.patch;
     const removeId = location.state?.removeId;
@@ -164,7 +172,7 @@ function AddressItem({ data, onClickBox, onClickEdit }) {
             <AddrLine title={address1}>{address1}</AddrLine>
             {/* 메모 태그: 기본 아이콘 + 커스텀 태그 */}
             <Row style={{ gap: 8, flexWrap: 'wrap' }}>
-              {neighborNotes.map(key => {
+              {(neighborNotes || []).map(key => {
                 const imgs = NOTE_ICONS[key];
                 if (!imgs) return null;
                 return (
@@ -200,7 +208,7 @@ function AddressItem({ data, onClickBox, onClickEdit }) {
 }
 
 // ----------------------------------------------------------
-// 스타일
+// 스타일 (기존 그대로 유지)
 // ----------------------------------------------------------
 const Container = styled.div`
   padding: 0px 25px;

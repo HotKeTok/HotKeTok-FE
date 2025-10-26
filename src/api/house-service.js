@@ -110,3 +110,35 @@ export async function patchTenantInfo(payload = {}) {
     message: data?.message ?? '',
   };
 }
+
+/**
+ * 내 주소 리스트 조회
+ * - GET /house-service/house-list
+ * - 토큰 사용 O
+ * - 응답의 state === 'NONE' 인 항목은 프론트에서 제외
+ */
+export async function apiGetHouseList(accessToken) {
+  const { data } = await api.get('/house-service/house-list', {
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+  });
+
+  const success = data?.success === true || data?.status === 200 || data?.code === 'COMMON200';
+
+  // data 또는 result 어느 쪽이든 배열로 수용
+  const raw = Array.isArray(data?.data)
+    ? data.data
+    : Array.isArray(data?.result)
+    ? data.result
+    : [];
+
+  // NONE 제외 + 안전 정렬(대표주소 먼저)
+  const items = raw
+    .filter(h => (h?.state || '') !== 'NONE')
+    .sort((a, b) => (b?.isCurrent === true) - (a?.isCurrent === true));
+
+  return {
+    success,
+    data: items,
+    message: data?.message ?? '',
+  };
+}
