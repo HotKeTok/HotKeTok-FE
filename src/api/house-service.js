@@ -54,18 +54,35 @@ export async function getTenantRequestList() {
 
 // 입주민 집 등록(인증 요청)
 export async function apiTenantRequest(body) {
-  const { data } = await api.post('/house-service/tenant-request', body);
-  const success =
-    data?.success === true ||
-    data?.isSuccess === true ||
-    data?.status === 200 ||
-    data?.code === 'COMMON200';
-
-  return {
-    success,
-    data: data?.data ?? data?.result ?? null,
-    message: data?.message ?? '',
-  };
+  try {
+    const { data } = await api.post('/house-service/tenant-request', body);
+    const success =
+      data?.success === true ||
+      data?.isSuccess === true ||
+      data?.status === 200 ||
+      data?.code === 'COMMON200';
+    return {
+      success,
+      status: data?.status ?? 200,
+      data: data?.data ?? data?.result ?? null,
+      message: data?.message ?? '',
+    };
+  } catch (err) {
+    // ⬇️ axios 에러를 표준 형태로 변환
+    const res = err?.response;
+    const payload = res?.data ?? {};
+    const status = res?.status ?? payload?.status ?? 500;
+    const inner = payload?.data ?? payload ?? {};
+    const errorClassName = inner?.errorClassName || inner?.code || 'REQUEST_FAILED';
+    const message =
+      inner?.message || payload?.message || err?.message || '요청 중 오류가 발생했습니다.';
+    return {
+      success: false,
+      status,
+      data: { errorClassName, message },
+      message,
+    };
+  }
 }
 
 // 입주민 승인(집주인 화면)

@@ -1,8 +1,9 @@
-// src/templates/tenant/my/AddressAddFlow.jsx
+// src/templates/tenant/my/ExtraAddressRegisterTemplate.jsx
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Toast from '../../../components/common/Toast';
 
 import TopBar from '../../../components/common/TopBar';
 import { Row, Column, Spacer } from '../../../styles/flex';
@@ -15,40 +16,6 @@ import iconCheck from '../../../assets/repair/request-repair/icon_big-check.png'
 import iconHouse from '../../../assets/my/address-admin/icon-house.svg';
 import iconCompany from '../../../assets/my/address-admin/icon-building.svg';
 import iconEtc from '../../../assets/my/address-admin/icon-location.svg';
-
-/* =========================================================
- * 공통: 주소 검색 목데이터 (InitProcess 동일)
- * ======================================================= */
-function mockSearchAddresses(keyword) {
-  const seed = (keyword || '').trim();
-  if (!seed) return [];
-  return [
-    {
-      id: '1',
-      sido: '서울특별시',
-      sigungu: '강남구',
-      road: `${seed} 112길 46`,
-      building: '(삼OO 더샵 오브제 나무A동)',
-      jibun: '역삼동 102-1',
-    },
-    {
-      id: '2',
-      sido: '서울특별시',
-      sigungu: '강남구',
-      road: `${seed} 101로 12`,
-      building: '(역삼 자이 101동)',
-      jibun: '역삼동 10-21',
-    },
-    {
-      id: '3',
-      sido: '서울특별시',
-      sigungu: '강남구',
-      road: `${seed} 45길 23`,
-      building: '(역삼 래미안 203동)',
-      jibun: '역삼동 23-5',
-    },
-  ];
-}
 
 const PLACE_TYPES = [
   { key: 'HOME', label: '우리집', icon: iconHouse },
@@ -70,7 +37,6 @@ function getProgressRange(step) {
 }
 
 function ProgressBar({ value = 0, start, end }) {
-  // start/end가 오면 오프셋형, 없으면 기존 value 사용(하위호환)
   const hasRange = typeof start === 'number' && typeof end === 'number';
   const s = hasRange ? Math.max(0, Math.min(100, start)) : 0;
   const e = hasRange ? Math.max(0, Math.min(100, end)) : Math.max(0, Math.min(100, value));
@@ -88,20 +54,34 @@ function ProgressBar({ value = 0, start, end }) {
 /* =========================================================
  * STEP 1: 주소 키워드 검색/선택
  * ======================================================= */
-function StepAddressKeyword({ defaultKeyword, onPick }) {
+function StepAddressKeyword({ defaultKeyword, onPick, onBack, onSearch }) {
   const [keyword, setKeyword] = useState(defaultKeyword ?? '');
   const [results, setResults] = useState([]);
   const [showExamples, setShowExamples] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState('');
 
-  const handleSearch = () => {
-    const list = mockSearchAddresses(keyword);
-    setResults(list);
-    setShowExamples(false);
+  const handleSearch = async () => {
+    const q = (keyword || '').trim();
+    if (!q) return;
+    setLoading(true);
+    setErr('');
+    try {
+      const list = await onSearch(q); // ✅ 실제 API
+      setResults(Array.isArray(list) ? list : []);
+      setShowExamples(false);
+    } catch (e) {
+      setErr(e?.message || '주소 검색 중 오류가 발생했습니다.');
+      setResults([]);
+      setShowExamples(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <PageWrap>
-      <TopBar title="주소 등록" />
+      <TopBar title="주소 등록" onBack={onBack} />
       <ProgressBar {...getProgressRange('AddressKeyword')} />
       <StepTitle>{'추가할 주소를\n등록해주세요.'}</StepTitle>
 
@@ -113,8 +93,16 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
               placeholder="예) 판교역로 235, 도산대로 33"
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleSearch();
+              }}
             />
-            <ButtonSmall text="검색" width="30%" active={!!keyword.trim()} onClick={handleSearch} />
+            <ButtonSmall
+              text={loading ? '검색중' : '검색'}
+              width="30%"
+              active={!!keyword.trim()}
+              onClick={handleSearch}
+            />
           </Row>
         </Column>
 
@@ -137,8 +125,11 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
 
         {!showExamples && results.length > 0 && (
           <ListWrap style={{ marginTop: 16 }}>
-            {results.map(a => (
-              <AddressCard key={a.id} onClick={() => onPick(a)}>
+            {results.map((a, idx) => (
+              <AddressCard
+                key={`${a.sido}-${a.sigungu}-${a.road}-${idx}`}
+                onClick={() => onPick(a)}
+              >
                 <Column $gap={10}>
                   <Addr>
                     {a.sido} {a.sigungu} {a.road} <br />
@@ -154,7 +145,7 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
           </ListWrap>
         )}
 
-        {!showExamples && results.length === 0 && (
+        {!showExamples && !loading && results.length === 0 && (
           <div style={{ marginTop: 16, color: '#767676', fontSize: 14 }}>
             검색 결과가 없습니다. 키워드를 다시 입력해주세요.
           </div>
@@ -165,21 +156,18 @@ function StepAddressKeyword({ defaultKeyword, onPick }) {
 }
 
 /* =========================================================
- * STEP 2: 층/호 입력 + 주소 분류(우리집/회사/기타) 선택 (한 화면)
- *  - 기존 상세주소(TextField) → 층/호 두 개 필드로 대체
- *  - ‘우리집’이 이미 있는 경우 교체 모달 유지
+ * STEP 2: 층/호 입력 + 주소 분류 선택
  * ======================================================= */
 function StepUnitAndType({
   baseAddress,
-  defaultDetail, // ⚠️ 호환성 위해 남겨두지만 사용 안 함
+  defaultDetail, // 호환 유지
   defaultType,
   onNext,
   onBack,
   hasHomeAlready,
 }) {
-  // 신규: 층/호 상태 (기본값 지원)
   const [floor, setFloor] = useState(
-    typeof defaultDetail?.floor === 'number' ? String(defaultDetail.floor) : '' // 혹시 이전 컨텍스트를 넘겼다면 호환
+    typeof defaultDetail?.floor === 'number' ? String(defaultDetail.floor) : ''
   );
   const [ho, setHo] = useState(
     typeof defaultDetail?.ho === 'number' ? String(defaultDetail.ho) : ''
@@ -189,15 +177,13 @@ function StepUnitAndType({
   const [customPlaceName, setCustomPlaceName] = useState('');
   const [askReplace, setAskReplace] = useState(false);
 
-  // 숫자 유효성
   const floorNum = Number(floor);
   const hoNum = Number(ho);
-  const isValidFloor = Number.isInteger(floorNum) && floorNum >= -5 && floorNum <= 200; // 지하층 허용
+  const isValidFloor = Number.isInteger(floorNum) && floorNum >= -5 && floorNum <= 200;
   const isValidHo = Number.isInteger(hoNum) && hoNum > 0 && hoNum <= 9999;
-
   const canSubmit = isValidFloor && isValidHo && !!placeType;
 
-  const onlyDigits = v => v.replace(/[^\d-]/g, ''); // 지하층(-) 허용
+  const onlyDigits = v => v.replace(/[^\d-]/g, '');
 
   useEffect(() => {
     if (placeType === 'HOME' && hasHomeAlready) {
@@ -235,7 +221,6 @@ function StepUnitAndType({
           </Row>
         </SelectedBox>
 
-        {/* 층/호 입력 */}
         <Row $gap={24} style={{ marginBottom: 28 }}>
           <Column style={{ flex: 1 }}>
             <Label>층수</Label>
@@ -276,7 +261,6 @@ function StepUnitAndType({
           </Column>
         </Row>
 
-        {/* 주소 분류 */}
         <Column $gap={6}>
           <SecTitle>주소 분류</SecTitle>
           <Row style={{ gap: 10 }}>
@@ -311,7 +295,6 @@ function StepUnitAndType({
         <Button text="다음" active={canSubmit} onClick={() => submit(false)} />
       </div>
 
-      {/* HOME 교체 확인 모달 */}
       {askReplace && (
         <Dim>
           <Dialog>
@@ -338,10 +321,13 @@ function StepUnitAndType({
 /* =========================================================
  * STEP 3: 최종 확인/요청 → 완료
  * ======================================================= */
-function StepReview({ baseAddress, floor, ho, placeType, replaceHome, customPlaceName }) {
+function StepReview({ baseAddress, floor, ho, placeType, replaceHome, customPlaceName, onSubmit }) {
   const [requested, setRequested] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState('');
   const [showDoneBtn, setShowDoneBtn] = useState(false);
   const navigate = useNavigate();
+  const [toast, setToast] = useState({ show: false, message: '', icon: null });
 
   useEffect(() => {
     if (!requested) return;
@@ -349,29 +335,27 @@ function StepReview({ baseAddress, floor, ho, placeType, replaceHome, customPlac
     return () => clearTimeout(t);
   }, [requested]);
 
+  const handleRequest = async () => {
+    setSubmitting(true);
+    setErr('');
+    try {
+      await onSubmit({ baseAddress, floor, ho, placeType, replaceHome, customPlaceName });
+      setRequested(true);
+    } catch (e) {
+      const code = e?.code || '';
+      const msg = e?.message || '요청 중 오류가 발생했습니다.';
+      if (code === 'HOUSE_NOT_FOUND' || msg.includes('주택을 찾을 수 없습니다')) {
+        setToast({ show: true, message: '주택을 찾을 수 없습니다.', icon: 'warning' });
+      }
+      setErr(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const finishAndBack = () => {
-    const newId = String(Date.now());
-    const alias =
-      placeType === 'HOME' ? '우리집' : placeType === 'WORK' ? '회사' : customPlaceName || '기타';
-
-    const newItem = {
-      id: newId,
-      placeType,
-      alias,
-      address1: `${baseAddress.sido} ${baseAddress.sigungu} ${baseAddress.road} ${
-        baseAddress.building ?? ''
-      }`.trim(),
-      address2: `${floor}층 ${ho}호`,
-      verified: false,
-      isCurrent: placeType === 'HOME', // HOME이면 현재 주소로
-      neighborNotes: [],
-      extraNotes: [],
-    };
-
-    navigate('/address-admin', {
-      replace: true,
-      state: { add: newItem, replaceHome: placeType === 'HOME' ? replaceHome : false },
-    });
+    // 주소관리로 복귀 (리스트는 재조회)
+    navigate('/address-admin', { replace: true });
   };
 
   if (!requested) {
@@ -397,7 +381,6 @@ function StepReview({ baseAddress, floor, ho, placeType, replaceHome, customPlac
               <br />
               {baseAddress.building ? <span>{baseAddress.building}</span> : null}
               <br />
-              {/* ⬇️ 여기만 교체 */}
               {floor != null && ho != null ? `${floor}층 ${ho}호` : null}
             </Caption1Addr>
 
@@ -417,8 +400,15 @@ function StepReview({ baseAddress, floor, ho, placeType, replaceHome, customPlac
 
         <Spacer />
         <div style={{ padding: '30px 24px' }}>
-          <Button text="요청하기" active onClick={() => setRequested(true)} />
+          <Button text={submitting ? '요청 중...' : '요청하기'} active onClick={handleRequest} />
         </div>
+        <Toast
+          message={toast.message}
+          icon={toast.icon} // 'warning' 전달 시 경고 아이콘
+          show={toast.show}
+          duration={1500}
+          onClose={() => setToast(t => ({ ...t, show: false }))}
+        />
       </PageWrap>
     );
   }
@@ -436,19 +426,26 @@ function StepReview({ baseAddress, floor, ho, placeType, replaceHome, customPlac
           <Button text="완료하기" active={showDoneBtn} onClick={finishAndBack} />
         </FadeInWrap>
       </div>
+      <Toast
+        message={toast.message}
+        icon={toast.icon} // 'warning' 전달 시 경고 아이콘
+        show={toast.show}
+        duration={1500}
+        onClose={() => setToast(t => ({ ...t, show: false }))}
+      />
     </PageWrap>
   );
 }
 
 /* =========================================================
  * 메인: Funnel.Render
- *  - URL: /address/add/AddressKeyword → /address/add/UnitAndType → /address/add/Review
- *  - 상세단계에서 분류까지 선택
  * ======================================================= */
-export default function ExtraAddressRegisterTemplate() {
-  const location = useLocation();
-  const hasHomeAlready = Boolean(location.state?.hasHomeAlready);
-
+// ✅ onSearch, onSubmit을 외부(페이지)로부터 주입
+export default function ExtraAddressRegisterTemplate({
+  hasHomeAlready = false,
+  onSearch,
+  onSubmit,
+}) {
   const Funnel = useFunnel({
     id: 'address-add',
     initial: { step: 'AddressKeyword', context: {} },
@@ -463,12 +460,12 @@ export default function ExtraAddressRegisterTemplate() {
           defaultKeyword={context.keyword}
           onBack={() => history.exit('/address-admin')}
           onPick={baseAddress => history.push('UnitAndType', { ...context, baseAddress })}
+          onSearch={onSearch}
         />
       )}
       UnitAndType={({ history, context }) => (
         <StepUnitAndType
           baseAddress={context.baseAddress}
-          // ⬇️ 변경: defaultDetail 대신 floor/ho를 묶어 전달(호환용으로 defaultDetail에 넣음)
           defaultDetail={{ floor: context.floor, ho: context.ho }}
           defaultType={context.placeType}
           hasHomeAlready={hasHomeAlready}
@@ -493,23 +490,22 @@ export default function ExtraAddressRegisterTemplate() {
           placeType={context.placeType}
           replaceHome={context.replaceHome}
           customPlaceName={context.customPlaceName}
+          onSubmit={onSubmit}
         />
       )}
     />
   );
 }
 
-/* ============================= 스타일 ============================= */
+/* ============================= 스타일 (변경 없음) ============================= */
 const PageWrap = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 `;
-
 const ContentWrap = styled.div`
   padding: 16px 16px 0 16px;
 `;
-
 const ContentWrapCentered = styled(ContentWrap)`
   display: flex;
   align-items: center;
@@ -518,36 +514,30 @@ const ContentWrapCentered = styled(ContentWrap)`
   min-height: calc(100dvh - 120px);
   text-align: center;
 `;
-
 const StepTitle = styled.div`
   ${typo('h2')};
   color: ${color('grayscale.800')};
   white-space: pre-line;
   margin: 30px 0 40px 28px;
 `;
-
 const Label = styled.div`
   ${typo('caption2')};
   color: ${color('grayscale.500')};
 `;
-
 const ExampleTitle = styled.div`
   ${typo('body2')};
   color: ${color('grayscale.600')};
 `;
-
 const ExampleDesc = styled.div`
   ${typo('caption1')};
   color: ${color('grayscale.500')};
 `;
-
 const ListWrap = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 12px;
 `;
-
 const AddressCard = styled.div`
   width: 100%;
   text-align: left;
@@ -556,7 +546,6 @@ const AddressCard = styled.div`
   margin-bottom: 12px;
   border-bottom: 1px solid ${color('grayscale.200')};
 `;
-
 const SelectedBox = styled.div`
   display: flex;
   box-sizing: border-box;
@@ -571,22 +560,18 @@ const SelectedBox = styled.div`
   background: #fafafb;
   margin-bottom: 30px;
 `;
-
 const Addr = styled.div`
   ${typo('body2')};
   color: ${color('grayscale.800')};
 `;
-
 const Caption1Addr = styled.div`
   ${typo('caption1')};
   color: ${color('grayscale.800')};
 `;
-
 const JibunAddr = styled.div`
   ${typo('caption2')};
   color: ${color('grayscale.600')};
 `;
-
 const Jibun = styled.div`
   display: flex;
   width: 38px;
@@ -599,22 +584,18 @@ const Jibun = styled.div`
   ${typo('caption2')};
   color: ${color('grayscale.500')};
 `;
-
 const InfoKey = styled.div`
   ${typo('h3')};
   color: ${color('grayscale.800')};
 `;
-
 const SmallNotice = styled.div`
   ${typo('caption1')};
   color: ${color('grayscale.500')};
 `;
-
 const SmallNoticeGreen = styled.div`
   ${typo('caption1')};
   color: ${color('brand.primary')};
 `;
-
 const fadeUp = keyframes`
   from { transform: translateY(8px); opacity: 0; }
   to   { transform: translateY(0);   opacity: 1; }
@@ -625,13 +606,11 @@ const popBounce = keyframes`
   80%  { transform: scale(0.98) rotate(-1deg); }
   100% { transform: scale(1) rotate(0deg); }
 `;
-
 const SubmitIcon = styled.img`
   width: 90px;
   animation: ${popBounce} 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
   will-change: transform, opacity;
 `;
-
 const SuccessTitle = styled.div`
   ${typo('h3')};
   color: ${color('grayscale.800')};
@@ -643,20 +622,16 @@ const SuccessSub = styled.div`
   text-align: center;
   animation: ${fadeUp} 360ms ease 120ms both;
 `;
-
 const FadeInWrap = styled.div`
   animation: ${fadeUp} 700ms ease both;
   animation-delay: 800ms;
 `;
-
-/* 진행바 */
 const ProgressTrack = styled.div`
   position: relative;
   height: 2px;
   width: 100%;
   background: ${color('grayscale.200')};
 `;
-
 const ProgressFill = styled.div`
   position: absolute;
   top: 0;
@@ -666,13 +641,10 @@ const ProgressFill = styled.div`
   background: ${color('brand.primary')};
   transition: left 220ms ease, width 220ms ease;
 `;
-
-/* 상세 화면의 Segment UI 그대로 이식 */
 const SecTitle = styled.div`
   ${typo('body2')}
   color: ${color('grayscale.700')};
 `;
-
 const Segment = styled.div`
   display: flex;
   align-items: center;
@@ -709,7 +681,6 @@ const SegLabel = styled.div`
   color: ${color('grayscale.800')};
   white-space: nowrap;
 `;
-
 const EtcInput = styled.input`
   margin-top: 4px;
   width: 100%;
@@ -724,8 +695,6 @@ const EtcInput = styled.input`
     color: ${color('grayscale.400')};
   }
 `;
-
-/* 모달 */
 const Dim = styled.div`
   position: fixed;
   inset: 0;
