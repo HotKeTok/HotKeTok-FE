@@ -1,16 +1,15 @@
-// src/templates/landlord/repair/L_RepairHistoryTemplate.jsx
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import TopBar from '../../../components/common/TopBar';
-import ButtonRound from '../../../components/common/ButtonRound';
 import { color, typo } from '../../../styles/tokens';
 import { Column, Row } from '../../../styles/flex';
 import { useNavigate } from 'react-router-dom';
+import { formatCategoryName } from '../../../utils/format';
 
 export default function L_RepairHistoryTemplate({ items = [] }) {
   const navigate = useNavigate();
 
-  // 1) 연도 목록 (내림차순) — items의 schedule에서 연도 추출
+  // 1) 연도 목록 만들기 (내림차순)
   const years = useMemo(() => {
     const ys = Array.from(new Set(items.map(it => extractYear(it.schedule)).filter(Boolean))).sort(
       (a, b) => Number(b) - Number(a)
@@ -18,17 +17,16 @@ export default function L_RepairHistoryTemplate({ items = [] }) {
     return ys.length > 0 ? ys : [String(new Date().getFullYear())];
   }, [items]);
 
-  // 2) 기본 선택 연도: 최신
+  // 2) 기본 선택 연도: 가장 최신 연도
   const [selectedYear, setSelectedYear] = useState(years[0]);
   const [open, setOpen] = useState(false);
 
-  // 3) 선택 연도 필터
+  // 3) 선택된 연도만 필터링
   const filtered = useMemo(
     () => items.filter(it => extractYear(it.schedule) === selectedYear),
     [items, selectedYear]
   );
 
-  // 상세로 이동 (집주인 상세 경로 동일)
   const goDetail = id => navigate(`/repair-progress?id=${encodeURIComponent(id)}`);
 
   return (
@@ -63,17 +61,22 @@ export default function L_RepairHistoryTemplate({ items = [] }) {
         </YearFilter>
       </Header>
 
+      {/* 리스트 */}
       <ListWrap>
         <Column $gap={10}>
           {filtered.map(item => (
             <Card key={item.id} onClick={() => goDetail(item.id)}>
               <Row $justify="space-between" style={{ alignItems: 'flex-start' }}>
                 <div>
-                  <Title>{item.categoryLabel}</Title>
+                  <Title>{formatCategoryName(item.categoryLabel)}</Title>
                   <Meta>{item.schedule}</Meta>
-                  <Price>{comma(item.price)}원</Price>
+                  {item.decisionLater ? (
+                    <Price>상담 후 결정</Price>
+                  ) : (
+                    <Price>{comma(item.price)}원</Price>
+                  )}
                 </div>
-                <ButtonRound text="처리완료" />
+                <StatusBadge>처리 완료</StatusBadge>
               </Row>
             </Card>
           ))}
@@ -107,6 +110,19 @@ const Header = styled.div`
 const TitleH1 = styled.div`
   ${typo('h2')};
   color: black;
+`;
+const StatusBadge = styled.div`
+  ${typo('button3')};
+  color: ${color('white')};
+  border-radius: 30px;
+  border: 1.5px solid rgba(1, 210, 129, 0.3);
+  background: ${color('brand.primary')};
+  display: flex;
+  height: 24px;
+  padding: 0 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 `;
 const YearFilter = styled.div`
   position: relative;

@@ -79,9 +79,23 @@ export default function RequestSummary({ context, address, repairTypes = [] }) {
           <Column $gap={6}>
             <ItemLabel style={{ marginTop: 12 }}>증상 사진</ItemLabel>
             <ThumbRow>
-              {images.map((url, idx) => (
-                <Thumb key={`${url}-${idx}`} style={{ backgroundImage: `url(${url})` }} />
-              ))}
+              {images.map((rawUrl, idx) => {
+                const url = typeof rawUrl === 'string' ? encodeURI(rawUrl) : '';
+                return (
+                  <Thumb key={`${url}-${idx}`}>
+                    <img
+                      src={url}
+                      alt=""
+                      loading="lazy"
+                      onError={e => {
+                        // 깨진 이미지 → 투명 1px로 치환 (흰 박스 방지)
+                        e.currentTarget.src =
+                          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                      }}
+                    />
+                  </Thumb>
+                );
+              })}
             </ThumbRow>
           </Column>
         )}
@@ -132,10 +146,20 @@ const ThumbRow = styled.div`
 `;
 
 const Thumb = styled.div`
-  width: calc((100% - 6px * 3) / 4);
+  position: relative;
+  width: calc((100% - 6px * 3) / 4); /* 4열 유지 */
   aspect-ratio: 1 / 1;
-  background-size: cover;
-  background-position: center;
   border-radius: 6px;
   border: 1px solid ${color('grayscale.200')};
+  background: ${color('grayscale.100')}; /* 로딩 중 배경 */
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 배경 cover와 동일 효과 */
+    display: block;
+    border-radius: 6px;
+  }
 `;
