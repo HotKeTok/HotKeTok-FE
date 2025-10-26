@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import TopBar from '../../../components/common/TopBar';
 import RepairProgressTemplate from '../../../templates/tenant/repair/RepairProgressTemplate';
 import { apiGetRepairDetail } from '../../../api/requestform-service';
+import { apiGetEstimateList } from '../../../api/estimate-service';
 import { getAccessToken } from '../../../utils/auth';
 import { formatYMDWithKoreanTime } from '../../../utils/dateFormat';
 
@@ -20,48 +21,65 @@ function mapPayTypeToMode(payType) {
   return 'SELF'; // 기본: 본인부담
 }
 
+// 견적서 API 응답 → 화면 모델로 매핑
+function mapEstimateToQuote(e) {
+  return {
+    id: e.estimateId,
+    companyName: e.vendorName,
+    avatar: e.vendorProfileImage,
+    phone: e.vendorNumber,
+    content: e.content,
+    price: e.price, // number | null
+    schedule: e.estimateTime, // "2025.10.05 / 오후 08:45"
+  };
+}
+
 export default function RepairProgress() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const id = params.get('id');
+  const requestFormId = params.get('id');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const token = getAccessToken();
 
   useEffect(() => {
-    if (!id) return;
+    if (!requestFormId) return;
     (async () => {
       try {
         setLoading(true);
-        const res = await apiGetRepairDetail(token, id);
-        if (res.success && res.data) {
-          const d = res.data;
 
-          // ✅ status 기반으로 초기 스텝 결정
-          const initialStep = STATUS_TO_STEP[d.status] ?? 1;
-
-          // ✅ 비용 모드 매핑 (RESIDENT → SELF, LANDLORD/PROPRIETORSHIP → LANDLORD)
-          const initialMode = mapPayTypeToMode(d.payType);
-
-          const mapped = {
-            initialStep,
-            initialMode,
-            initialSelectedQuoteId: d.selectedQuoteId ?? null,
-            initialRequest: {
-              categoryLabel: d.category,
-              requestedAt: formatYMDWithKoreanTime(d.requestSchedule),
-              hopeAt: formatYMDWithKoreanTime(d.requestSchedule),
-              address: `${d.currentAddress} ${d.currentNumber || ''}`.trim(),
-              description: d.description,
-              images: d.imagesUrl || [],
-            },
-            initialQuotes: d.quotes || [],
-          };
-
-          setData(mapped);
-        } else {
+        // 1) 개별 수리 건 상세
+        const res = await apiGetRepairDetail(token, requestFormId);
+        if (!res.success || !res.data) {
           setData(null);
+          return;
         }
+        const d = res.data;
+
+        // 2) 견적서 목록 조회
+        const listRes = await apiGetEstimateList(token, requestFormId);
+        const quotes = (listRes?.data ?? []).map(mapEstimateToQuote);
+
+        // 초기 스텝/모드 매핑
+        const initialStep = STATUS_TO_STEP[d.status] ?? 1;
+        const initialMode = mapPayTypeToMode(d.payType);
+
+        const mapped = {
+          initialStep,
+          initialMode,
+          initialSelectedQuoteId: d.selectedQuoteId ?? null,
+          initialRequest: {
+            categoryLabel: d.category,
+            requestedAt: formatYMDWithKoreanTime(d.requestSchedule),
+            hopeAt: formatYMDWithKoreanTime(d.requestSchedule),
+            address: `${d.currentAddress} ${d.currentNumber || ''}`.trim(),
+            description: d.description,
+            images: d.imagesUrl || [],
+          },
+          initialQuotes: quotes,
+        };
+
+        setData(mapped);
       } catch (e) {
         console.error(e);
         setData(null);
@@ -69,7 +87,7 @@ export default function RepairProgress() {
         setLoading(false);
       }
     })();
-  }, [id, token]);
+  }, [requestFormId, token]);
 
   if (loading)
     return (

@@ -1,4 +1,3 @@
-// src/templates/tenant/repair/RepairProgressTemplate.jsx
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Row, Column, Spacer } from '../../../styles/flex';
@@ -16,6 +15,8 @@ import StepMatching from '../../../components/repair/repair-progress/StepMatchin
 import StepCompleted from '../../../components/repair/repair-progress/StepCompleted';
 
 import { formatCategoryName } from '../../../utils/format';
+import { apiSelectEstimate } from '../../../api/estimate-service';
+import { getAccessToken } from '../../../utils/auth';
 
 const COST_MODE = { SELF: 'SELF', LANDLORD: 'LANDLORD' };
 const STEP = { FINDING: 1, CHOOSE: 2, MATCHED: 3, DONE: 4 };
@@ -37,6 +38,20 @@ export default function RepairProgressTemplate({
 
   const isDone = step === STEP.DONE;
   const canProceed = mode !== COST_MODE.LANDLORD && !!selectedQuoteId;
+
+  // 진행 버튼 동작: 본인부담 모드에서만 매칭 API 호출 후 스텝 전환
+  const handleProceed = async () => {
+    if (mode === COST_MODE.SELF && selectedQuoteId) {
+      const token = getAccessToken();
+      const res = await apiSelectEstimate(token, selectedQuoteId);
+      if (!res.success) {
+        alert(res.message || '견적서 선택에 실패했습니다.');
+        return;
+      }
+    }
+    // API 성공(또는 LANDLORD 모드) → 매칭 스텝으로 이동
+    setStep(STEP.MATCHED);
+  };
 
   // 데모 전환용 UI(유지)
   const DemoSwitch = () => (
@@ -106,7 +121,7 @@ export default function RepairProgressTemplate({
             selectedQuoteId={selectedQuoteId}
             setSelectedQuoteId={setSelectedQuoteId}
             canProceed={canProceed}
-            onProceed={() => setStep(STEP.MATCHED)}
+            onProceed={handleProceed}
           />
         )}
 
