@@ -25,12 +25,14 @@ function mapPayTypeToMode(payType) {
 function mapEstimateToQuote(e) {
   return {
     id: e.estimateId,
+    vendorId: e.vendorId,
     companyName: e.vendorName,
     avatar: e.vendorProfileImage,
     phone: e.vendorNumber,
     content: e.content,
     price: e.price, // number | null
     schedule: e.estimateTime, // "2025.10.05 / 오후 08:45"
+    decisionLater: e.decisionLater ?? e.discisionLater ?? false, // ✅ 추가(오타 대비)
   };
 }
 

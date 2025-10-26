@@ -4,8 +4,11 @@ import styled from 'styled-components';
 import ButtonSmall from '../../common/ButtonSmall';
 import RepairDetailRows from '../repair-progress/RepairDetailRows';
 import { color, typo } from '../../../styles/tokens';
+import { useNavigate } from 'react-router-dom';
 
-export default function StepMatching({ mode, selectedQuote, onCancel }) {
+export default function StepMatching({ mode, selectedQuote, hopeAt, onCancel }) {
+  const nav = useNavigate();
+
   if (!selectedQuote) return null;
 
   return (
@@ -19,9 +22,17 @@ export default function StepMatching({ mode, selectedQuote, onCancel }) {
           companyName={selectedQuote.companyName}
           phone={selectedQuote.phone}
           price={selectedQuote.price}
-          schedule={selectedQuote.schedule}
+          schedule={hopeAt}
           content={selectedQuote.content}
           avatar={selectedQuote.avatar}
+          decisionLater={selectedQuote.decisionLater}
+          onCompanyClick={() =>
+            selectedQuote.vendorId &&
+            nav({
+              pathname: '/vendor-profile',
+              search: `?vendorId=${encodeURIComponent(String(selectedQuote.vendorId))}`,
+            })
+          }
         />
       </Body>
     </Wrap>

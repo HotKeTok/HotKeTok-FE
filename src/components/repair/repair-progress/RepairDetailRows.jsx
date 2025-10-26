@@ -2,17 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Row, Column } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
-
-/* =========================
- * 유틸(금액 콤마 찍어주기)
- * ========================= */
-function comma(n) {
-  try {
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  } catch {
-    return n;
-  }
-}
+import { formatNumberWithCommas } from '../../../utils/number';
+import arrowIcon from '../../../assets/repair/icon-chevron.svg';
 
 /**
  * 업체명~내용까지의 정보 행 묶음
@@ -27,10 +18,14 @@ export default function RepairDetailRows({
   schedule, // "YYYY.MM.DD / 오전 12:30" 등 표시 문자열
   content,
   avatar, // 이미지 src
-  arrowIcon, // 화살표 아이콘 src (선택)
-  onCompanyClick, // 업체 영역 클릭 핸들러 (선택)
+  decisionLater,
+  onCompanyClick,
 }) {
-  const displayPrice = typeof price === 'number' ? comma(price) : String(price);
+  const displayPrice = decisionLater
+    ? '상담 후 결정' // ✅ 여기서 문자열 확정
+    : typeof price === 'number'
+    ? formatNumberWithCommas(price) + '원'
+    : String(price) + '원';
 
   return (
     <Block>
@@ -54,7 +49,7 @@ export default function RepairDetailRows({
         {/* 금액 */}
         <Row $justify="space-between">
           <ItemLabel>금액</ItemLabel>
-          <ItemValue>{displayPrice}원</ItemValue>
+          <ItemValue>{displayPrice}</ItemValue> {/* ✅ 변경된 변수 사용 */}
         </Row>
 
         {/* 수리 예정 날짜 */}
