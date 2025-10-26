@@ -13,6 +13,18 @@ function formatPhone(p) {
   return p;
 }
 
+// ✅ URL 안전 처리 (공백/한글/특수문자 포함 경로 안전화)
+function sanitizeUrl(url) {
+  if (!url) return '';
+  try {
+    // 이미 유효한 절대 URL이면 그대로 사용
+    return new URL(url).href;
+  } catch {
+    // 절대 URL이 아니거나 문자가 섞여 실패하면 encodeURI로 보정
+    return encodeURI(String(url));
+  }
+}
+
 export default function MyPage() {
   const accessToken = useAuthStore(s => s.accessToken);
 
@@ -26,6 +38,7 @@ export default function MyPage() {
     phoneNumber: '',
     logInId: '',
     address: '',
+    profileImage: '',
   });
 
   // ✅ 최초 마운트 시 내 정보 + 현재 주소 조회
@@ -49,6 +62,7 @@ export default function MyPage() {
           phoneNumber: formatPhone(info.phoneNumber || ''),
           logInId: info.logInId || '',
           address: info.address || '',
+          profileImage: sanitizeUrl(info.profileImage || ''),
         };
 
         // 2️⃣ 현재 주소 조회
@@ -81,14 +95,17 @@ export default function MyPage() {
       setSaving(true);
       try {
         await updateMyInfo(accessToken, { name: nextName }, imageFile);
-        setUser(prev => ({ ...prev, name: nextName }));
+        // 업로드 후 서버가 새 이미지 URL을 바로 돌려주지 않는다면, 이름만 즉시 반영
+        // 이미지의 경우, 성공 후 fetchMyInfo를 다시 불러오거나 아래처럼 낙관적 반영 가능
+        const nextProfileImage = imageFile ? URL.createObjectURL(imageFile) : user.profileImage;
+        setUser(prev => ({ ...prev, name: nextName, profileImage: nextProfileImage }));
       } catch (e) {
         setError(e);
       } finally {
         setSaving(false);
       }
     },
-    [accessToken]
+    [accessToken, user.profileImage]
   );
 
   return (
