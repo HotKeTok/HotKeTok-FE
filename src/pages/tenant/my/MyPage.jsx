@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import MyPageTemplate from '../../../templates/tenant/my/MyPageTemplate';
 import { useAuthStore } from '../../../store/useAuthStore';
-import { fetchMyInfo, fetchCurrentAddress, updateMyInfo } from '../../../api/user-service';
+import { fetchMyInfo, updateMyInfo } from '../../../api/user-service';
 
 // ✅ 전화번호 하이픈 포맷터
 function formatPhone(p) {
@@ -66,15 +66,7 @@ export default function MyPage() {
         };
 
         // 2️⃣ 현재 주소 조회
-        try {
-          const addrRes = await fetchCurrentAddress(accessToken);
-          const addr = addrRes?.data?.data || {};
-          const displayAddress =
-            addr.currentAddress || addr.address || addr.fullAddress || nextUser.address || '';
-          if (mounted) setUser({ ...nextUser, address: displayAddress });
-        } catch {
-          if (mounted) setUser(nextUser);
-        }
+        if (mounted) setUser(nextUser);
       } catch (err) {
         if (mounted) setError(err);
       } finally {

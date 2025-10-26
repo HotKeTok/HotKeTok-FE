@@ -154,12 +154,15 @@ export default function MyPageTemplate({
 
         <EndSection>
           <Column $gap={30}>
-            <Row $justify="space-between">
-              <Label>주소</Label>
-              <MoveText onClick={moveAddressAdmin}>
-                주소관리 <img src={iconChevron} alt=">" />
-              </MoveText>
-            </Row>
+            <Column $gap={10}>
+              <Row $justify="space-between">
+                <Label>주소</Label>
+                <MoveText onClick={moveAddressAdmin}>
+                  주소관리 <img src={iconChevron} alt=">" />
+                </MoveText>
+              </Row>
+              <CurrentAddress>{user?.address}</CurrentAddress>
+            </Column>
             <Row $justify="space-between">
               <Label>수리내역</Label>
               <MoveText>
