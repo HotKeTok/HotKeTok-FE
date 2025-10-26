@@ -6,6 +6,7 @@ import Button from '../../common/Button';
 import { Row, Column } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
+import { formatNumberWithCommas } from '../../../utils/number';
 
 export default function StepChoosing({
   mode,
@@ -36,15 +37,17 @@ export default function StepChoosing({
               height="auto"
               padding="18px 24px"
             >
-              <Row style={{ alignItems: 'center' }} $gap={10}>
-                <Avatar src={q.avatar} alt="" />
-                <Company>
-                  {q.companyName} <Arrow src={iconChevron} />
-                </Company>
-              </Row>
-              <Phone>{q.phone}</Phone>
-              <Content>{q.content}</Content>
-              <Price>{q.price?.toLocaleString()}원</Price>
+              <Column>
+                <Row style={{ alignItems: 'center', width: '100%' }} $gap={10}>
+                  <Avatar src={q.avatar} alt="" />
+                  <Company>
+                    {q.companyName} <Arrow src={iconChevron} />
+                  </Company>
+                </Row>
+                <Phone>{q.phone}</Phone>
+                <Content>{q.content}</Content>
+                <Price>{formatNumberWithCommas(q.price?.toLocaleString())}원</Price>
+              </Column>
             </ModeItem>
           ))}
         </Column>
@@ -108,6 +111,7 @@ const Content = styled.div`
   margin: 2px 0 10px 0;
 `;
 const Price = styled.div`
+  width: 100%;
   ${typo('subtitle1')}
   color: ${color('grayscale.800')};
   text-align: end;
