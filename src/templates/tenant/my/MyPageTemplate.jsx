@@ -24,14 +24,14 @@ import { useNavigate } from 'react-router-dom';
  * - onChangeCurrentAddress(payload)
  */
 export default function MyPageTemplate({
-  user = { name: '', phoneNumber: '', logInId: '', address: '' },
+  user = { name: '', phoneNumber: '', logInId: '', address: '', profileImage: '' },
   loading = false,
   error = null,
   saving = false,
   onSaveProfile,
 }) {
   const [name, setName] = useState(user?.name || '핫케톡');
-  const [avatar, setAvatar] = useState(AvatarImg);
+  const [avatar, setAvatar] = useState(user?.profileImage || AvatarImg);
   const [avatarFile, setAvatarFile] = useState(null);
 
   // 바텀시트 상태
@@ -41,10 +41,30 @@ export default function MyPageTemplate({
 
   const nav = useNavigate();
 
-  // ✅ API로부터 유저정보 들어오면 UI 반영
+  //  API로부터 유저정보 들어오면 UI 반영
   useEffect(() => {
     if (user?.name) setName(user.name);
   }, [user?.name]);
+
+  //  서버에서 넘어온 프로필 이미지가 바뀌면 즉시 반영
+  useEffect(() => {
+    if (user?.profileImage) {
+      setAvatar(user.profileImage);
+    } else {
+      setAvatar(AvatarImg);
+    }
+  }, [user?.profileImage]);
+
+  //  objectURL 메모리 누수 방지 (파일 미리보기 사용 후 revoke)
+  useEffect(() => {
+    return () => {
+      if (avatarFile && typeof avatar === 'string' && avatar.startsWith('blob:')) {
+        try {
+          URL.revokeObjectURL(avatar);
+        } catch {}
+      }
+    };
+  }, [avatar, avatarFile]);
 
   const openSheet = () => {
     setEditName(name);
@@ -256,6 +276,7 @@ const Avatar = styled.img`
   border-radius: 100px;
   border: 2.5px solid ${color('brand.primary')};
   align-self: center;
+  object-fit: cover;
 `;
 
 const Label = styled.div`
