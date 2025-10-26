@@ -16,6 +16,7 @@ export default function SignIn() {
   const navigate = useNavigate();
   const setRole = useAuthStore(s => s.setRole);
   const setStoreTokens = useAuthStore(s => s.setTokens);
+  const setOnBoardingStageFlag = useAuthStore(s => s.setOnBoardingStageFlag);
 
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ open: false, message: '' });
@@ -27,15 +28,17 @@ export default function SignIn() {
     try {
       setLoading(true);
       const res = await apiLogin({ logInId, password, role });
-      const { jwtToken, role: serverRole, onBoardingStageFlag } = res.data;
+      const { jwtToken, role: serverRole, onBoardingStageFlag, userId } = res.data;
 
       const tokens = {
         accessToken: jwtToken.accessToken,
         refreshToken: jwtToken.refreshToken,
       };
 
+      useAuthStore.getState().setUserId(userId);
       setStoreTokens(tokens); // ✅ Zustand
       setLegacyTokens(tokens); // ✅ utils/auth (HK_ACCESS_TOKEN/REFRESH_TOKEN 동기화)
+      setOnBoardingStageFlag(onBoardingStageFlag);
 
       if (serverRole === 'OWNER') {
         setRole('landlord');
@@ -48,12 +51,11 @@ export default function SignIn() {
         return;
       }
       if (serverRole === 'NONE') {
-        setRole('tenant');
-        if (onBoardingStageFlag) navigate('/welcome', { replace: true }); // ✅ 기존 '/welcome' 유지
+        setRole('none'); // 인증 안된 상태 'none'
+        if (onBoardingStageFlag) navigate('/', { replace: true });
         else navigate('/init-process', { replace: true });
         return;
       }
-
       openToast('알 수 없는 사용자 유형이에요.');
     } catch (e) {
       const status = e?.response?.status;

@@ -33,7 +33,7 @@ export default function StepLandlordWelcome() {
       </ContentWrapCentered>
       <div style={{ padding: '30px 24px' }}>
         <FadeInWrap>
-          <Button text="시작하기" active={showBtn} onClick={() => navigate('/welcome')} />
+          <Button text="시작하기" active={showBtn} onClick={() => navigate('/')} />
         </FadeInWrap>
       </div>
     </PageWrap>

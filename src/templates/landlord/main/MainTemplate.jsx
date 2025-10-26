@@ -6,24 +6,19 @@ import { Page } from '../../../styles/layout';
 import { color, typo } from '../../../styles/tokens';
 import ArrowRight from '../../../assets/common/icon-arrow-right.svg?react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Dropdown from '../../../components/common/DropDown';
 import { DASHBOARD_ITEMS } from '../../../constants/landlord/main';
 import { MAIN_DASHBOARD_ITEMS } from '../../../constants/landlord/main';
+import useUserAddress from '../../../hooks/useUserAddress';
 
-export default function MainTemplate() {
+export default function MainTemplate({ updateCurrentAddress, authRequestCount }) {
+  const { addressList } = useUserAddress();
   const navigate = useNavigate();
   const USER_NAME = '집주인';
 
-  // TODO : 실제 주소 리스트 get
-  const menuItems = [
-    { index: 1, label: '서울특별시 강남구 영동대로 112길 46' },
-    { index: 2, label: '서울특별시 동작구 상도로 369 숭실대학교 일반대학원 웨스트민스터' },
-    { index: 3, label: '서울특별시 강남구 영동대로 112길 46' },
-  ];
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selected, setSelected] = useState(menuItems.find(item => item.index === 1).label);
+  const [selected, setSelected] = useState('');
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -32,9 +27,28 @@ export default function MainTemplate() {
     navigate('/my-page');
   };
 
+  const handleAddressChange = (address, number) => {
+    setSelected(address);
+    updateCurrentAddress(address, number);
+  };
+
+  useEffect(() => {
+    const currAddress = addressList.find(address => address.isCurrent);
+    setSelected(currAddress ? currAddress.address : '주소가 없습니다');
+  }, [addressList]);
+
   const filteredItems = Object.values(DASHBOARD_ITEMS).filter(item =>
     MAIN_DASHBOARD_ITEMS.includes(item.key)
   );
+
+  const menuItems =
+    addressList.length > 0
+      ? addressList.map((address, index) => ({
+          index: index + 1,
+          label: address.address,
+          number: address.number,
+        }))
+      : [{ index: 1, label: '주소가 없습니다' }];
 
   return (
     <Page>
@@ -68,7 +82,7 @@ export default function MainTemplate() {
           toggleDropdown={toggleMenu}
           closeDropdown={closeMenu}
           selected={selected}
-          setSelected={setSelected}
+          setSelected={handleAddressChange}
           items={menuItems}
         />
 
@@ -81,13 +95,12 @@ export default function MainTemplate() {
               <Button
                 key={index}
                 onClick={() => navigate(item.route)}
-                style={{ backgroundColor: item.backgroundColor }}
+                style={{ background: item.background }}
               >
-                <Row $gap={14}>
+                <Row $gap={14} style={{ height: '100%' }}>
                   <TextWrapper>
                     <Title>{item.text}</Title>
-                    {/* description이 true일 때만 특정 텍스트를 보여주는 로직 (예시) */}
-                    {item.description && <Description>3건 진행중</Description>}
+                    {item.description && <Description>요청 {authRequestCount}건</Description>}
                   </TextWrapper>
                   <Column $justify={'center'} style={{ height: 38, width: 20, cursor: 'pointer' }}>
                     <StyleArrowRight width={7} height={11} stroke="#565656" />
@@ -106,7 +119,6 @@ export default function MainTemplate() {
 }
 
 const Content = styled.div`
-  flex: 1;
   background: #fff;
   padding: 24px;
   padding-top: 6px;
@@ -158,6 +170,8 @@ const Button = styled.button`
   width: 166px;
   height: 140px;
 
+  position: relative;
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -166,6 +180,11 @@ const Button = styled.button`
 
 const TextWrapper = styled.div`
   width: 80%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const Title = styled.div`
@@ -174,13 +193,26 @@ const Title = styled.div`
   word-break: keep-all;
 `;
 
-const Description = styled.p`
-  font-size: 14px;
-  color: #868e96;
-  margin: 0;
+const Description = styled.div`
+  max-width: 65%;
+  background: #fff;
+  padding: 3px 8px;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  ${typo('button3')};
+  color: ${color('brand.primary')};
+
+  border-radius: 30px;
 `;
 
 const Icon = styled.div`
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+
   width: 50px;
   height: 50px;
   align-self: flex-end; // 아이콘을 오른쪽 아래로

@@ -14,23 +14,33 @@ import { formatNumberWithCommas } from '../../../utils/number';
 
 /**
  * @function MainTemplate
- * @param {string} address - 사용자 주소
- * @param {object} utilityBill - 공과금 정보
- * @param {object} commonBill - 공동 관리비 정보
  * @returns
  */
-export default function MainTemplate({ address, utilityBill, commonBill, noticeList }) {
+export default function MainTemplate({
+  utilityBill,
+  noticeList,
+  addressList,
+  updateCurrentAddress,
+  commonBillTotal,
+}) {
   const navigate = useNavigate();
+  const currentAddress = addressList
+    ? addressList.find(item => item.isCurrent)
+    : '주소가 설정되지 않았습니다.';
 
   return (
     <Page>
       <ColorBackground>
         <PageHeader
           isLightVersion={true}
-          leftComponent={<SelectHome homeTitle="우리집" isLightVersion={true} />}
+          leftComponent={
+            <SelectHome addresses={addressList} onSelectAddress={updateCurrentAddress} />
+          }
         />
         <Content>
-          <H3 style={{ color: '#fff', marginBottom: 16 }}>{address}</H3>
+          <H3 style={{ color: '#fff', marginBottom: 16 }}>
+            {currentAddress?.address} {currentAddress?.number}
+          </H3>
 
           <Row $justify={'flex-end'} style={{ marginBottom: 4 }}>
             <Row
@@ -51,7 +61,7 @@ export default function MainTemplate({ address, utilityBill, commonBill, noticeL
 
           <Row $justify={'space-between'}>
             <Subtitle1 style={{ color: '#fff' }}>공동 관리비</Subtitle1>
-            <H3 style={{ color: '#fff' }}>{formatNumberWithCommas(commonBill)}원</H3>
+            <H3 style={{ color: '#fff' }}>{formatNumberWithCommas(commonBillTotal)}원</H3>
           </Row>
         </Content>
       </ColorBackground>
@@ -86,7 +96,7 @@ const BottomContent = styled(Column)`
   border-radius: 30px 30px 0 0;
   background: #fff;
 
-  height: 70vh; // 높이를 정확히 명시
+  height: 60vh; // 높이를 정확히 명시
   padding-bottom: ${BOTTOM_BAR_HEIGHT}; // 바텀바 높이만큼 하단 패딩
   overflow-y: scroll; // scroll
 `;

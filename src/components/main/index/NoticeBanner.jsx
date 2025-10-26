@@ -13,13 +13,8 @@ export default function NoticeBanner({ noticeList }) {
   };
 
   return (
-    <Container $gap={10}>
-      <Row
-        $align={'center'}
-        $justify={'space-between'}
-        style={{ cursor: 'pointer' }}
-        onClick={handleBannerClick}
-      >
+    <Container $gap={10} onClick={handleBannerClick}>
+      <Row $align={'center'} $justify={'space-between'}>
         <H3>공지사항</H3>
         <ArrowRightStyled style={{ width: 6, height: 7 }} />
       </Row>
@@ -46,6 +41,8 @@ const Container = styled(Column)`
   border-radius: 2rem;
   background: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  cursor: pointer;
 `;
 
 const H3 = styled.div`

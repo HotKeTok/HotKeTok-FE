@@ -1,8 +1,6 @@
 import styled, { css } from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
 
-// Import your icons
 import HomeIcon from '../../assets/common/icon-home.svg?react';
 import CommunicationIcon from '../../assets/common/icon-communication.svg?react';
 import RepairIcon from '../../assets/common/icon-repair.svg?react';
@@ -16,10 +14,9 @@ import MyIconActive from '../../assets/common/icon-my-active.svg?react';
 
 import { typo, color } from '../../styles/tokens';
 import { BOTTOM_BAR_HEIGHT } from '../../styles/layout';
-import BottomSheet from './BottomSheet';
-import AuthModal from '../main/index/AuthModal';
 
 const Nav = styled.nav`
+  position: relative;
   width: 100%;
   height: ${BOTTOM_BAR_HEIGHT};
   display: flex;
@@ -52,56 +49,62 @@ const NavItem = styled(Link)`
   }
 `;
 
+const navItems = [
+  {
+    to: '/',
+    label: '홈',
+    Icon: HomeIcon,
+    ActiveIcon: HomeIconActive,
+    isActive: pathname => pathname === '/' || pathname.startsWith('/main'),
+    roles: ['landlord', 'tenant'],
+  },
+  {
+    to: '/repair',
+    label: '뚝딱',
+    Icon: RepairIcon,
+    ActiveIcon: RepairIconActive,
+    roles: ['landlord', 'tenant'],
+  },
+  {
+    to: '/admin',
+    label: '관리',
+    Icon: AdminIcon,
+    ActiveIcon: AdminIconActive,
+    roles: ['landlord'],
+  },
+  {
+    to: '/communication',
+    label: '똑똑',
+    Icon: CommunicationIcon,
+    ActiveIcon: CommunicationIconActive,
+    roles: ['tenant'],
+  },
+  {
+    to: '/my-page',
+    label: '마이',
+    Icon: MyIcon,
+    ActiveIcon: MyIconActive,
+    roles: ['landlord', 'tenant'],
+  },
+];
+
 export default function NavBar({ currentRole }) {
-  const [open, setOpen] = useState(false);
-  const address = '서울특별시 강남구 영동대로 112길 46'; // TODO: 유저 주소로 변경
   const { pathname } = useLocation();
 
-  // Define active states for clarity
-  const isHomeActive = pathname === '/' || pathname === '/welcome' || pathname.startsWith('/main');
-  const isRepairActive = pathname.startsWith('/repair');
-  const isAdminActive = pathname.startsWith('/admin');
-  const isCommunicationActive = pathname.startsWith('/communication');
-  const isMyPageActive = pathname.startsWith('/my-page');
+  const visibleNavItems = navItems.filter(item => item.roles.includes(currentRole));
 
-  return (
-    <Nav>
-      <BottomSheet
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        height="260px"
-        children={<AuthModal address={address} />}
-      />
+  const renderNavItems = () =>
+    visibleNavItems.map(({ to, label, Icon, ActiveIcon, isActive }) => {
+      const active = isActive ? isActive(pathname) : pathname.startsWith(to);
+      const IconComponent = active ? ActiveIcon : Icon;
 
-      <NavItem to="/" $active={isHomeActive} $role={currentRole}>
-        {isHomeActive ? <HomeIconActive /> : <HomeIcon />}홈
-      </NavItem>
-
-      <NavItem to="/repair" $active={isRepairActive} $role={currentRole}>
-        {isRepairActive ? <RepairIconActive /> : <RepairIcon />}
-        뚝딱
-      </NavItem>
-
-      {currentRole === 'landlord' && (
-        <NavItem to="/admin" $active={isAdminActive} $role={currentRole}>
-          {isAdminActive ? <AdminIconActive /> : <AdminIcon />}
-          관리
+      return (
+        <NavItem key={to} to={to} $active={active} $role={currentRole}>
+          <IconComponent />
+          {label}
         </NavItem>
-      )}
+      );
+    });
 
-      {currentRole === 'tenant' ? (
-        <NavItem to="/communication" $active={isCommunicationActive} $role={currentRole}>
-          {isCommunicationActive ? <CommunicationIconActive /> : <CommunicationIcon />}
-          똑똑
-        </NavItem>
-      ) : (
-        <></>
-      )}
-
-      <NavItem to="/my-page" $active={isMyPageActive} $role={currentRole}>
-        {isMyPageActive ? <MyIconActive /> : <MyIcon />}
-        마이
-      </NavItem>
-    </Nav>
-  );
+  return <Nav>{renderNavItems()}</Nav>;
 }
