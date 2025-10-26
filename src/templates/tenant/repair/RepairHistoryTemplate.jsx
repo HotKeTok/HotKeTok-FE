@@ -4,6 +4,7 @@ import TopBar from '../../../components/common/TopBar';
 import { color, typo } from '../../../styles/tokens';
 import { Column, Row } from '../../../styles/flex';
 import { useNavigate } from 'react-router-dom';
+import { formatCategoryName } from '../../../utils/format';
 
 export default function RepairHistoryTemplate({ items = [] }) {
   const navigate = useNavigate();
@@ -67,9 +68,13 @@ export default function RepairHistoryTemplate({ items = [] }) {
             <Card key={item.id} onClick={() => goDetail(item.id)}>
               <Row $justify="space-between" style={{ alignItems: 'flex-start' }}>
                 <div>
-                  <Title>{item.categoryLabel}</Title>
+                  <Title>{formatCategoryName(item.categoryLabel)}</Title>
                   <Meta>{item.schedule}</Meta>
-                  <Price>{comma(item.price)}원</Price>
+                  {item.decisionLater ? (
+                    <Price>상담 후 결정</Price>
+                  ) : (
+                    <Price>{comma(item.price)}원</Price>
+                  )}
                 </div>
                 <StatusBadge>처리 완료</StatusBadge>
               </Row>

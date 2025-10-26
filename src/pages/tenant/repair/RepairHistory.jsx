@@ -27,6 +27,7 @@ export default function RepairHistory() {
           schedule: formatYMDWithKoreanTime(r.requestSchedule),
           price: r.estimatePrice ?? 0,
           room: r.number || '',
+          decisionLater: r.decisionLater === true,
         }));
 
         setItems(mapped);

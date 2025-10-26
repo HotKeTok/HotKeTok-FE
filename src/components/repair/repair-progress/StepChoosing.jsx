@@ -10,7 +10,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function StepChoosing({
   mode,
-  isLandlordView = false, // ✅ 추가
+  isLandlordView = false,
+  landlordCanSelect = false,
   quotes,
   selectedQuoteId,
   setSelectedQuoteId,
@@ -28,7 +29,9 @@ export default function StepChoosing({
     });
   };
 
-  const allowSelect = isLandlordView || mode === 'SELF'; // ✅ 집주인은 선택 가능
+  // 집주인: landlordCanSelect일 때만 선택 가능
+  // 입주민: SELF일 때만 선택 가능(기존과 동일)
+  const allowSelect = isLandlordView ? landlordCanSelect : mode === 'SELF';
 
   return (
     <Wrap>
