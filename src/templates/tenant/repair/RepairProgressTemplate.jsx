@@ -27,6 +27,7 @@ export default function RepairProgressTemplate({
   initialRequest,
   initialQuotes,
   isLandlordView = false, // ✅ 집주인 화면 여부
+  landlordCanSelect = false,
 } = {}) {
   const [mode] = useState(initialMode ?? COST_MODE.SELF);
   const [step, setStep] = useState(initialStep ?? STEP.FINDING);
@@ -38,12 +39,19 @@ export default function RepairProgressTemplate({
 
   const isDone = step === STEP.DONE;
 
-  // ✅ 집주인 뷰이거나(=LANDLORD가 선택 권한), 입주민 뷰에서 SELF일 때만 진행 가능
-  const canProceed = !!selectedQuoteId && (isLandlordView || mode !== COST_MODE.LANDLORD);
+  const canProceed =
+    !!selectedQuoteId &&
+    ((isLandlordView && landlordCanSelect) || (!isLandlordView && mode !== COST_MODE.LANDLORD));
 
   // ✅ 권한 있으면 항상 선택 API 호출
   const handleProceed = async () => {
-    if (!canProceed) return;
+    if (!canProceed) {
+      // 선택 권한 없음 안내(선택)
+      if (isLandlordView && !landlordCanSelect) {
+        alert('집주인 부담 건이 아닙니다. 견적서 선택 권한이 없습니다.');
+      }
+      return;
+    }
     const token = getAccessToken();
     const res = await apiSelectEstimate(token, selectedQuoteId);
     if (!res.success) {
@@ -106,7 +114,8 @@ export default function RepairProgressTemplate({
         {step === STEP.CHOOSE && (
           <StepChoosing
             mode={isLandlordView ? COST_MODE.LANDLORD : mode}
-            isLandlordView={isLandlordView} // ✅ 전달
+            isLandlordView={isLandlordView}
+            landlordCanSelect={landlordCanSelect}
             quotes={quotes}
             selectedQuoteId={selectedQuoteId}
             setSelectedQuoteId={setSelectedQuoteId}

@@ -57,7 +57,7 @@ const Card = styled.div`
 `;
 const StickyFooter = styled.div`
   position: sticky;
-  bottom: 10px;
+  bottom: 0px;
   background: #fff;
   padding: 12px 24px 18px;
 `;
