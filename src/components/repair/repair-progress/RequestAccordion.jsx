@@ -8,29 +8,32 @@ export default function RequestAccordion({ request, mode }) {
   const [open, setOpen] = useState(true);
 
   return (
-    <Accordion>
-      <AccordionHeader onClick={() => setOpen(o => !o)}>
-        <AccordionTitle>요청서</AccordionTitle>
-        <Chevron $open={open} />
-      </AccordionHeader>
+    <>
+      <div style={{ height: '10px', backgroundColor: '#F5F6F6' }} />
+      <Accordion>
+        <AccordionHeader onClick={() => setOpen(o => !o)}>
+          <AccordionTitle>요청서</AccordionTitle>
+          <Chevron $open={open} />
+        </AccordionHeader>
 
-      <Collapsible isOpen={open}>
-        <AccordionBody>
-          <RequestSummary
-            context={{
-              typeKey: 'etc',
-              fullDateLabel: request?.hopeAt, // 완성된 문자열 그대로
-              payer: mode === 'SELF' ? 'me' : 'landlord',
-              images: request?.images || [],
-              desc: request?.description || '',
-              useAI: false,
-            }}
-            address={request?.address || ''}
-            repairTypes={[{ key: 'etc', label: request?.categoryLabel || '기타' }]}
-          />
-        </AccordionBody>
-      </Collapsible>
-    </Accordion>
+        <Collapsible isOpen={open}>
+          <AccordionBody>
+            <RequestSummary
+              context={{
+                typeKey: 'etc',
+                fullDateLabel: request?.hopeAt, // 완성된 문자열 그대로
+                payer: mode === 'SELF' ? 'me' : 'landlord',
+                images: request?.images || [],
+                desc: request?.description || '',
+                useAI: false,
+              }}
+              address={request?.address || ''}
+              repairTypes={[{ key: 'etc', label: request?.categoryLabel || '기타' }]}
+            />
+          </AccordionBody>
+        </Collapsible>
+      </Accordion>
+    </>
   );
 }
 
@@ -73,7 +76,6 @@ function Collapsible({ isOpen, children, className }) {
 
 /* ===== styles: 컴포넌트화 이전 스타일과 동일하게 복구 ===== */
 const Accordion = styled.div`
-  margin-top: 10px;
   background: #fff;
   overflow: hidden; /* 모서리/애니메이션 시 내용 튀어나옴 방지 */
 `;
