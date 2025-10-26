@@ -31,6 +31,7 @@ export default function BillsTemplate({
   commonBillDetail,
   fetchCommonBillsDetail,
   loading,
+  modalLoading,
 }) {
   const scrollRef = useRef(null);
 
@@ -77,7 +78,7 @@ export default function BillsTemplate({
       {/* 공통 바텀시트 */}
       <BottomSheet isOpen={modal} onClose={() => setModal(false)} height={'90%'}>
         <ModalBillDetail
-          loading={loading}
+          loading={modalLoading}
           year={year}
           month={activeTab === '공과금' ? selectedUtilityBill?.month : commonBillDetail?.month}
           utilityBillData={selectedUtilityBill}
@@ -87,56 +88,60 @@ export default function BillsTemplate({
         />
       </BottomSheet>
 
-      <ScrollableContent
-        ref={scrollRef}
-        style={{ height: `calc(100vh - ${TOP_BAR_HEIGHT} - 40px)` }}
-      >
-        <Content>
-          <Row $align="flex-end" $justify="space-between" style={{ marginBottom: 20 }}>
-            <Column $gap={4} $align="flex-start" style={{ marginBottom: 10 }}>
-              {billList && (
-                <>
-                  <Date>{LATEST_DATE}</Date>
-                  <MainCost>{won(LATEST_COST)}</MainCost>
-                </>
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '20px' }}>데이터를 불러오는 중입니다..</div>
+      ) : (
+        <ScrollableContent
+          ref={scrollRef}
+          style={{ height: `calc(100vh - ${TOP_BAR_HEIGHT} - 40px)` }}
+        >
+          <Content>
+            <Row $align="flex-end" $justify="space-between" style={{ marginBottom: 20 }}>
+              <Column $gap={4} $align="flex-start" style={{ marginBottom: 10 }}>
+                {billList && (
+                  <>
+                    <Date>{LATEST_DATE}</Date>
+                    <MainCost>{won(LATEST_COST)}</MainCost>
+                  </>
+                )}
+              </Column>
+              {activeTab === '공동 관리비' && (
+                <ListHeader>
+                  <YearSelect value={year} onChange={setYear} years={userYears} />
+                </ListHeader>
               )}
-            </Column>
-            {activeTab === '공동 관리비' && (
-              <ListHeader>
-                <YearSelect value={year} onChange={setYear} years={userYears} />
-              </ListHeader>
-            )}
-          </Row>
+            </Row>
 
-          {activeTab === '공과금' && (
-            <>
-              <GraphUtilityBills year={year} />
-              <ListHeader style={{ marginBottom: 10 }}>
-                <YearSelect value={year} onChange={setYear} years={userYears} />
-              </ListHeader>
-            </>
-          )}
-
-          <List>
-            {sorted.length !== 0 ? (
-              sorted.map(item => (
-                <MonthBillsItem
-                  key={`${year}-${item.month}`}
-                  year={year}
-                  item={item}
-                  monthsLabel={monthsLabel}
-                  won={won}
-                  onClick={() => handleOpenDetailModal(year, item.month)}
-                />
-              ))
-            ) : (
-              <Row $justify="center" style={{ marginTop: 50 }}>
-                {year}년 내역이 없습니다.
-              </Row>
+            {activeTab === '공과금' && (
+              <>
+                <GraphUtilityBills year={year} />
+                <ListHeader style={{ marginBottom: 10 }}>
+                  <YearSelect value={year} onChange={setYear} years={userYears} />
+                </ListHeader>
+              </>
             )}
-          </List>
-        </Content>
-      </ScrollableContent>
+
+            <List>
+              {sorted.length !== 0 ? (
+                sorted.map(item => (
+                  <MonthBillsItem
+                    key={`${year}-${item.month}`}
+                    year={year}
+                    item={item}
+                    monthsLabel={monthsLabel}
+                    won={won}
+                    onClick={() => handleOpenDetailModal(year, item.month)}
+                  />
+                ))
+              ) : (
+                <Row $justify="center" style={{ marginTop: 50 }}>
+                  {year}년 내역이 없습니다.
+                </Row>
+              )}
+            </List>
+          </Content>
+        </ScrollableContent>
+      )}
     </Wrapper>
   );
 }

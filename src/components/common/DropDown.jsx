@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { typo, color } from '../../styles/tokens';
 import ArrowUp from '../../assets/common/icon-arrow-up.svg?react';
 
@@ -47,7 +47,7 @@ const Dropdown = ({
     // 만약 items가 문자열 배열이라면 item을 그대로 사용하면 됩니다.
     const selectedItem = items.find(item => item.label === value);
     if (selectedItem) {
-      setSelected(selectedItem); // 부모의 상태 업데이트
+      setSelected(selectedItem.label); // 부모의 상태 업데이트
     }
     closeDropdown(); // 메뉴 닫기
   };
@@ -62,9 +62,13 @@ const Dropdown = ({
 
       <Menu isOpen={isOpen} style={menuStyle}>
         {items.map((item, index) => (
-          // handleItemClick에 item.label을 전달합니다.
-          <MenuItem key={index} onClick={() => handleItemClick(item.label)}>
+          <MenuItem
+            key={index}
+            onClick={() => handleItemClick(item.label, item.number)}
+            isSelected={selected == item.label}
+          >
             {item.label}
+            {item.number ? ` (${item.number})` : ''}
           </MenuItem>
         ))}
       </Menu>
@@ -129,4 +133,10 @@ const MenuItem = styled.a`
   &:hover {
     background-color: ${color('grayscale.200')};
   }
+  ${props =>
+    props.isSelected
+      ? css`
+          background-color: ${color('grayscale.300')};
+        `
+      : ''}
 `;

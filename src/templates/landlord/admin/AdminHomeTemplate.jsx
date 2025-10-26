@@ -12,10 +12,6 @@ import ArrowRight from '../../../assets/common/icon-arrow-right.svg?react';
 export default function AdminHomeTemplate({ noticeList }) {
   const navigate = useNavigate();
 
-  // const filteredItems = Object.values(DASHBOARD_ITEMS).filter(item =>
-  //   ADMIN_DASHBOARD_ITEMS.includes(item.key)
-  // );
-
   const filteredItems = ADMIN_DASHBOARD_ITEMS.map(key =>
     Object.values(DASHBOARD_ITEMS).find(item => item.key === key)
   );
@@ -34,7 +30,7 @@ export default function AdminHomeTemplate({ noticeList }) {
               <Button
                 key={index}
                 onClick={() => navigate(item.route)}
-                style={{ backgroundColor: item.backgroundColor }}
+                style={{ background: item.background }}
               >
                 <Row $gap={14}>
                   <TextWrapper>
@@ -72,30 +68,10 @@ const Subtitle1 = styled.div`
 `;
 
 const DashboardContainer = styled.div`
+  width: 100%;
   margin-top: 16px;
   display: grid;
   gap: 10px;
-
-  // 2개의 컬럼을 정의합니다.
-  grid-template-columns: repeat(2, 1fr);
-
-  // 그리드 레이아웃의 '지도'를 그립니다.
-  // 1행: item-1, item-2
-  // 2행: item-3 이 두 칸을 모두 차지
-  grid-template-areas:
-    'item-1 item-2'
-    'item-3 item-3';
-
-  // 각 자식 요소를 그려진 지도 위의 이름에 할당합니다.
-  & > *:nth-child(1) {
-    grid-area: item-1;
-  }
-  & > *:nth-child(2) {
-    grid-area: item-2;
-  }
-  & > *:nth-child(3) {
-    grid-area: item-3;
-  }
 `;
 
 const Button = styled.button`

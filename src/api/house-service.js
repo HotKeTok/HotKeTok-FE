@@ -79,3 +79,34 @@ export async function rejectTenant(houseId, body = {}) {
   const { data } = await api.post(`/house-service/tenant-reject/${houseId}`, body);
   return { success: isOk(data), data: data?.data ?? null, message: data?.message ?? '' };
 }
+
+// GET 주소 리스트 조회
+export async function getAddressList() {
+  const { data } = await api.get('/house-service/house-list');
+  return {
+    success: data.success,
+    status: data.status,
+    data: data?.data ?? [],
+  };
+}
+
+// GET 입주민 상세 조회
+export async function getTenantDetail(houseNumber) {
+  const { data } = await api.get(`/house-service/tenant-info?number=${houseNumber}`);
+  return {
+    success: isOk(data),
+    data: data?.data ?? null,
+    message: data?.message ?? '',
+  };
+}
+
+// PATCH 입주민 정보 수정
+export async function patchTenantInfo(payload = {}) {
+  const { data } = await api.patch('house-service/tenant-info/change', payload);
+  console.log(data);
+  return {
+    success: isOk(data),
+    data: data?.data ?? null,
+    message: data?.message ?? '',
+  };
+}

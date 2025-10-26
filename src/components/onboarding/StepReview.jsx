@@ -112,7 +112,7 @@ export default function StepReview({ baseAddress, floor, ho, requesting, onReque
 
       <div style={{ padding: '30px 24px' }}>
         <FadeInWrap $show={showDoneBtn}>
-          <Button text="완료하기" active={showDoneBtn} onClick={() => navigate('/welcome')} />
+          <Button text="완료하기" active={showDoneBtn} onClick={() => navigate('/')} />
         </FadeInWrap>
       </div>
     </PageWrap>

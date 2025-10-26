@@ -3,7 +3,9 @@ import styled from 'styled-components';
 import { Column } from '../../../styles/flex';
 import { AUTH_TEXT } from '../../../constants/tenant/main';
 
-export default function AddressBox({ address }) {
+export default function AddressBox({ address, currentRole }) {
+  if (!address) return null;
+
   return (
     <Container $gap={10}>
       <Subtitle1>{address}</Subtitle1>
