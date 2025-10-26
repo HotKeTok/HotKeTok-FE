@@ -64,7 +64,7 @@ export default function RepairProgressTemplate({
   return (
     <PageWithoutBottomBar>
       <TopBar title={isDone ? '완료된 수리' : '진행중인 수리'} />
-      <ScrollableNoBottomBarContent>
+      <ScrollableNoBottomBarContent style={{ backgroundColor: '#fff' }}>
         {/* 상단 상태 + 스텝 인디케이터 */}
         <WhiteSection>
           <Row $justify="space-between" style={{ marginBottom: '15px' }}>

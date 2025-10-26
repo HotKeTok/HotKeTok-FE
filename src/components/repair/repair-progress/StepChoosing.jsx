@@ -34,71 +34,73 @@ export default function StepChoosing({
   const allowSelect = isLandlordView ? landlordCanSelect : mode === 'SELF';
 
   return (
-    <Wrap>
-      <Header>
-        <Title>받은 견적</Title>
-        <Desc>
-          {quotes.length}개 업체에서 견적서를 보내왔어요.
-          <br />
-          수리를 진행할 업체를 선택해 주세요.
-        </Desc>
-      </Header>
+    <>
+      <div style={{ height: '10px', backgroundColor: '#F5F6F6' }} />
+      <Wrap>
+        <Header>
+          <Title>받은 견적</Title>
+          <Desc>
+            {quotes.length}개 업체에서 견적서를 보내왔어요.
+            <br />
+            수리를 진행할 업체를 선택해 주세요.
+          </Desc>
+        </Header>
 
-      <Body>
-        <Column $gap={10}>
-          {quotes.map(q => (
-            <ModeItem
-              key={q.id}
-              selected={selectedQuoteId === q.id}
-              onClick={() => (allowSelect ? setSelectedQuoteId(q.id) : null)} // ✅ 선택 허용
-              height="auto"
-              padding="18px 24px"
-            >
-              <Column>
-                <Row>
-                  <Row
-                    $gap={10}
-                    style={{ cursor: q.vendorId ? 'pointer' : 'default' }}
-                    onClick={e => goVendor(e, q.vendorId)}
-                  >
-                    <Avatar src={q.avatar} alt="" />
-                    <Company>
-                      {q.companyName} <Arrow src={iconChevron} />
-                    </Company>
+        <Body>
+          <Column $gap={10}>
+            {quotes.map(q => (
+              <ModeItem
+                key={q.id}
+                selected={selectedQuoteId === q.id}
+                onClick={() => (allowSelect ? setSelectedQuoteId(q.id) : null)} // ✅ 선택 허용
+                height="auto"
+                padding="18px 24px"
+              >
+                <Column>
+                  <Row>
+                    <Row
+                      $gap={10}
+                      style={{ cursor: q.vendorId ? 'pointer' : 'default' }}
+                      onClick={e => goVendor(e, q.vendorId)}
+                    >
+                      <Avatar src={q.avatar} alt="" />
+                      <Company>
+                        {q.companyName} <Arrow src={iconChevron} />
+                      </Company>
+                    </Row>
                   </Row>
-                </Row>
-                <Phone>{q.phone}</Phone>
-                <Content>{q.content}</Content>
-                <Price>
-                  {q.decisionLater
-                    ? '상담 후 결정'
-                    : (typeof q.price === 'number' ? formatNumberWithCommas(q.price) : q.price) +
-                      '원'}
-                </Price>
-              </Column>
-            </ModeItem>
-          ))}
-        </Column>
-        <Footer>
-          <Button
-            active={canProceed} // ✅ 부모 계산값 사용
-            onClick={onProceed}
-            text={
-              isLandlordView
-                ? '견적서 선택'
-                : mode === 'LANDLORD'
-                ? '집주인이 선택합니다'
-                : '견적서 선택'
-            }
-          />
-        </Footer>
-      </Body>
-    </Wrap>
+                  <Phone>{q.phone}</Phone>
+                  <Content>{q.content}</Content>
+                  <Price>
+                    {q.decisionLater
+                      ? '상담 후 결정'
+                      : (typeof q.price === 'number' ? formatNumberWithCommas(q.price) : q.price) +
+                        '원'}
+                  </Price>
+                </Column>
+              </ModeItem>
+            ))}
+          </Column>
+          <Footer>
+            <Button
+              active={canProceed} // ✅ 부모 계산값 사용
+              onClick={onProceed}
+              text={
+                isLandlordView
+                  ? '견적서 선택'
+                  : mode === 'LANDLORD'
+                  ? '집주인이 선택합니다'
+                  : '견적서 선택'
+              }
+            />
+          </Footer>
+        </Body>
+      </Wrap>
+    </>
   );
 }
 
 const Wrap = styled.div`
-  margin-top: 10px;
   background: #fff;
 `;
 const Header = styled.div`
