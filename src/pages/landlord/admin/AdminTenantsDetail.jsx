@@ -10,21 +10,21 @@ export default function AdminTenantsDetail() {
   const tenantNumber = params.id;
   const [tenantInfo, setTenantInfo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ open: false, message: '' });
 
   // todo : 입주민 정보 수정 api
   const updateTenantInfo = async (tenantNumber, updatedInfo) => {
     try {
-      console.log('입주민 정보 수정 요청:', tenantNumber, updatedInfo);
       const response = await patchTenantInfo({
         number: tenantNumber,
         tenantMemo: updatedInfo.houseMemo,
       });
-      console.log('입주민 정보 수정 성공:', response);
       if (response.success) {
         setTenantInfo(prev => ({
           ...prev,
           houseMemo: updatedInfo.houseMemo,
         }));
+        setToast({ open: true, message: '입주민 메모가 편집되었어요.' });
       }
     } catch (error) {
       console.error('입주민 정보 수정 실패:', error);
@@ -62,6 +62,8 @@ export default function AdminTenantsDetail() {
       tenantNumber={tenantNumber}
       tenantInfo={tenantInfo}
       updateTenantInfo={updateTenantInfo}
+      toast={toast}
+      setToast={setToast}
     />
   );
 }

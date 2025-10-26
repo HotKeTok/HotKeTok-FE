@@ -15,8 +15,15 @@ import { Column, Row } from '../../../styles/flex';
 import ProfileDefault from '../../../assets/common/icon-profile-default.svg?react';
 import { useNavigate } from 'react-router-dom';
 import { formatPhoneNumber } from '../../../utils/number';
+import Toast from '../../../components/common/Toast';
 
-export default function AdminTenantsDetailTemplate({ tenantNumber, tenantInfo, updateTenantInfo }) {
+export default function AdminTenantsDetailTemplate({
+  tenantNumber,
+  tenantInfo,
+  updateTenantInfo,
+  setToast,
+  toast,
+}) {
   const [deleteModal, setDeleteModal] = useState(false);
   const [callModal, setCallModal] = useState(false);
   const [memo, setMemo] = useState(tenantInfo?.houseMemo || '');
@@ -137,6 +144,13 @@ export default function AdminTenantsDetailTemplate({ tenantNumber, tenantInfo, u
         <ButtonSmall text="전화하기" width="48%" height={50} onClick={() => setCallModal(true)} />
         <Button text="1:1 채팅하기" width="48%" height={50} />
       </BottomButtonContainer>
+      <Toast
+        show={toast.open}
+        message={toast.message}
+        onClose={() => {
+          setToast({ open: false, message: '' });
+        }}
+      />
     </>
   );
 }
