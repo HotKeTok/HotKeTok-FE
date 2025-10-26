@@ -74,3 +74,26 @@ export async function apiGetReviewWriteStatus({ vendorId }) {
     message: data?.message ?? '',
   };
 }
+
+/** GET : 주소 기준으로 입주민 후기 목록 조회 */
+export async function apiGetAddressReviews() {
+  const token = getAccessToken?.();
+  const { data } = await api.get('/review-service/address', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  const success =
+    data?.success === true ||
+    data?.isSuccess === true ||
+    data?.status === 200 ||
+    data?.code === 'COMMON200';
+
+  // 서버 명세: data.reviews: [...]
+  const reviews = data?.data?.reviews ?? data?.result?.reviews ?? data?.data ?? [];
+
+  return {
+    success,
+    data: { reviews: Array.isArray(reviews) ? reviews : [] },
+    message: data?.message ?? '',
+  };
+}

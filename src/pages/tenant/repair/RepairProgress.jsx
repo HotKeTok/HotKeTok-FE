@@ -11,7 +11,7 @@ import { formatYMDWithKoreanTime } from '../../../utils/dateFormat';
 const STATUS_TO_STEP = {
   SEARCHING: 1, // 업체 찾는 중
   CHOOSING: 2, // 견적서 선택
-  MATCHED: 3, // 업체 매칭
+  MATCHING: 3, // 업체 매칭
   COMPLETED: 4, // 처리 완료
 };
 
