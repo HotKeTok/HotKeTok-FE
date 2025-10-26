@@ -7,6 +7,7 @@ import { Row, Column } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
 import { formatNumberWithCommas } from '../../../utils/number';
+import { useNavigate } from 'react-router-dom';
 
 export default function StepChoosing({
   mode,
@@ -16,6 +17,18 @@ export default function StepChoosing({
   canProceed,
   onProceed,
 }) {
+  const nav = useNavigate();
+
+  const goVendor = (e, vendorId) => {
+    e.stopPropagation(); // 카드 선택과 충돌 방지
+    if (vendorId == null) return;
+    // ✅ 쿼리파라미터로 라우팅
+    nav({
+      pathname: '/vendor-profile',
+      search: `?vendorId=${encodeURIComponent(String(vendorId))}`,
+    });
+  };
+
   return (
     <Wrap>
       <Header>
@@ -38,15 +51,26 @@ export default function StepChoosing({
               padding="18px 24px"
             >
               <Column>
-                <Row style={{ alignItems: 'center', width: '100%' }} $gap={10}>
-                  <Avatar src={q.avatar} alt="" />
-                  <Company>
-                    {q.companyName} <Arrow src={iconChevron} />
-                  </Company>
+                <Row>
+                  <Row
+                    $gap={10}
+                    style={{ cursor: q.vendorId ? 'pointer' : 'default' }}
+                    onClick={e => goVendor(e, q.vendorId)}
+                  >
+                    <Avatar src={q.avatar} alt="" />
+                    <Company>
+                      {q.companyName} <Arrow src={iconChevron} />
+                    </Company>
+                  </Row>
                 </Row>
                 <Phone>{q.phone}</Phone>
                 <Content>{q.content}</Content>
-                <Price>{formatNumberWithCommas(q.price?.toLocaleString())}원</Price>
+                <Price>
+                  {q.decisionLater
+                    ? '상담 후 결정'
+                    : (typeof q.price === 'number' ? formatNumberWithCommas(q.price) : q.price) +
+                      '원'}
+                </Price>
               </Column>
             </ModeItem>
           ))}

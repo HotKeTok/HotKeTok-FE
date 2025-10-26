@@ -129,12 +129,17 @@ export default function RepairProgressTemplate({
           <StepMatching
             mode={mode}
             selectedQuote={selectedQuote}
+            hopeAt={request?.hopeAt}
             onCancel={() => setStep(STEP.CHOOSE)}
           />
         )}
 
         {step === STEP.DONE && (
-          <StepCompleted selectedQuote={selectedQuote} onWriteReview={() => alert('후기 작성')} />
+          <StepCompleted
+            selectedQuote={selectedQuote}
+            hopeAt={request?.hopeAt}
+            onWriteReview={() => alert('후기 작성')}
+          />
         )}
 
         {/* 데모 전환용 UI 유지 */}
