@@ -165,7 +165,11 @@ export default function MyPageTemplate({
             </Column>
             <Row $justify="space-between">
               <Label>수리내역</Label>
-              <MoveText>
+              <MoveText
+                onClick={() => {
+                  nav('/repair-history');
+                }}
+              >
                 조회하기 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
