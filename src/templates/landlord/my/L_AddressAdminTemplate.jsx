@@ -8,7 +8,6 @@ import TopBar from '../../../components/common/TopBar';
 import Toast from '../../../components/common/Toast';
 
 import iconPlus from '../../../assets/my/address-admin/icon-plus.svg';
-import iconMenu from '../../../assets/common/icon-menu.svg';
 import iconBuilding from '../../../assets/my/address-admin/icon-building.svg';
 
 /**
@@ -17,9 +16,6 @@ import iconBuilding from '../../../assets/my/address-admin/icon-building.svg';
  */
 export default function L_AddressAdminTemplate({
   items: itemsProp = [],
-  loading = false,
-  error = '',
-  onRefresh,
   onChangeCurrent,
   addPath = '/address/add/:step',
 }) {
@@ -134,7 +130,7 @@ export default function L_AddressAdminTemplate({
 /* -------------------------
  * 카드 (배지 추가 / 디자인 유지)
  * ----------------------- */
-function LandlordAddressItem({ data, onClickCard, menuOpen, onToggleMenu, onDelete }) {
+function LandlordAddressItem({ data, onClickCard }) {
   const { roadAddress, buildingName, isCurrent, state } = data;
 
   const isCertDone = state === 'REGISTERED' || state === 'MATCHED';
@@ -160,17 +156,7 @@ function LandlordAddressItem({ data, onClickCard, menuOpen, onToggleMenu, onDele
             {!!buildingName && <AddrSub>{buildingName}</AddrSub>}
           </Column>
         </Row>
-
-        <MoreBtn aria-label="더보기" onClick={onToggleMenu} onMouseDown={e => e.stopPropagation()}>
-          <img src={iconMenu} alt="menu" />
-        </MoreBtn>
       </Row>
-
-      {menuOpen && (
-        <Menu onClick={e => e.stopPropagation()}>
-          <MenuItem onClick={onDelete}>삭제하기</MenuItem>
-        </Menu>
-      )}
     </Card>
   );
 }
