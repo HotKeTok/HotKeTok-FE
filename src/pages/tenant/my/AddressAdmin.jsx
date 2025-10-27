@@ -3,34 +3,29 @@ import React, { useEffect, useState, useCallback } from 'react';
 import AddressAdminTemplate from '../../../templates/tenant/my/AddressAdminTemplate';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { apiGetHouseList } from '../../../api/house-service';
+import { apiChangeCurrentAddress } from '../../../api/user-service';
 
 // 템플릿이 기대하는 형태로 응답을 매핑
-// API 응답 예시:
-// { address, number, houseTags, alias, type, state, isCurrent }
 function mapHouseItem(raw, idx) {
   const {
     address = '',
     number = '',
     houseTags = [],
     alias = '',
-    type = 'ETC', // HOME | WORK | ETC
+    type = 'ETC', // HOME | COMPANY | ETC
     state = '',
     isCurrent = false,
   } = raw || {};
 
   return {
-    // ✅ 템플릿에서 쓰는 필드들
-    id: `${type}-${address}-${number}-${idx}`, // 고유키 생성 (API에 id 없어서 합성)
-    alias, // 상단 타이틀
-    address1: address, // 본문 주소(멀티라인 말줄임)
-    address2: number, // 필요시 서브라인에서 사용 가능
-    placeType: type, // 아이콘 매핑용 (HOME/WORK/ETC)
-    verified: state === 'MATCHED', // '인증 완료' 뱃지 여부
-    isCurrent: !!isCurrent, // 선택 시 테두리 강조
-
-    // ✅ 메모 태그들: 아이콘 태그(neighborNotes)와 텍스트 칩(extraNotes)
-    // 현재 API에는 houseTags(문자)만 있으므로 텍스트 칩에 매핑
-    neighborNotes: [], // (아이콘 태그가 생기면 여기에 키로 넣으면 됨)
+    id: `${type}-${address}-${number}-${idx}`, // API에 id 없어서 합성키
+    alias,
+    address1: address,
+    address2: number,
+    placeType: type, // HOME/COMPANY/ETC
+    verified: state === 'MATCHED', // 인증 완료 여부
+    isCurrent: !!isCurrent,
+    neighborNotes: [],
     extraNotes: Array.isArray(houseTags) ? houseTags : [],
   };
 }
@@ -53,10 +48,6 @@ export default function AddressAdmin() {
     try {
       const res = await apiGetHouseList(accessToken);
       if (!res.success) throw new Error(res.message || '주소 목록을 불러오지 못했습니다.');
-
-      // 1) state === 'NONE' 은 apiGetHouseList에서 이미 제외됨
-      // 2) 대표주소(isCurrent) 우선 정렬도 apiGetHouseList에서 적용됨
-      // 3) 템플릿 호환 매핑
       const mapped = (res.data || []).map(mapHouseItem);
       setItems(mapped);
     } catch (e) {
@@ -71,12 +62,30 @@ export default function AddressAdmin() {
     load();
   }, [load]);
 
+  // ✅ 현재주소 변경 API 호출 핸들러 (템플릿에 주입)
+  const handleChangeCurrent = useCallback(
+    async ({ currentAddress, currentNumber }) => {
+      if (!accessToken) throw new Error('로그인이 필요합니다.');
+      const res = await apiChangeCurrentAddress(accessToken, { currentAddress, currentNumber });
+      if (!res.success) {
+        const err = new Error(res.message || '현재 주소 변경에 실패했습니다.');
+        err.code = res.code || res.status;
+        throw err;
+      }
+      // 성공 시 페이지 레벨에서는 재조회만 선택적으로 수행 (필수는 아님)
+      // await load();
+      return res;
+    },
+    [accessToken]
+  );
+
   return (
     <AddressAdminTemplate
-      items={items} // ✅ 템플릿은 이 데이터만 그대로 렌더링
+      items={items}
       loading={loading}
       error={error}
       onRefresh={load}
+      onChangeCurrent={handleChangeCurrent} // ⬅️ 주입
     />
   );
 }

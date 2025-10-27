@@ -79,9 +79,14 @@ function StepAddressKeyword({ defaultKeyword, onPick, onBack, onSearch }) {
     }
   };
 
+  const nav = useNavigate();
+  const handleBack = () => {
+    nav('/address-admin');
+  };
+
   return (
     <PageWrap>
-      <TopBar title="주소 등록" onBack={onBack} />
+      <TopBar title="주소 등록" onBack={handleBack} />
       <ProgressBar {...getProgressRange('AddressKeyword')} />
       <StepTitle>{'추가할 주소를\n등록해주세요.'}</StepTitle>
 
@@ -502,6 +507,7 @@ const PageWrap = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: #fff;
 `;
 const ContentWrap = styled.div`
   padding: 16px 16px 0 16px;

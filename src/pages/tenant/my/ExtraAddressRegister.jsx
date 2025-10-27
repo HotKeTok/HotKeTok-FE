@@ -68,15 +68,20 @@ export default function ExtraAddressRegister() {
         .join(' ')
         .trim();
 
+      // UI의 WORK → API의 COMPANY 로 매핑
+      const houseTypeMap = { HOME: 'HOME', WORK: 'COMPANY', ETC: 'ETC' };
+      const houseType = houseTypeMap[placeType] || 'ETC';
+
+      // ETC일 때는 입력한 별칭 사용, 그 외엔 기본 이름(서버가 무시해도 무방)
       const alias =
-        placeType === 'HOME' ? '우리집' : placeType === 'WORK' ? '회사' : customPlaceName || '기타';
+        houseType === 'ETC' ? customPlaceName || '기타' : houseType === 'HOME' ? '우리집' : '회사';
 
       const body = {
-        address: fullAddress, // "경기도 성남시 분당구 판교역로 235 (XX아파트)" 등
-        number: `${ho}호`, // 호 표시
-        alias, // 우리집/회사/기타 별칭
-        type: placeType, // HOME | WORK | ETC
-        replaceHome: !!replaceHome, // 우리집 교체 여부 (서버가 받지 않으면 무시됨)
+        address: fullAddress,
+        number: `${ho}호`,
+        alias, // ✅ 반드시 포함
+        houseType, // ✅ HOME | COMPANY | ETC
+        replaceHome: !!replaceHome,
       };
 
       const res = await apiTenantRequest(body);

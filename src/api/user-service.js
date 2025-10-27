@@ -1,5 +1,6 @@
 // src/api/user-service.js
 import client from './client';
+import api from './client';
 
 // 마이페이지 사용자 정보 조회
 export function fetchMyInfo(accessToken) {
@@ -34,4 +35,49 @@ export function changeCurrentAddress(accessToken, payload) {
   return client.put('/user-service/change/current-address-and-number', payload, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
+}
+
+/**
+ * 현재 설정된 주소/호수 변경
+ * @param {string} accessToken
+ * @param {{ currentAddress: string, currentNumber: string }} body
+ * @returns {{success:boolean, status:number, data:any, message:string, code?:string}}
+ */
+export async function apiChangeCurrentAddress(accessToken, { currentAddress, currentNumber }) {
+  try {
+    const res = await api.put(
+      '/user-service/change/current-address-and-number',
+      { currentAddress, currentNumber },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        // ✅ 이 요청은 공통 성공 토스트 끄기
+        meta: { silentSuccessToast: true },
+      }
+    );
+
+    const data = res?.data ?? {};
+    // ✅ 어떤 2xx든 성공으로 간주 + 서버 포맷도 함께 체크
+    const status = Number(res?.status) || 0;
+    const isHttp2xx = status >= 200 && status < 300;
+    const success =
+      isHttp2xx ||
+      data?.isSuccess === true ||
+      data?.code === 'COMMON200' ||
+      String(data?.code || '').includes('200');
+
+    return {
+      success,
+      status: status || 200,
+      data: data?.result ?? data?.data ?? null,
+      message: data?.message ?? '',
+      code: data?.code ?? 'COMMON200',
+    };
+  } catch (err) {
+    const r = err?.response;
+    const payload = r?.data ?? {};
+    const status = r?.status ?? payload?.status ?? 500;
+    const code = payload?.code || payload?.data?.errorClassName || 'REQUEST_FAILED';
+    const message = payload?.message || err?.message || '현재 주소 변경 중 오류가 발생했습니다.';
+    return { success: false, status, code, message, data: payload?.result ?? null };
+  }
 }
