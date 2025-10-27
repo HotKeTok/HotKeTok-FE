@@ -86,6 +86,7 @@ export default function VendorProfile() {
   const [sp] = useSearchParams();
   const location = useLocation();
   const vendorId = Number(params?.vendorId) || Number(sp.get('vendorId')) || 1;
+  const initialTab = (sp.get('tab') || 'home').toLowerCase(); // 'home' | 'news' | 'review'
 
   // 로그인 사용자 ID
   const token = getAccessToken();
@@ -208,6 +209,7 @@ export default function VendorProfile() {
         onDeleteReview={handleDeleteReview}
         currentUserId={currentUserId}
         canWriteReview={canWrite}
+        initialTab={initialTab}
       />
       <Toast show={toast.show} message={toast.message} onClose={closeToast} />
     </>

@@ -5,6 +5,7 @@ import { color, typo } from '../../../styles/tokens';
 import { Row } from '../../../styles/flex';
 import iconYellowStar from '../../../assets/repair/vendor-profile/icon-star-yellow.svg';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
+import { formatCategoryName } from '../../../utils/format';
 
 function ReviewCard({
   companyName,
@@ -44,7 +45,7 @@ function ReviewCard({
         </Row>
 
         <Row $gap={6} style={{ alignItems: 'center' }}>
-          <CategoryChip>{categoryLabel}</CategoryChip>
+          <CategoryChip>{formatCategoryName(categoryLabel)}</CategoryChip>
           <Row $gap={2} style={{ alignItems: 'center' }}>
             <StarIcon src={iconYellowStar} alt="" />
             <RatingText>{rating}</RatingText>
