@@ -5,7 +5,7 @@ import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import { Page } from '../../../styles/layout';
 
-import AvatarImg from '../../../assets/my/img-profile.png';
+import AvatarImg from '../../../assets/common/icon-profile-default.svg';
 import iconPencil from '../../../assets/my/icon-pencil.svg';
 import iconPencilGreen from '../../../assets/my/icon-pencil-green.svg';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';

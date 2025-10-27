@@ -94,7 +94,15 @@ api.interceptors.request.use(async config => {
 
 /** 응답 인터셉터: 401 시 리프레시 후 원요청 재시도 */
 api.interceptors.response.use(
-  res => res,
+  res => {
+    // ✅ 공통 성공 토스트가 있는 프로젝트라면, 여기서 meta.silentSuccessToast 체크 후 스킵
+    // const cfg = res.config || {};
+    // if (cfg.meta?.silentSuccessToast) {
+    //   // 여기서 성공 토스트 호출을 건너뛰도록 처리
+    //   return res;
+    // }
+    return res;
+  },
   async error => {
     const original = error.config;
     const status = error?.response?.status;
