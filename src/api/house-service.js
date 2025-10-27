@@ -148,10 +148,8 @@ export async function apiGetHouseList(accessToken) {
     ? data.result
     : [];
 
-  // NONE 제외 + 안전 정렬(대표주소 먼저)
-  const items = raw
-    .filter(h => (h?.state || '') !== 'NONE')
-    .sort((a, b) => (b?.isCurrent === true) - (a?.isCurrent === true));
+  // 안전 정렬(대표주소 먼저)
+  const items = raw.sort((a, b) => (b?.isCurrent === true) - (a?.isCurrent === true));
 
   return {
     success,
