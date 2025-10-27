@@ -167,7 +167,11 @@ export default function L_MyPageTemplate({
 
             <Row $justify="space-between" $align="center" style={{ marginTop: 12 }}>
               <Label>수리내역</Label>
-              <MoveText>
+              <MoveText
+                onClick={() => {
+                  nav('/repair-history');
+                }}
+              >
                 조회하기 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
