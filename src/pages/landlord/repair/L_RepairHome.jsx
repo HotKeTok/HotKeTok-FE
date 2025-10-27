@@ -61,22 +61,21 @@ export default function L_RepairHome() {
       try {
         setReviewLoading(true);
         const res = await apiGetAddressReviews();
-        const reviews = res?.data?.reviews ?? [];
+        const reviews = Array.isArray(res?.data) ? res.data : res?.data?.reviews ?? [];
 
         // 케러셀 아이템 형태로 매핑
         const items = reviews.map(r => ({
           id: r.reviewId,
-          companyName: r.vendorName,
-          photos: [
-            r.reviewImage?.[0] ?? r.vendorProfileImage ?? '',
-            r.reviewImage?.[1] ?? r.vendorProfileImage ?? '',
-          ],
+          vendorId: r.vendorId,
+          companyName: r.vendorName ?? '업체',
+          photos: r.reviewImage?.length
+            ? r.reviewImage.slice(0, 2)
+            : [r.vendorProfileImage ?? '', r.vendorProfileImage ?? ''],
           reviewerName: r.writerName,
-          reviewerAvatar: r.writerProfileImage,
+          reviewerAvatar: r.writerProfileImage ?? '',
           categoryLabel: r.category,
           rating: r.rate,
           reviewText: r.content,
-          vendorId: r.vendorId,
         }));
 
         setReviewItems(items);
@@ -92,8 +91,12 @@ export default function L_RepairHome() {
   // 진행중 상세 이동
   const handleClickProgress = id => nav(`/repair-progress?id=${encodeURIComponent(id)}`);
 
-  // ★ 후기 카드 클릭 시 업체 프로필로 이동
-  const handleReviewClick = item => nav(`/vendor-proifle/${encodeURIComponent(item?.vendorId)}`);
+  // ★ 후기 카드 클릭 시 업체 프로필로 이동 (/vendor-profile?{vendorid})
+  const handleReviewClick = item => {
+    const vid = item?.vendorId;
+    if (!vid) return;
+    nav(`/vendor-profile?vendorId=${encodeURIComponent(vid)}&tab=review`);
+  };
 
   // 지난 내역 더보기
   const handleClickHistoryMore = () => nav('/repair-history');
