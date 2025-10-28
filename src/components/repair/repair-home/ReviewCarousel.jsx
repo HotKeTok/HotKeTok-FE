@@ -1,42 +1,11 @@
-// src/components/repair/repair-progress/ReviewCarousel.jsx
+// src/components/repair/repair-home/ReviewCarousel.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
 import { Row } from '../../../styles/flex';
 import iconYellowStar from '../../../assets/repair/vendor-profile/icon-star-yellow.svg';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
-
-// 샘플(없으면 이걸로 렌더)
-const MOCK_ITEMS = [
-  {
-    id: 'r1',
-    companyName: '메종인테리어',
-    photos: [
-      'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200&auto=format&fit=crop',
-    ],
-    reviewerName: '하케톡',
-    categoryLabel: '가전',
-    rating: 4,
-    reviewText: '최고예요~ 근데 답장이 좀 느려요! 최고예요~ 근데 답장이 좀 느려요!',
-    reviewerAvatar:
-      'https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=400&auto=format&fit=crop',
-  },
-  {
-    id: 'r2',
-    companyName: '메종인테리어',
-    photos: [
-      'https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
-    ],
-    reviewerName: '하케톡',
-    categoryLabel: '가전',
-    rating: 4,
-    reviewText: '응대 깔끔하고 만족! 또 이용하고 싶어요 :)',
-    reviewerAvatar:
-      'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=400&auto=format&fit=crop',
-  },
-];
+import { formatCategoryName } from '../../../utils/format';
 
 function ReviewCard({
   companyName,
@@ -48,12 +17,15 @@ function ReviewCard({
   reviewText,
   onClick,
 }) {
+  const p0 = photos?.[0] || '';
+  const p1 = photos?.[1] || '';
+
   return (
     <Card role="listitem" onClick={onClick}>
       {/* 상단: 업체명 + > */}
       <HeaderRow>
         <Row $gap={4} $align={'center'}>
-          <Avatar src={reviewerAvatar} />
+          <Avatar src={reviewerAvatar} alt={`${reviewerName || '리뷰어'} 프로필`} />
           <CompanyName>{companyName}</CompanyName>
         </Row>
         <Chevron src={iconChevron} />
@@ -61,19 +33,19 @@ function ReviewCard({
 
       {/* 사진 2장 그리드 */}
       <PhotoGrid>
-        <Thumb src={photos[0]} alt={`${companyName} 사진 1`} />
-        <Thumb src={photos[1]} alt={`${companyName} 사진 2`} />
+        {p0 ? <Thumb src={p0} alt={`${companyName} 사진 1`} /> : <Thumb as="div" />}
+        {p1 ? <Thumb src={p1} alt={`${companyName} 사진 2`} /> : <Thumb as="div" />}
       </PhotoGrid>
 
       {/* 리뷰어 + 카테고리칩 + 별점 */}
       <MetaRow>
         <Row $gap={4} style={{ alignItems: 'center' }}>
-          <Avatar src={reviewerAvatar} alt={`${reviewerName} 프로필`} />
+          <Avatar src={reviewerAvatar} alt={`${reviewerName || '리뷰어'} 프로필`} />
           <ReviewerName>{reviewerName}</ReviewerName>
         </Row>
 
         <Row $gap={6} style={{ alignItems: 'center' }}>
-          <CategoryChip>{categoryLabel}</CategoryChip>
+          <CategoryChip>{formatCategoryName(categoryLabel)}</CategoryChip>
           <Row $gap={2} style={{ alignItems: 'center' }}>
             <StarIcon src={iconYellowStar} alt="" />
             <RatingText>{rating}</RatingText>
@@ -87,7 +59,7 @@ function ReviewCard({
   );
 }
 
-export default function ReviewCarousel({ items = MOCK_ITEMS, onItemClick }) {
+export default function ReviewCarousel({ items = [], onItemClick }) {
   return (
     <Wrap>
       <HorizontalList role="list" aria-label="업체 리뷰 목록">
@@ -108,7 +80,7 @@ const Wrap = styled.div`
 const HorizontalList = styled.div`
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 260px; /* 이미지와 동일 폭 느낌 */
+  grid-auto-columns: 260px;
   gap: 12px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
@@ -158,9 +130,9 @@ const PhotoGrid = styled.div`
 const Thumb = styled.img`
   width: 100%;
   height: 100px;
-
   object-fit: cover;
   border-radius: 10px;
+  background: ${color('grayscale.200')};
 `;
 
 const MetaRow = styled.div`
@@ -191,7 +163,6 @@ const CategoryChip = styled.div`
   padding: 10px 8px;
   justify-content: center;
   align-items: center;
-
   border-radius: 30px;
   border: 0.5px solid var(--Color-Primary, #01d281);
 `;
@@ -210,7 +181,7 @@ const ReviewText = styled.p`
   ${typo('caption1')};
   color: ${color('grayscale.700')};
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* 2줄 말줄임 */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   white-space: normal;

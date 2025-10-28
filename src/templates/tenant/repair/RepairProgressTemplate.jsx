@@ -1,21 +1,21 @@
-// src/templates/tenant/repair/RepairProgressTemplate.jsx
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { Row, Column, Spacer } from '../../../styles/flex';
+import { Row, Column } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../styles/layout';
 
 import TopBar from '../../../components/common/TopBar';
-import ButtonSmall from '../../../components/common/ButtonSmall';
 
-// ✅ 분리된 컴포넌트들
+// 분리 컴포넌트
 import RequestAccordion from '../../../components/repair/repair-progress/RequestAccordion';
-import StepFinding from '../../../components/repair/repair-progress/StepFinding';
-import StepChoose from '../../../components/repair/repair-progress/StepChoose';
-import StepMatched from '../../../components/repair/repair-progress/StepMatched';
-import StepDone from '../../../components/repair/repair-progress/StepDone';
+import StepSearching from '../../../components/repair/repair-progress/StepSearching';
+import StepChoosing from '../../../components/repair/repair-progress/StepChoosing';
+import StepMatching from '../../../components/repair/repair-progress/StepMatching';
+import StepCompleted from '../../../components/repair/repair-progress/StepCompleted';
 
 import { formatCategoryName } from '../../../utils/format';
+import { apiSelectEstimate } from '../../../api/estimate-service';
+import { getAccessToken } from '../../../utils/auth';
 
 const COST_MODE = { SELF: 'SELF', LANDLORD: 'LANDLORD' };
 const STEP = { FINDING: 1, CHOOSE: 2, MATCHED: 3, DONE: 4 };
@@ -26,8 +26,10 @@ export default function RepairProgressTemplate({
   initialSelectedQuoteId,
   initialRequest,
   initialQuotes,
+  isLandlordView = false, // ✅ 집주인 화면 여부
+  landlordCanSelect = false,
 } = {}) {
-  const [mode, setMode] = useState(initialMode ?? COST_MODE.SELF);
+  const [mode] = useState(initialMode ?? COST_MODE.SELF);
   const [step, setStep] = useState(initialStep ?? STEP.FINDING);
   const [selectedQuoteId, setSelectedQuoteId] = useState(initialSelectedQuoteId ?? null);
 
@@ -36,26 +38,34 @@ export default function RepairProgressTemplate({
   const selectedQuote = quotes.find(q => q.id === selectedQuoteId) || null;
 
   const isDone = step === STEP.DONE;
-  const canProceed = mode !== COST_MODE.LANDLORD && !!selectedQuoteId;
 
-  // 데모 전환용 UI(유지)
-  const DemoSwitch = () => (
-    <Row $gap={8} style={{ padding: '10px 16px' }}>
-      <ButtonSmall active text="본인부담 모드" onClick={() => setMode(COST_MODE.SELF)} />
-      <ButtonSmall active text="집주인부담 모드" onClick={() => setMode(COST_MODE.LANDLORD)} />
-      <Spacer x={8} />
-      <ButtonSmall active text="STEP1" onClick={() => setStep(STEP.FINDING)} />
-      <ButtonSmall active text="STEP2" onClick={() => setStep(STEP.CHOOSE)} />
-      <ButtonSmall active text="STEP3" onClick={() => setStep(STEP.MATCHED)} />
-      <ButtonSmall active text="STEP4" onClick={() => setStep(STEP.DONE)} />
-    </Row>
-  );
+  const canProceed =
+    !!selectedQuoteId &&
+    ((isLandlordView && landlordCanSelect) || (!isLandlordView && mode !== COST_MODE.LANDLORD));
+
+  // ✅ 권한 있으면 항상 선택 API 호출
+  const handleProceed = async () => {
+    if (!canProceed) {
+      // 선택 권한 없음 안내(선택)
+      if (isLandlordView && !landlordCanSelect) {
+        alert('집주인 부담 건이 아닙니다. 견적서 선택 권한이 없습니다.');
+      }
+      return;
+    }
+    const token = getAccessToken();
+    const res = await apiSelectEstimate(token, selectedQuoteId);
+    if (!res.success) {
+      alert(res.message || '견적서 선택에 실패했습니다.');
+      return;
+    }
+    setStep(STEP.MATCHED);
+  };
 
   return (
     <PageWithoutBottomBar>
       <TopBar title={isDone ? '완료된 수리' : '진행중인 수리'} />
-      <ScrollableNoBottomBarContent>
-        {/* ===== 상단 상태 + 스텝 인디케이터 (복구) ===== */}
+      <ScrollableNoBottomBarContent style={{ backgroundColor: '#fff' }}>
+        {/* 상단 상태 + 스텝 인디케이터 */}
         <WhiteSection>
           <Row $justify="space-between" style={{ marginBottom: '15px' }}>
             <StatusBadge>{isDone ? '처리 완료' : '진행중'}</StatusBadge>
@@ -84,7 +94,9 @@ export default function RepairProgressTemplate({
               <GuideBubble>
                 {step === STEP.FINDING && '수리업체에서 요청서를 확인하고 있어요.'}
                 {step === STEP.CHOOSE &&
-                  (mode === COST_MODE.SELF
+                  (isLandlordView
+                    ? '도착한 견적서 중 수리를 진행할 업체를 선택하세요.'
+                    : mode === COST_MODE.SELF
                     ? '마음에 드는 견적서를 선택해주세요!'
                     : '집주인이 견적서를 선택하는 중이에요.')}
                 {step === STEP.MATCHED && '업체가 매칭되었어요!'}
@@ -93,51 +105,53 @@ export default function RepairProgressTemplate({
           </Column>
         </WhiteSection>
 
-        {/* ===== 요청서 요약 아코디언 ===== */}
-        <RequestAccordion request={request} mode={mode} />
+        {/* 요청서 아코디언 */}
+        <RequestAccordion request={request} mode={isLandlordView ? COST_MODE.LANDLORD : mode} />
 
-        {/* ===== 단계별 섹션 ===== */}
-        {step === STEP.FINDING && <StepFinding />}
+        {/* 단계별 섹션 */}
+        {step === STEP.FINDING && <StepSearching />}
 
         {step === STEP.CHOOSE && (
-          <StepChoose
-            mode={mode}
+          <StepChoosing
+            mode={isLandlordView ? COST_MODE.LANDLORD : mode}
+            isLandlordView={isLandlordView}
+            landlordCanSelect={landlordCanSelect}
             quotes={quotes}
             selectedQuoteId={selectedQuoteId}
             setSelectedQuoteId={setSelectedQuoteId}
             canProceed={canProceed}
-            onProceed={() => setStep(STEP.MATCHED)}
-            isLandlordView={isLandlordView}
+            onProceed={handleProceed}
           />
         )}
 
         {step === STEP.MATCHED && (
-          <StepMatched
-            mode={mode}
+          <StepMatching
+            mode={isLandlordView ? COST_MODE.LANDLORD : mode}
             selectedQuote={selectedQuote}
+            hopeAt={request?.hopeAt}
             onCancel={() => setStep(STEP.CHOOSE)}
           />
         )}
 
         {step === STEP.DONE && (
-          <StepDone selectedQuote={selectedQuote} onWriteReview={() => alert('후기 작성')} />
+          <StepCompleted
+            selectedQuote={selectedQuote}
+            hopeAt={request?.hopeAt}
+            onWriteReview={() => alert('후기 작성')}
+          />
         )}
-
-        {/* 데모 전환용 UI 유지 */}
-        <DemoSwitch />
       </ScrollableNoBottomBarContent>
     </PageWithoutBottomBar>
   );
 }
 
-/* ===== styles (복구된 상단 UI용) ===== */
+/* ===== styles ===== */
 const WhiteSection = styled.div`
   box-sizing: border-box;
   padding: 20px 24px;
   width: 100%;
   background-color: white;
 `;
-
 const StatusBadge = styled.div`
   ${typo('button3')}
   color: ${color('white')};
@@ -147,22 +161,18 @@ const StatusBadge = styled.div`
   justify-content: center;
   align-items: center;
   gap: 10px;
-
   border-radius: 30px;
   border: 1.5px solid rgba(1, 210, 129, 0.3);
   background: ${color('brand.primary')};
 `;
-
 const Category = styled.div`
   ${typo('h3')}
   color: ${color('grayscale.600')};
 `;
-
 const RequestDate = styled.div`
   ${typo('caption1')}
   color: ${color('grayscale.500')};
 `;
-
 const StepBar = styled.div`
   display: grid;
   grid-template-columns:
@@ -172,19 +182,16 @@ const StepBar = styled.div`
     max-content;
   align-items: center;
 `;
-
 const StepDot = styled.div`
   display: flex;
   box-sizing: border-box;
   width: 56px;
   height: 56px;
-
   ${typo('button3')}
   white-space: pre-line;
   text-align: center;
   justify-content: center;
   align-items: center;
-
   color: ${color('grayscale.800')};
   background: ${color('grayscale.100')};
   border: 1px ${({ $active }) => ($active ? 'solid' : 'dashed')} ${color('brand.primary')};
@@ -192,14 +199,12 @@ const StepDot = styled.div`
   padding: 10px;
   border-radius: 50%;
 `;
-
 const StepDivider = styled.div`
   height: 1px;
   margin: 0 8px;
   background: ${color('brand.primary')};
   opacity: 0.4;
 `;
-
 const GuideBubble = styled.div`
   display: flex;
   justify-content: center;

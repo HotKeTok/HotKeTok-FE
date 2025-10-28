@@ -1,11 +1,10 @@
-// src/templates/landlord/my/L_MyPageTemplate.jsx
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import { Page } from '../../../styles/layout';
 
-import AvatarImg from '../../../assets/my/img-profile.png';
+import AvatarImg from '../../../assets/common/icon-profile-default.svg';
 import iconPencil from '../../../assets/my/icon-pencil.svg';
 import iconPencilGreen from '../../../assets/my/icon-pencil-green.svg';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
@@ -18,13 +17,15 @@ import { useNavigate } from 'react-router-dom';
 /**
  * 집주인 마이페이지 템플릿 (표시 전용)
  * @param {object} props
- * @param {{name:string, phoneNumber:string, logInId:string, address:string}} props.user
+ * @param {{name:string, phoneNumber:string, logInId:string, address:string, profileImage?:string}} props.user
  * @param {boolean} props.loading
  * @param {any} props.error
+ * @param {boolean} props.saving
+ * @param {(name:string, imageFile?:File|null)=>Promise<void>} props.onSaveProfile
  * @param {string} [props.addressManagePath='/address-admin'] - 주소관리 화면 라우팅 경로
  */
 export default function L_MyPageTemplate({
-  user = { name: '', phoneNumber: '', logInId: '', address: '' },
+  user = { name: '', phoneNumber: '', logInId: '', address: '', profileImage: '' },
   loading = false,
   error = null,
   saving = false,
@@ -34,16 +35,37 @@ export default function L_MyPageTemplate({
   const nav = useNavigate();
 
   const [name, setName] = useState(user?.name || '집주인');
-  const [avatar, setAvatar] = useState(AvatarImg);
+  const [avatar, setAvatar] = useState(user?.profileImage || AvatarImg);
   const [open, setOpen] = useState(false);
 
   const [editName, setEditName] = useState(name);
   const [editAvatar, setEditAvatar] = useState(avatar);
-  const [editAvatarFile, setEditAvatarFile] = useState(null); // ✅ 추가
+  const [editAvatarFile, setEditAvatarFile] = useState(null);
 
+  // 이름 반영
   useEffect(() => {
     setName(user?.name || '집주인');
   }, [user?.name]);
+
+  // 서버에서 넘어온 프로필 이미지 반영
+  useEffect(() => {
+    if (user?.profileImage) {
+      setAvatar(user.profileImage);
+    } else {
+      setAvatar(AvatarImg);
+    }
+  }, [user?.profileImage]);
+
+  // 메모리 누수 방지: blob URL revoke
+  useEffect(() => {
+    return () => {
+      if (editAvatarFile && typeof editAvatar === 'string' && editAvatar.startsWith('blob:')) {
+        try {
+          URL.revokeObjectURL(editAvatar);
+        } catch {}
+      }
+    };
+  }, [editAvatar, editAvatarFile]);
 
   const openSheet = () => {
     setEditName(name);
@@ -54,11 +76,9 @@ export default function L_MyPageTemplate({
   const closeSheet = () => setOpen(false);
 
   const handleSave = async () => {
-    // 표시 반영
     setName(editName);
-    if (editAvatarFile) setAvatar(editAvatar); // 새 이미지 선택 시 미리보기 고정
+    if (editAvatarFile) setAvatar(editAvatar); // 새 이미지 미리보기 고정
 
-    // 서버 반영 (이름 + 이미지 파일)
     if (typeof onSaveProfile === 'function') {
       await onSaveProfile(editName, editAvatarFile);
     }
@@ -142,11 +162,16 @@ export default function L_MyPageTemplate({
               </MoveText>
             </Row>
 
+            {/* 주소는 정보조회 응답의 address 사용 */}
             <CurrentAddress>{user?.address || '등록된 기본 주소가 없습니다'}</CurrentAddress>
 
             <Row $justify="space-between" $align="center" style={{ marginTop: 12 }}>
               <Label>수리내역</Label>
-              <MoveText>
+              <MoveText
+                onClick={() => {
+                  nav('/repair-history');
+                }}
+              >
                 조회하기 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
@@ -168,9 +193,9 @@ export default function L_MyPageTemplate({
                   onChange={e => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      setEditAvatarFile(file); // ✅ 파일 보관
+                      setEditAvatarFile(file);
                       const url = URL.createObjectURL(file);
-                      setEditAvatar(url); // 미리보기
+                      setEditAvatar(url);
                     }
                   }}
                 />
@@ -309,37 +334,14 @@ const MoveText = styled.div`
   white-space: nowrap;
 `;
 
-const AddressPreview = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px 12px;
-  border-radius: 12px;
-  border: 1px solid ${color('grayscale.200')};
-  background: ${color('grayscale.50')};
-`;
-
-const Badge = styled.span`
-  align-self: flex-start;
-  ${typo('caption2')};
-  color: ${color('brand.primary')};
-  border: 1px solid ${color('brand.primary')};
-  background: #fff;
-  padding: 2px 8px;
-  border-radius: 999px;
-`;
-
 const CurrentAddress = styled.div`
   ${typo('subtitle1')};
   color: ${color('grayscale.800')};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
-const Subline = styled.div`
-  ${typo('caption1')};
-  color: ${color('grayscale.600')};
-`;
-
-/* ===== 바텀시트 내부 ===== */
 const SheetBody = styled.div`
   display: flex;
   flex-direction: column;

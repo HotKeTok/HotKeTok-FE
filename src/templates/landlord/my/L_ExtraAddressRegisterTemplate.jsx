@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useFunnel } from '@use-funnel/react-router-dom';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import TopBar from '../../../components/common/TopBar';
 import { Row, Column, Spacer } from '../../../styles/flex';
@@ -38,36 +38,20 @@ function ProgressBar({ start, end }) {
   );
 }
 
-/* -------------------------------------------
- * 목 주소 검색 (UI 데모용)
- * ----------------------------------------- */
-function mockSearchAddresses(keyword) {
-  const seed = (keyword || '').trim();
-  if (!seed) return [];
-  return [
-    {
-      id: '1',
-      road: `서울특별시 강남구 ${seed} 112길 46`,
-      jibun: '역삼동 102-1',
-      bname: '현대프라자',
-    },
-    { id: '2', road: `서울특별시 강남구 ${seed} 19길 7`, jibun: '역삼동 33-2', bname: '강남N타워' },
-    { id: '3', road: `서울특별시 강남구 ${seed}로 10`, jibun: '역삼동 10-21', bname: '역삼하이힐' },
-  ];
-}
-
 /* =========================================================
  * STEP 1. 주소 검색
  *  - 타이틀/예시/결과 리스트 UI를 InitProcess의 톤으로 맞춤
+ *  - onSearch 콜백으로 실제 주소 검색 API 연동
  * ======================================================= */
-function StepAddressKeyword({ onPick, onBack, defaultKeyword }) {
+function StepAddressKeyword({ onPick, onBack, defaultKeyword, onSearch }) {
   const [keyword, setKeyword] = useState(defaultKeyword ?? '');
   const [results, setResults] = useState([]);
   const [showExamples, setShowExamples] = useState(true);
 
-  const doSearch = () => {
-    const list = mockSearchAddresses(keyword);
-    setResults(list);
+  const doSearch = async () => {
+    if (!keyword.trim()) return;
+    const list = await onSearch?.(keyword);
+    setResults(Array.isArray(list) ? list : []);
     setShowExamples(false);
   };
 
@@ -228,6 +212,7 @@ function StepHouseholdCount({ onNext, onBack }) {
 /* =========================================================
  * STEP 4. 등기부등본 업로드
  *  - InitProcess 집주인과 동일한 카드형 업로드 UI
+ *  - 다음 단계로 file 객체 자체 전달 (fileName 아님)
  * ======================================================= */
 function StepUploadDeed({ onNext, onBack }) {
   const [file, setFile] = useState(null);
@@ -278,11 +263,7 @@ function StepUploadDeed({ onNext, onBack }) {
 
       <Spacer />
       <div style={{ padding: '30px 24px' }}>
-        <Button
-          text="다음"
-          active={!!file || !!fileName}
-          onClick={() => onNext({ fileName: fileName })}
-        />
+        <Button text="다음" active={!!file} onClick={() => onNext({ file })} />
       </div>
     </PageWrap>
   );
@@ -290,21 +271,11 @@ function StepUploadDeed({ onNext, onBack }) {
 
 /* =========================================================
  * STEP 5. 완료
+ *  - 실제 서버 등록은 상위 onSubmit(payload) 콜백에서 수행
  * ======================================================= */
-function StepDone({ payload }) {
-  const nav = useNavigate();
-
-  // 완료 시 목록으로 복귀 + 신규 주소 추가 상태 전달(필요 시 서버 연동 위치)
+function StepDone({ payload, onSubmit }) {
   const finish = () => {
-    const newItem = {
-      id: String(Date.now()),
-      roadAddress: payload?.road || '',
-      // 상세주소(건물명): 사용자가 입력한 refDetail이 우선, 없으면 검색 결과의 bname
-      buildingName: payload?.refDetail || payload?.bname || '',
-      isCurrent: false,
-    };
-    // replace:true 로 돌아가면 state가 한 번만 반영되어 카드가 '한 개'만 추가됩니다.
-    nav('/address-admin', { replace: true, state: { add: newItem } });
+    onSubmit?.(payload);
   };
 
   return (
@@ -324,9 +295,9 @@ function StepDone({ payload }) {
 
 /* =========================================================
  * 메인: Funnel.Render
- *  - SignUp(집주인)과 동일 동선/문구/톤으로 연결
+ *  - 상위에서 전달한 onSearch / onSubmit을 연결
  * ======================================================= */
-export default function L_ExtraAddressRegisterTemplate() {
+export default function L_ExtraAddressRegisterTemplate({ onSearch, onSubmit }) {
   const location = useLocation();
 
   const Funnel = useFunnel({
@@ -343,6 +314,7 @@ export default function L_ExtraAddressRegisterTemplate() {
           defaultKeyword={context.keyword}
           onBack={() => history.exit('/address-admin')}
           onPick={base => history.push('AddressConfirm', { ...context, base })}
+          onSearch={onSearch}
         />
       )}
       AddressConfirm={({ history, context }) => (
@@ -361,7 +333,7 @@ export default function L_ExtraAddressRegisterTemplate() {
       UploadDeed={({ history, context }) => (
         <StepUploadDeed
           onBack={history.back}
-          onNext={({ fileName }) =>
+          onNext={({ file }) =>
             history.push('Done', {
               ...context,
               road: context.base.road,
@@ -369,12 +341,12 @@ export default function L_ExtraAddressRegisterTemplate() {
               bname: context.base.bname,
               refDetail: context.refDetail,
               count: context.count,
-              fileName,
+              file,
             })
           }
         />
       )}
-      Done={({ context }) => <StepDone payload={context} />}
+      Done={({ context }) => <StepDone payload={context} onSubmit={onSubmit} />}
     />
   );
 }

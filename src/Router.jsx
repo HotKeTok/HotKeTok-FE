@@ -71,7 +71,6 @@ const Layout = ({ currentRole, onBoardingStageFlag }) => {
       '/sign-up',
       '/init-process',
       '/address-admin',
-      '/address/add',
       '/repair-history',
       '/write-review',
       '/',

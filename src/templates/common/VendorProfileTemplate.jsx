@@ -22,8 +22,10 @@ export default function VendorProfileTemplate({
   onDeleteReview,
   currentUserId,
   canWriteReview = true,
+  initialTab = 'home',
 }) {
-  const [tab, setTab] = useState('home'); // home | news | review
+  const safeTab = ['home', 'news', 'review'].includes(initialTab) ? initialTab : 'home';
+  const [tab, setTab] = useState(safeTab); // home | news | review
   const [reviewSort, setReviewSort] = useState('latest'); // latest | ratingLow | ratingHigh
 
   // ReviewTab 정렬 안전 처리

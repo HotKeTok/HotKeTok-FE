@@ -1,61 +1,44 @@
-// src/templates/landlord/my/L_AddressAdminTemplate.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styled, { css, keyframes } from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import { Page } from '../../../styles/layout';
-
 import TopBar from '../../../components/common/TopBar';
 import Toast from '../../../components/common/Toast';
 
 import iconPlus from '../../../assets/my/address-admin/icon-plus.svg';
-import iconMenu from '../../../assets/common/icon-menu.svg';
-import iconBuilding from '../../../assets/my/address-admin/icon-building.svg'; // 건물 아이콘 고정
-
-// ✅ 집주인 전용 목데이터
-import { L_ADDRESS_LIST_MOCK } from '../../../mocks/landlord/addresses';
+import iconBuilding from '../../../assets/my/address-admin/icon-building.svg';
 
 /**
- * 집주인 주소관리 (Detail 없음, 단순 선택형)
- * @param {object} props
- * @param {string} [props.addPath='/landlord/address/add/AddressKeyword'] 주소추가 플로우 시작 경로
+ * 집주인 주소관리
+ * state: NONE(인증전), REGISTERED(입주민없음), MATCHED(입주민있음)
  */
-export default function L_AddressAdminTemplate({ addPath = '/address/add/:step' }) {
-  const [items, setItems] = useState(L_ADDRESS_LIST_MOCK);
+export default function L_AddressAdminTemplate({
+  items: itemsProp = [],
+  onChangeCurrent,
+  addPath = '/address/add/:step',
+}) {
+  const [items, setItems] = useState(itemsProp);
   const [menuOpenId, setMenuOpenId] = useState(null);
-  const [toast, setToast] = useState('');
+  const [toast, setToast] = useState({ show: false, message: '', icon: null });
   const nav = useNavigate();
   const location = useLocation();
 
-  // 현재 주소 설정
-  const setCurrentAddress = id => {
-    setItems(prev => prev.map(it => ({ ...it, isCurrent: it.id === id })));
-    setToast('현재 설정된 주소를 변경했어요.');
-  };
-
-  // 삭제
-  const removeItem = id => {
-    setItems(prev => prev.filter(it => it.id !== id));
-    setMenuOpenId(null);
-  };
-
-  // 상위 플로우(add/patch/remove) 반영
   useEffect(() => {
-    const patch = location.state?.patch;
-    const removeId = location.state?.removeId;
-    const addItem = location.state?.add;
+    setItems(itemsProp);
+  }, [itemsProp]);
 
-    if (!patch && !removeId && !addItem) return;
+  // add/patch/remove 반영
+  useEffect(() => {
+    const { patch, removeId, add } = location.state || {};
+    if (!patch && !removeId && !add) return;
 
     setItems(prev => {
       let next = [...prev];
       if (removeId) next = next.filter(it => it.id !== removeId);
       if (patch) next = next.map(it => (it.id === patch.id ? { ...it, ...patch } : it));
-      if (addItem) {
-        // 집주인: 단순 추가
-        next = [...next, addItem];
-      }
+      if (add) next = [...next, add];
       return next;
     });
 
@@ -69,15 +52,52 @@ export default function L_AddressAdminTemplate({ addPath = '/address/add/:step' 
     return () => document.removeEventListener('click', onDoc);
   }, []);
 
+  const goBack = () => nav('/my-page');
+  const openAdd = () => nav(addPath);
+
+  // ✅ NONE은 변경 불가, REGISTERED/MATCHED는 변경 가능
+  const handleSelectAsCurrent = useCallback(
+    async addr => {
+      if (addr?.state === 'NONE') {
+        setToast({ show: true, message: '인증 후 현재 주소로 설정이 가능해요.', icon: 'warning' });
+        return;
+      }
+      if (addr?.isCurrent) return;
+
+      try {
+        await onChangeCurrent?.({
+          currentAddress: addr.roadAddress,
+          currentNumber: addr.buildingName,
+        });
+        setItems(prev => prev.map(it => ({ ...it, isCurrent: it.id === addr.id })));
+        setToast({ show: true, message: '현재 설정된 주소를 변경했어요.' });
+      } catch (e) {
+        setToast({
+          show: true,
+          message: e?.message || '현재 주소 변경에 실패했습니다.',
+          icon: 'warning',
+        });
+      }
+    },
+    [onChangeCurrent]
+  );
+
+  const removeItem = id => {
+    setItems(prev => prev.filter(it => it.id !== id));
+    setMenuOpenId(null);
+  };
+
   return (
     <Page>
-      <TopBar title="주소 관리" />
+      <TopBar title="주소 관리" onBack={goBack} />
+
       <ButtonWrapper>
         <IconPlus src={iconPlus} alt="" />
-        <AddButton type="button" onClick={() => nav(addPath)}>
+        <AddButton type="button" onClick={openAdd}>
           주소 등록하기
         </AddButton>
       </ButtonWrapper>
+
       <Container>
         <Column $gap={10}>
           {items.map(addr => (
@@ -85,7 +105,7 @@ export default function L_AddressAdminTemplate({ addPath = '/address/add/:step' 
               key={addr.id}
               data={addr}
               menuOpen={menuOpenId === addr.id}
-              onClickCard={() => setCurrentAddress(addr.id)}
+              onClickCard={() => handleSelectAsCurrent(addr)}
               onToggleMenu={e => {
                 e.stopPropagation();
                 setMenuOpenId(prev => (prev === addr.id ? null : addr.id));
@@ -95,48 +115,54 @@ export default function L_AddressAdminTemplate({ addPath = '/address/add/:step' 
           ))}
         </Column>
       </Container>
-      <Toast message={toast} show={!!toast} onClose={() => setToast('')} />
+
+      <Toast
+        message={toast.message}
+        show={toast.show}
+        duration={1500}
+        onClose={() => setToast(t => ({ ...t, show: false }))}
+        {...(toast.icon ? { icon: toast.icon } : {})}
+      />
     </Page>
   );
 }
 
 /* -------------------------
- * 카드 (집주인 전용)
+ * 카드 (배지 추가 / 디자인 유지)
  * ----------------------- */
-// --- (그대로) 카드 렌더 부분만 교체 ---
-function LandlordAddressItem({ data, onClickCard, menuOpen, onToggleMenu, onDelete }) {
-  const { roadAddress, buildingName, isCurrent } = data;
+function LandlordAddressItem({ data, onClickCard }) {
+  const { roadAddress, buildingName, isCurrent, state } = data;
+
+  const isCertDone = state === 'REGISTERED' || state === 'MATCHED';
+  const badgeState = isCertDone ? 'done' : 'pending';
+  const badgeText = isCertDone ? '인증 완료' : '인증 전';
 
   return (
     <Card $active={isCurrent} onClick={onClickCard}>
       <Row style={{ alignItems: 'center' }}>
-        {/* ▶ 왼쪽 콘텐츠: 아이콘 + 주소 텍스트 */}
         <Row $gap={16} $align="center" style={{ minWidth: 0, flex: 1 }}>
           <Icon src={iconBuilding} alt="건물아이콘" />
           <Column $gap={8}>
-            <AddrTitle title={roadAddress}>{roadAddress}</AddrTitle>
+            <Column>
+              <AddrTitle title={roadAddress}>{roadAddress?.split('(')[0]}</AddrTitle>
+              {roadAddress?.includes('(') && (
+                <AddrSubBracket>({roadAddress.split('(')[1]}</AddrSubBracket>
+              )}
+            </Column>
+            <Row style={{ gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <Badge $state={badgeState}>{badgeText}</Badge>
+              {isCurrent && <NowBadge>현재 설정된 주소</NowBadge>}
+            </Row>
             {!!buildingName && <AddrSub>{buildingName}</AddrSub>}
-            {isCurrent && <NowBadge>현재 설정된 주소</NowBadge>}
           </Column>
         </Row>
-
-        {/* ▶ 오른쪽 ... 버튼 */}
-        <MoreBtn aria-label="더보기" onClick={onToggleMenu} onMouseDown={e => e.stopPropagation()}>
-          <img src={iconMenu} />
-        </MoreBtn>
       </Row>
-
-      {menuOpen && (
-        <Menu onClick={e => e.stopPropagation()}>
-          <MenuItem onClick={onDelete}>삭제하기</MenuItem>
-        </Menu>
-      )}
     </Card>
   );
 }
 
 /* -------------------------
- * 스타일
+ * 스타일 (그대로)
  * ----------------------- */
 const Container = styled.div`
   padding: 0 20px;
@@ -192,15 +218,24 @@ const Icon = styled.img`
 const AddrTitle = styled.div`
   ${typo('subtitle1')};
   color: ${color('black')};
-  white-space: nowrap;
+`;
+
+const Badge = styled.div`
+  ${typo('button3')}
+  padding: 1px 6px;
+  border-radius: 30px;
+  background: ${p => (p.$state === 'done' ? color('brand.primary') : color('transparent'))};
+  color: ${p => (p.$state === 'done' ? color('white') : color('brand.primary'))};
+  border: 1px solid ${p => (p.$state === 'done' ? color('transparent') : color('brand.primary'))};
+  opacity: ${p => (p.$state === 'done' ? 1 : 0.5)};
 `;
 
 const NowBadge = styled.div`
   ${typo('button3')};
-  display: inline-flex; /* ✅ 줄만큼만 */
+  display: inline-flex;
   align-items: center;
-  width: fit-content; /* ✅ 줄만큼만 */
-  align-self: flex-start; /* ✅ 왼쪽 정렬 유지 */
+  width: fit-content;
+  align-self: flex-start;
   margin-top: 2px;
   padding: 2px 8px;
   border-radius: 4px;
@@ -211,7 +246,6 @@ const NowBadge = styled.div`
 const AddrSub = styled.div`
   ${typo('caption1')}
   color: ${color('grayscale.500')};
-  /* 한 줄 말줄임 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -219,7 +253,7 @@ const AddrSub = styled.div`
 `;
 
 const MoreBtn = styled.button`
-  margin-left: auto; /* ✅ 카드 안 우측으로 쏙 */
+  margin-left: auto;
   width: 44px;
   height: 44px;
   border: none;
@@ -245,6 +279,7 @@ const Menu = styled.div`
   padding: 6px;
   z-index: 10;
 `;
+
 const MenuItem = styled.button`
   width: 100%;
   height: 40px;
@@ -256,32 +291,12 @@ const MenuItem = styled.button`
   ${typo('body2')};
   color: ${color('grayscale.800')};
   cursor: pointer;
-
   &:hover {
     background: ${color('grayscale.100')};
   }
 `;
 
-/* 토스트 */
-const toastIn = keyframes`
-  from { transform: translate(-50%, 12px); opacity: 0; }
-  to   { transform: translate(-50%, 0);    opacity: 1; }
-`;
-const ToastWrap = styled.div`
-  position: fixed;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 30px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  ${typo('body2')};
-  animation: ${toastIn} 200ms ease both;
-`;
-const CheckIcon = styled.img`
-  width: 16px;
+const AddrSubBracket = styled.div`
+  ${typo('subtitle1')};
+  color: ${color('black')};
 `;

@@ -5,7 +5,7 @@ import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import { Page } from '../../../styles/layout';
 
-import AvatarImg from '../../../assets/my/img-profile.png';
+import AvatarImg from '../../../assets/common/icon-profile-default.svg';
 import iconPencil from '../../../assets/my/icon-pencil.svg';
 import iconPencilGreen from '../../../assets/my/icon-pencil-green.svg';
 import iconChevron from '../../../assets/repair/icon-chevron.svg';
@@ -24,14 +24,14 @@ import { useNavigate } from 'react-router-dom';
  * - onChangeCurrentAddress(payload)
  */
 export default function MyPageTemplate({
-  user = { name: '', phoneNumber: '', logInId: '', address: '' },
+  user = { name: '', phoneNumber: '', logInId: '', address: '', profileImage: '' },
   loading = false,
   error = null,
   saving = false,
   onSaveProfile,
 }) {
   const [name, setName] = useState(user?.name || '핫케톡');
-  const [avatar, setAvatar] = useState(AvatarImg);
+  const [avatar, setAvatar] = useState(user?.profileImage || AvatarImg);
   const [avatarFile, setAvatarFile] = useState(null);
 
   // 바텀시트 상태
@@ -41,10 +41,30 @@ export default function MyPageTemplate({
 
   const nav = useNavigate();
 
-  // ✅ API로부터 유저정보 들어오면 UI 반영
+  //  API로부터 유저정보 들어오면 UI 반영
   useEffect(() => {
     if (user?.name) setName(user.name);
   }, [user?.name]);
+
+  //  서버에서 넘어온 프로필 이미지가 바뀌면 즉시 반영
+  useEffect(() => {
+    if (user?.profileImage) {
+      setAvatar(user.profileImage);
+    } else {
+      setAvatar(AvatarImg);
+    }
+  }, [user?.profileImage]);
+
+  //  objectURL 메모리 누수 방지 (파일 미리보기 사용 후 revoke)
+  useEffect(() => {
+    return () => {
+      if (avatarFile && typeof avatar === 'string' && avatar.startsWith('blob:')) {
+        try {
+          URL.revokeObjectURL(avatar);
+        } catch {}
+      }
+    };
+  }, [avatar, avatarFile]);
 
   const openSheet = () => {
     setEditName(name);
@@ -134,15 +154,22 @@ export default function MyPageTemplate({
 
         <EndSection>
           <Column $gap={30}>
-            <Row $justify="space-between">
-              <Label>주소</Label>
-              <MoveText onClick={moveAddressAdmin}>
-                주소관리 <img src={iconChevron} alt=">" />
-              </MoveText>
-            </Row>
+            <Column $gap={10}>
+              <Row $justify="space-between">
+                <Label>주소</Label>
+                <MoveText onClick={moveAddressAdmin}>
+                  주소관리 <img src={iconChevron} alt=">" />
+                </MoveText>
+              </Row>
+              <CurrentAddress>{user?.address}</CurrentAddress>
+            </Column>
             <Row $justify="space-between">
               <Label>수리내역</Label>
-              <MoveText>
+              <MoveText
+                onClick={() => {
+                  nav('/repair-history');
+                }}
+              >
                 조회하기 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
@@ -256,6 +283,7 @@ const Avatar = styled.img`
   border-radius: 100px;
   border: 2.5px solid ${color('brand.primary')};
   align-self: center;
+  object-fit: cover;
 `;
 
 const Label = styled.div`

@@ -54,18 +54,35 @@ export async function getTenantRequestList() {
 
 // 입주민 집 등록(인증 요청)
 export async function apiTenantRequest(body) {
-  const { data } = await api.post('/house-service/tenant-request', body);
-  const success =
-    data?.success === true ||
-    data?.isSuccess === true ||
-    data?.status === 200 ||
-    data?.code === 'COMMON200';
-
-  return {
-    success,
-    data: data?.data ?? data?.result ?? null,
-    message: data?.message ?? '',
-  };
+  try {
+    const { data } = await api.post('/house-service/tenant-request', body);
+    const success =
+      data?.success === true ||
+      data?.isSuccess === true ||
+      data?.status === 200 ||
+      data?.code === 'COMMON200';
+    return {
+      success,
+      status: data?.status ?? 200,
+      data: data?.data ?? data?.result ?? null,
+      message: data?.message ?? '',
+    };
+  } catch (err) {
+    // ⬇️ axios 에러를 표준 형태로 변환
+    const res = err?.response;
+    const payload = res?.data ?? {};
+    const status = res?.status ?? payload?.status ?? 500;
+    const inner = payload?.data ?? payload ?? {};
+    const errorClassName = inner?.errorClassName || inner?.code || 'REQUEST_FAILED';
+    const message =
+      inner?.message || payload?.message || err?.message || '요청 중 오류가 발생했습니다.';
+    return {
+      success: false,
+      status,
+      data: { errorClassName, message },
+      message,
+    };
+  }
 }
 
 // 입주민 승인(집주인 화면)
@@ -107,6 +124,36 @@ export async function patchTenantInfo(payload = {}) {
   return {
     success: isOk(data),
     data: data?.data ?? null,
+    message: data?.message ?? '',
+  };
+}
+
+/**
+ * 내 주소 리스트 조회
+ * - GET /house-service/house-list
+ * - 토큰 사용 O
+ * - 응답의 state === 'NONE' 인 항목은 프론트에서 제외
+ */
+export async function apiGetHouseList(accessToken) {
+  const { data } = await api.get('/house-service/house-list', {
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+  });
+
+  const success = data?.success === true || data?.status === 200 || data?.code === 'COMMON200';
+
+  // data 또는 result 어느 쪽이든 배열로 수용
+  const raw = Array.isArray(data?.data)
+    ? data.data
+    : Array.isArray(data?.result)
+    ? data.result
+    : [];
+
+  // 안전 정렬(대표주소 먼저)
+  const items = raw.sort((a, b) => (b?.isCurrent === true) - (a?.isCurrent === true));
+
+  return {
+    success,
+    data: items,
     message: data?.message ?? '',
   };
 }

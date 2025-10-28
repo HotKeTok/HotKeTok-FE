@@ -15,15 +15,17 @@ const ItemBox = styled.div`
   display: flex;
   border-radius: 15px;
   border: 1px solid ${color('grayscale.300')};
+  flex-direction: column;
+  align-items: stretch; /* 자식이 가로로 꽉 차도록 */
   cursor: pointer;
   transition: border 0.2s ease;
 
   /* ✅ 기본값 + props override */
-  width: ${(props) => props.width || '100%'};
-  height: ${(props) => props.height || '100px'};
-  padding: ${(props) => props.padding || '22px 25px'};
+  width: ${props => props.width || '100%'};
+  height: ${props => props.height || '100px'};
+  padding: ${props => props.padding || '22px 25px'};
 
-  ${(props) =>
+  ${props =>
     props.selected &&
     css`
       border: 1px solid ${color('brand.primary')};

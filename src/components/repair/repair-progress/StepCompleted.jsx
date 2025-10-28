@@ -1,11 +1,13 @@
-// src/components/repair/repair-progress/StepDone.jsx
+// src/components/repair/repair-progress/StepCompleted.jsx
 import React from 'react';
 import styled from 'styled-components';
 import Button from '../../common/Button';
 import RepairDetailRows from '../repair-progress/RepairDetailRows';
 import { color, typo } from '../../../styles/tokens';
+import { useNavigate } from 'react-router-dom';
 
-export default function StepDone({ selectedQuote, onWriteReview }) {
+export default function StepCompleted({ selectedQuote, onWriteReview, hopeAt }) {
+  const nav = useNavigate();
   if (!selectedQuote) return null;
 
   return (
@@ -17,9 +19,17 @@ export default function StepDone({ selectedQuote, onWriteReview }) {
           companyName={selectedQuote.companyName}
           phone={selectedQuote.phone}
           price={selectedQuote.price}
-          schedule={selectedQuote.schedule}
+          schedule={hopeAt}
           content={selectedQuote.content}
           avatar={selectedQuote.avatar}
+          decisionLater={selectedQuote.decisionLater}
+          onCompanyClick={() =>
+            selectedQuote.vendorId &&
+            nav({
+              pathname: '/vendor-profile',
+              search: `?vendorId=${encodeURIComponent(String(selectedQuote.vendorId))}`,
+            })
+          }
         />
       </Card>
       <StickyFooter>
@@ -47,7 +57,7 @@ const Card = styled.div`
 `;
 const StickyFooter = styled.div`
   position: sticky;
-  bottom: 10px;
+  bottom: 0px;
   background: #fff;
   padding: 12px 24px 18px;
 `;

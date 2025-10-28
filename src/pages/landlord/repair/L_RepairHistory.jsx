@@ -1,13 +1,12 @@
-// src/pages/landlord/repair/L_RepairHistory.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import L_RepairHistoryTemplate from '../../../templates/landlord/repair/L_RepairHistoryTemplate';
 import { getAccessToken } from '../../../utils/auth';
 import { apiGetCompletedRepairs } from '../../../api/requestform-service';
 import { formatYMDWithKoreanTime } from '../../../utils/dateFormat';
 
-export default function RepairHistory() {
+export default function L_RepairHistory() {
   const token = useMemo(() => getAccessToken(), []);
-  const [items, setItems] = useState([]); // 템플릿에 내려줄 리스트
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -16,23 +15,24 @@ export default function RepairHistory() {
       try {
         setLoading(true);
         setError('');
+        const year = new Date().getFullYear();
 
-        const year = new Date().getFullYear(); // 기본: 올해
+        // ✅ 토큰 전달 유지
         const res = await apiGetCompletedRepairs(token, year);
-        if (!res.success) throw new Error(res.message || '지난 수리 내역을 불러올 수 없습니다.');
+        if (!res.success) throw new Error(res.message || '완료된 내역을 불러오지 못했습니다.');
 
-        // 템플릿이 사용하는 필드로 매핑
         const mapped = (res.data || []).map(r => ({
           id: r.requestFormId,
           categoryLabel: r.category,
-          schedule: formatYMDWithKoreanTime(r.requestSchedule), // "YYYY.MM.DD / 오전 HH:MM"
+          schedule: formatYMDWithKoreanTime(r.requestSchedule),
           price: r.estimatePrice ?? 0,
           room: r.number || '',
+          decisionLater: r.decisionLater === true,
         }));
 
         setItems(mapped);
       } catch (e) {
-        console.error('L_RepairHistory fetch error:', e);
+        console.error('RepairHistory fetch error:', e);
         setError('지난 수리 내역을 불러올 수 없습니다.');
       } finally {
         setLoading(false);
