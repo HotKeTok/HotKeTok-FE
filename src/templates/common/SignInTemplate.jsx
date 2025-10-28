@@ -34,7 +34,7 @@ export default function SignInTemplate({ onSubmit = () => {}, loading = false })
   return (
     <div style={{ height: '100vh' }}>
       <div style={{ height: '15%' }} />
-      <Column $gap={6} $align="center">
+      <Column $gap={10} $align="center">
         <LogoImg src={Logo} alt="핫케톡로고" />
         <Title>로그인</Title>
       </Column>
@@ -106,11 +106,14 @@ export default function SignInTemplate({ onSubmit = () => {}, loading = false })
  * Styled Components
  * ============================= */
 
-const LogoImg = styled.img``;
+const LogoImg = styled.img`
+  width: 60px;
+`;
 
 const Title = styled.div`
   ${typo('h2')};
   color: ${color('grayscale.700')};
+  font-weight: 600;
 `;
 
 const TextFieldTitle = styled.div`
