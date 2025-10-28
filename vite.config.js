@@ -7,4 +7,14 @@ export default defineConfig({
   define: {
     global: 'window',
   },
+  plugins: [
+    react(),
+    svgr({ exportAsDefault: true }), // default import로 받으려면 이 옵션이 편함
+  ],
+  resolve: {
+    alias: {
+      '@': '/src',
+      '@assets': '/src/assets',
+    },
+  },
 });
