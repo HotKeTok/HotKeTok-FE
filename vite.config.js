@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
+  base: '/', // ← 중요
   plugins: [react(), svgr({ exportAsDefault: true })],
   define: {
     global: 'window',
@@ -18,9 +19,8 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
       '@assets': resolve(__dirname, 'src/assets'),
     },
-    plugins: [react(), svgr()],
-    define: {
-      global: 'window',
-    },
+  },
+  define: {
+    global: 'window',
   },
 });
