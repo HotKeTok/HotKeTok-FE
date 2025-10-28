@@ -1,5 +1,6 @@
 // src/api/vendor-service.js
 import api from './client';
+import { getAccessToken } from '../utils/auth';
 
 // GET : 업체 정보 확인
 export async function apiGetVendorProfile({ vendorId }) {

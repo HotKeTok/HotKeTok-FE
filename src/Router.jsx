@@ -141,7 +141,7 @@ export default function AppRouter() {
     return () => {
       disconnect();
     };
-  }, [accessToken, connect, disconnect]);
+  }, [accessToken, connect, disconnect, hydrated]);
 
   if (!hydrated) return null;
 
@@ -186,7 +186,7 @@ export default function AppRouter() {
                 <Route path="/admin/tenants/detail/:id" element={<AdminTenantsDetail />} />
                 <Route path="/admin/common-bills" element={<AdminCommonBills />} />
                 <Route path="/admin/common-bills/write" element={<AdminCommonBillsWrite />} />
-                <Route path="/chat" element={<ChatMainLandlord />} />
+                <Route path="/chat" element={<ChatLandlord />} />
                 <Route path="/chat/chat-room/:id" element={<ChatRoomLandlord />} />
                 <Route path="/my-page" element={<MyPageLandlord />} />
                 <Route path="/address-admin" element={<AddressAdminLandlord />} />
@@ -210,7 +210,7 @@ export default function AppRouter() {
                 <Route path="/write-review" element={<WriteReview />} />
                 <Route path="/communication" element={<Communication />} />
                 <Route path="/chat" element={<Chat />} />
-                <Route path="/chat/chat-room" element={<ChatRoom />} />
+                <Route path="/chat/chat-room/:id" element={<ChatRoom />} />
                 <Route path="/message" element={<Message />} />
                 <Route path="/message/detail/:id" element={<MessageDetail />} />
                 <Route path="/message/write" element={<MessageWrite />} />

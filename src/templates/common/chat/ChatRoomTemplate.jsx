@@ -3,20 +3,24 @@ import styled, { css } from 'styled-components';
 import { Page, ScrollableNoBottomBarContent } from '../../../styles/layout';
 import TopBar from '../../../components/common/TopBar';
 import IcnSend from '../../../assets/chat/send-icon.svg?react';
-import { color, typo } from '../../../styles/tokens';
+import { color } from '../../../styles/tokens';
 import MessageBubble from '../../../components/chat/MessageBubble';
+import { useAuthStore } from '../../../store/useAuthStore';
+import useChatStore from '../../../store/useChatStore';
 
 // 템플릿 컴포넌트
-export default function ChatRoomTemplate({ messages, participants, myUserId, onSendMessage }) {
+export default function ChatRoomTemplate({ onSendMessage }) {
+  const userId = useAuthStore(state => state.userId);
   const [inputValue, setInputValue] = useState('');
   const containerRef = useRef(null);
+  const messages = useChatStore(state => state.messages);
+  const participants = useChatStore(state => state.participants);
 
   useEffect(() => {
-    // 컨테이너가 존재하면, 컨테이너의 스크롤 위치를 컨테이너의 전체 높이로 설정
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [messages]); // 메시지 목록이 변경될 때마다 실행
+  }, [messages]);
 
   const handleSend = () => {
     if (inputValue.trim()) {
@@ -27,16 +31,19 @@ export default function ChatRoomTemplate({ messages, participants, myUserId, onS
 
   const renderMessages = () => {
     let lastDisplayedDate = null;
+
+    if (!messages || messages.length === 0) {
+      return <div>대화 내용이 없습니다.</div>;
+    }
+
     return messages.map(msg => {
       const currentDate = new Date(msg.createdAt).toDateString();
       const showDateSeparator = currentDate !== lastDisplayedDate;
       lastDisplayedDate = currentDate;
 
-      const isMe = msg.senderId === myUserId;
-      const senderInfo = {
-        avatar: null,
-        name: null,
-      };
+      const isMe = msg.senderId === userId;
+
+      const senderInfo = participants.find(p => p.userId === msg.senderId) || {};
 
       return (
         <MessageBubble

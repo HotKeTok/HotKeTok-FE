@@ -13,8 +13,8 @@ export default function MessageBubble({ message, isMe, senderInfo, showDateSepar
       <MessageRow isMe={isMe}>
         {!isMe && (
           <Row $gap={8} $align="center" style={{ padding: '0 4px' }}>
-            <Avatar src={senderInfo?.avatar || 'https://i.pravatar.cc/150?u=default'} />
-            <SenderName>{senderInfo?.name || '알 수 없음'}</SenderName>
+            <Avatar src={senderInfo?.profileImageUrl || 'https://i.pravatar.cc/150?u=default'} />
+            <SenderName>{senderInfo?.userName || '알 수 없음'}</SenderName>
           </Row>
         )}
         <MessageContainer>

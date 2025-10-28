@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import ButtonRound from '../../../components/common/ButtonRound';
 import TopBar from '../../../components/common/TopBar';
@@ -10,23 +10,22 @@ import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
 import IcnNoChat from '../../../assets/chat/no-chat-icon.svg?react';
 import IcnDefaultProfile from '../../../assets/common/icon-profile-default.svg?react';
+import Toast from '../../../components/common/Toast';
+import { useAuthStore } from '../../../store/useAuthStore';
 
-export default function ChatTemplate({ chatRooms, onDelete }) {
+export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('direct');
-  // API로부터 받은 원본 데이터라고 가정합니다.
-  const [rawChats, setRawChats] = useState([]);
+  const userId = useAuthStore(state => state.userId);
 
-  // 원본 데이터가 변경될 때만 재계산하도록 useMemo를 사용
   const processedChats = useMemo(() => {
-    const myUserId = 15; // todo: 실제 내 userId로 교체 필요
+    const myUserId = userId;
 
     const directTalk = [];
     const groupTalk = [];
 
     chatRooms.forEach(chat => {
       if (chat.participants.length > 2) {
-        // 단체톡 (함께톡) 처리
         const newChat = {
           ...chat,
           name: chat.participants
@@ -39,8 +38,8 @@ export default function ChatTemplate({ chatRooms, onDelete }) {
         };
         groupTalk.push(newChat); // 가공된 단체 채팅방 정보 저장
       } else {
-        // 개인톡 (바로톡) 처리
         const otherParticipant = chat.participants.find(p => p.userId !== myUserId);
+        console.log('Other Participant:', otherParticipant);
         const newChat = {
           ...chat,
           name: otherParticipant?.userName || '알 수 없는 사용자',
@@ -59,9 +58,9 @@ export default function ChatTemplate({ chatRooms, onDelete }) {
 
   const chatsToShow = activeTab === 'direct' ? processedChats.directTalk : processedChats.groupTalk;
 
-  console.log(chatsToShow);
   return (
     <Page style={{ backgroundColor: '#f5f6f6', position: 'relative' }}>
+      <Toast show={toast.open} onClose={closeToast} message={toast.message} duration={1000} />
       <TopBar title="채팅" />
       <ToggleContainer>
         <ButtonRound
@@ -100,7 +99,6 @@ export default function ChatTemplate({ chatRooms, onDelete }) {
                 onDelete={() => onDelete(chat.roomId, chat.name)}
               >
                 <ChatItem onClick={() => navigate(`/chat/chat-room/${chat.roomId}`)}>
-                  {/* TODO: 단체톡은 시공업체 아이콘, 개인톡은 상대방 프로필 이미지 표시 */}
                   {chat.isGroup && chat.vendorAvatar ? (
                     <VendorAvatar src={chat.vendorAvatar} />
                   ) : chat.avatar ? (
@@ -119,7 +117,6 @@ export default function ChatTemplate({ chatRooms, onDelete }) {
                       <Timestamp>{formatTodayTimeOrIsoTime(chat.lastMessageTime)}</Timestamp>
                     </MessageInfo>
                     <MessageContent>
-                      {/* 단체톡일 경우 참여자 목록을 부가 정보로 표시 */}
                       <LastMessage
                         style={{ maxWidth: chat.unreadCount > 0 ? 230 : 'auto' }}
                         isPlaceholder={chat.lastMessageContent === '아직 메시지가 없습니다.'}
