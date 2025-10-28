@@ -13,14 +13,10 @@ export default defineConfig({
   define: {
     global: 'window',
   },
-  base: '/', // ← 중요
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
       '@assets': resolve(__dirname, 'src/assets'),
     },
-  },
-  define: {
-    global: 'window',
   },
 });

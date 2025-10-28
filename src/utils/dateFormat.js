@@ -71,31 +71,6 @@ export const formatTodayTimeOrIsoTime = isoString => {
   }
 };
 
-// 날짜 포맷팅을 위한 헬퍼 함수
-/**
- * @function formatIsTodayOrIsoTime
- * @description ISO 8601 형식의 날짜 문자열을 받아서,
- *              오늘 날짜인 경우 '오늘' 문자열을,
- *              그 외의 경우 'YYYY년 M월 D일' 형식으로 변환하여 반환합니다.
- * @param {*} isoString
- * @returns
- */
-export const formatIsTodayOrIsoTime = isoString => {
-  const messageDate = new Date(isoString);
-  const now = new Date();
-
-  const isToday = messageDate.setHours(0, 0, 0, 0) === now.setHours(0, 0, 0, 0);
-  if (isToday) {
-    return '오늘';
-  }
-
-  return messageDate.toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
 /**
  * @description ISO 8601 형식의 날짜 문자열을 "YYYY-MM-DD" 형식으로 변환합니다.
  */
@@ -143,35 +118,6 @@ export function formatYMDWithKoreanTime(isoString) {
   if (!t) return d;
   return `${d} / ${t}`;
 }
-
-/**
- * @function formatTodayTimeOrIsoTime
- * @description ISO 8601 형식의 날짜 문자열을 받아서,
- *              오늘 날짜인 경우 '오전/오후 HH:MM' 형식으로,
- *              그 외의 경우 'YYYY.MM.DD' 형식으로 변환하여 반환합니다.
- * @param {string} isoString - ISO 8601 형식의 날짜 문자열
- * @returns {string} 변환된 날짜 문자열
- */
-export const formatTodayTimeOrIsoTime = isoString => {
-  const DateTmp = new Date(isoString);
-  const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  if (DateTmp >= startOfToday) {
-    return DateTmp.toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  } else {
-    return DateTmp.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-      .replace(/\.$/, '')
-      .replace(/ /g, '');
-  }
-};
 
 // 날짜 포맷팅을 위한 헬퍼 함수
 /**
