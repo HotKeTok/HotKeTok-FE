@@ -1,20 +1,20 @@
 // 검정 배경
-import Tag_Sleeping from '../../../../assets/communication/message/tag/Tag_Sleeping_black.svg?react';
-import Tag_Quiet from '../../../../assets/communication/message/tag/Tag_Quiet_black.svg?react';
-import Tag_Noise from '../../../../assets/communication/message/tag/Tag_Noise_black.svg?react';
-import Tag_Compliment from '../../../../assets/communication/message/tag/Tag_Compliment_black.svg?react';
+import Tag_Sleeping from '../../../../assets/communication/message/Tag/Tag_Sleeping_black.svg?react';
+import Tag_Quiet from '../../../../assets/communication/message/Tag/Tag_Quiet_black.svg?react';
+import Tag_Noise from '../../../../assets/communication/message/Tag/Tag_Noise_black.svg?react';
+import Tag_Compliment from '../../../../assets/communication/message/Tag/Tag_Compliment_black.svg?react';
 
 // active
-import Tag_Sleeping_active from '../../../../assets/communication/message/tag/Tag_Sleeping_active.svg?react';
-import Tag_Quiet_active from '../../../../assets/communication/message/tag/Tag_Quiet_active.svg?react';
-import Tag_Noise_active from '../../../../assets/communication/message/tag/Tag_Noise_active.svg?react';
-import Tag_Compliment_active from '../../../../assets/communication/message/tag/Tag_Compliment_active.svg?react';
+import Tag_Sleeping_active from '../../../../assets/communication/message/Tag/Tag_Sleeping_active.svg?react';
+import Tag_Quiet_active from '../../../../assets/communication/message/Tag/Tag_Quiet_active.svg?react';
+import Tag_Noise_active from '../../../../assets/communication/message/Tag/Tag_Noise_active.svg?react';
+import Tag_Compliment_active from '../../../../assets/communication/message/Tag/Tag_Compliment_active.svg?react';
 
 // disactive
-import Tag_Sleeping_disactive from '../../../../assets/communication/message/tag/Tag_Sleeping_disactive.svg?react';
-import Tag_Quiet_disactive from '../../../../assets/communication/message/tag/Tag_Quiet_disactive.svg?react';
-import Tag_Noise_disactive from '../../../../assets/communication/message/tag/Tag_Noise_disactive.svg?react';
-import Tag_Compliment_disactive from '../../../../assets/communication/message/tag/Tag_Compliment_disactive.svg?react';
+import Tag_Sleeping_disactive from '../../../../assets/communication/message/Tag/Tag_Sleeping_disactive.svg?react';
+import Tag_Quiet_disactive from '../../../../assets/communication/message/Tag/Tag_Quiet_disactive.svg?react';
+import Tag_Noise_disactive from '../../../../assets/communication/message/Tag/Tag_Noise_disactive.svg?react';
+import Tag_Compliment_disactive from '../../../../assets/communication/message/Tag/Tag_Compliment_disactive.svg?react';
 
 // 쪽지 태그 아이콘 맵핑 객체
 export const TAG_ICONS = {
