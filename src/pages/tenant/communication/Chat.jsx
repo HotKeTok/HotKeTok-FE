@@ -46,32 +46,37 @@ export default function Chat() {
     const fetchRooms = async () => {
       if (!accessToken) return;
 
-      setLoading(true);
-      const { success, data } = await getChatroomList(accessToken);
+      try {
+        setLoading(true);
+        const { success, data } = await getChatroomList(accessToken);
 
-      if (success) {
-        // 집주인(landlord)과의 채팅을 가장 위로 올린다.
-        const sortedData = [...data].sort((a, b) => {
-          const isALandlord = a.participants.some(p => p.senderType === 'VENDOR');
-          const isBLandlord = b.participants.some(p => p.senderType === 'VENDOR');
-          if (isALandlord) return -1; // a가 집주인이면 위로
-          if (isBLandlord) return 1; // b가 집주인이면 위로
-          return 0;
-        });
+        if (success) {
+          // 집주인(landlord)과의 채팅을 가장 위로 올린다.
+          const sortedData = [...data].sort((a, b) => {
+            const isALandlord = a.participants.some(p => p.senderType === 'VENDOR');
+            const isBLandlord = b.participants.some(p => p.senderType === 'VENDOR');
+            if (isALandlord) return -1; // a가 집주인이면 위로
+            if (isBLandlord) return 1; // b가 집주인이면 위로
+            return 0;
+          });
 
-        // 내가 보낸 메시지인지 확인하기 위해 'isMe' 속성 추가
-        const processedData = sortedData.map(room => ({
-          ...room,
-          participants: room.participants.map(p => ({
-            ...p,
-            // isMe: p.userId === user.id,
-            isMe: true, // todo(이후 삭제)
-          })),
-        }));
+          // 내가 보낸 메시지인지 확인하기 위해 'isMe' 속성 추가
+          const processedData = sortedData.map(room => ({
+            ...room,
+            participants: room.participants.map(p => ({
+              ...p,
+              // isMe: p.userId === user.id,
+              isMe: true, // todo(이후 삭제)
+            })),
+          }));
 
-        setChatRooms(processedData);
+          setChatRooms(processedData);
+        }
+      } catch (err) {
+        console.error('채팅방 목록 조회 중 오류 발생:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchRooms();

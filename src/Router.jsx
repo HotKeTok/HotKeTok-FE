@@ -126,7 +126,8 @@ const Layout = ({ currentRole, onBoardingStageFlag }) => {
 
 /* ---------- 라우터 ---------- */
 export default function AppRouter() {
-  const { accessToken, currentRole, hydrated, onBoardingStageFlag } = useAuthStore();
+  const currentRole = useAuthStore(state => state.role);
+  const { accessToken, hydrated, onBoardingStageFlag } = useAuthStore();
   const { connect, disconnect } = useChatStore(); // 웹소켓 연결 액션
 
   useEffect(() => {
