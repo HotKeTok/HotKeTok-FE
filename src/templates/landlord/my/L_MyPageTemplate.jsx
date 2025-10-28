@@ -13,6 +13,8 @@ import iconChevron from '../../../assets/repair/icon-chevron.svg';
 import BottomSheet from '../../../components/common/BottomSheet';
 import Button from '../../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../../store/useAuthStore';
+import useChatStore from '../../../store/useChatStore';
 
 /**
  * 집주인 마이페이지 템플릿 (표시 전용)
@@ -33,6 +35,8 @@ export default function L_MyPageTemplate({
   addressManagePath = '/address-admin',
 }) {
   const nav = useNavigate();
+  const logout = useAuthStore(s => s.logout);
+  const disconnect = useChatStore(s => s.disconnect);
 
   const [name, setName] = useState(user?.name || '집주인');
   const [avatar, setAvatar] = useState(user?.profileImage || AvatarImg);
@@ -83,6 +87,12 @@ export default function L_MyPageTemplate({
       await onSaveProfile(editName, editAvatarFile);
     }
     setOpen(false);
+  };
+
+  const handleLogout = () => {
+    disconnect(); // 채팅 연결 해제
+    logout(); // 로그아웃
+    nav('/sign-in');
   };
 
   const moveAddressAdmin = () => nav(addressManagePath);
@@ -175,6 +185,9 @@ export default function L_MyPageTemplate({
                 조회하기 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
+          </Column>
+          <Column style={{ marginTop: 30, cursor: 'pointer' }} onClick={handleLogout}>
+            <div>로그아웃</div>
           </Column>
         </EndSection>
 
