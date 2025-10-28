@@ -39,6 +39,7 @@ export default function AdminCommonBillsTemplate({
   const handleYearSelect = selectedItem => {
     setYear(selectedItem.value);
   };
+
   const handleMonthSelect = selectedItem => {
     setMonth(selectedItem.value);
   };

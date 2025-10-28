@@ -27,9 +27,10 @@ export default function MainTemplate({ updateCurrentAddress, authRequestCount })
     navigate('/my-page');
   };
 
-  const handleAddressChange = (address, number) => {
-    setSelected(address);
-    updateCurrentAddress(address, number);
+  const handleAddressChange = item => {
+    if (!item || !item.label || !item.number) return; // '주소가 없습니다' 항목 선택 시 무시
+    setSelected(item.label);
+    updateCurrentAddress(item.label, item.number);
   };
 
   useEffect(() => {

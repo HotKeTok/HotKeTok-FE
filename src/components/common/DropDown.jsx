@@ -42,13 +42,9 @@ const Dropdown = ({
     };
   }, [isOpen, closeDropdown]);
 
-  const handleItemClick = value => {
-    // items 배열이 객체 형태({ label, value })일 경우를 대비하여 label을 전달합니다.
-    // 만약 items가 문자열 배열이라면 item을 그대로 사용하면 됩니다.
-    const selectedItem = items.find(item => item.label === value);
-    if (selectedItem) {
-      setSelected(selectedItem.label); // 부모의 상태 업데이트
-    }
+  const handleItemClick = item => {
+    setSelected(item);
+
     closeDropdown(); // 메뉴 닫기
   };
 
@@ -64,7 +60,7 @@ const Dropdown = ({
         {items.map((item, index) => (
           <MenuItem
             key={index}
-            onClick={() => handleItemClick(item.label, item.number)}
+            onClick={() => handleItemClick(item)}
             isSelected={selected == item.label}
           >
             {item.label}
