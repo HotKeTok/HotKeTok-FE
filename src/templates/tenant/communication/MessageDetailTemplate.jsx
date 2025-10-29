@@ -9,6 +9,7 @@ import ConfirmModal from '../../../components/common/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
 import OptionsMenu from '../../../components/common/OptionsMenu';
 import { TAG_DATA } from '../../../constants/tenant/main/communication/tag';
+import { useToast } from '../../../contexts/ToastContext';
 
 /**
  * MessageDetailTemplate component
@@ -24,6 +25,7 @@ export default function MessageDetailTemplate({
   onReply,
   onReport,
 }) {
+  const showToast = useToast();
   const navigation = useNavigate();
   const [modal, setModal] = useState(false);
 
@@ -38,6 +40,7 @@ export default function MessageDetailTemplate({
   function handleConfirmReport() {
     onReport();
     setModal(false);
+    showToast('신고가 정상적으로 접수되었습니다.');
     navigation(-1);
   }
 

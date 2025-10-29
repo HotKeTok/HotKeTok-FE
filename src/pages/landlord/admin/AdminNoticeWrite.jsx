@@ -2,8 +2,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AdminNoticeWriteTemplate from '../../../templates/landlord/admin/AdminNoticeWriteTemplate';
 import { postNotice, updateNotice } from '../../../api/notice-service';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { useToast } from '../../../contexts/ToastContext';
 
 export default function AdminNoticeWrite() {
+  const showToast = useToast();
   const accessToken = useAuthStore(state => state.accessToken);
   const location = useLocation();
   const navigate = useNavigate();
@@ -29,11 +31,13 @@ export default function AdminNoticeWrite() {
         const data = await updateNotice(accessToken, formData);
         if (data.success) {
           navigate(-1);
+          showToast('공지가 수정되었어요.');
         }
       } else {
         const data = await postNotice(accessToken, formData);
         if (data.success) {
           navigate(-1);
+          showToast('공지가 등록되었어요.');
         }
       }
     } catch (error) {

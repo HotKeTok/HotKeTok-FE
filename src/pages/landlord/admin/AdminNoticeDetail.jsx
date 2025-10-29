@@ -5,8 +5,10 @@ import { getNoticeDetail } from '../../../api/notice-service';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useState } from 'react';
 import { deleteNotice } from '../../../api/notice-service';
+import { useToast } from '../../../contexts/ToastContext';
 
 export default function AdminNoticeDetail() {
+  const showToast = useToast();
   const params = useParams();
   const navigate = useNavigate();
   const accessToken = useAuthStore(state => state.accessToken);
@@ -19,6 +21,7 @@ export default function AdminNoticeDetail() {
       const data = await deleteNotice(accessToken, params.id);
       if (data.success) {
         navigate('/notice', { replace: true });
+        showToast('공지가 삭제되었어요.');
       }
     } catch (error) {
       console.error('Error deleting notice:', error);
