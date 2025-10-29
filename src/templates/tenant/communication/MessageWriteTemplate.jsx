@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
 import { Row } from '../../../styles/flex';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../../contexts/ToastContext';
 
 export default function MessageWriteTemplate({
   state,
@@ -23,6 +24,7 @@ export default function MessageWriteTemplate({
   fetchNewMessageData,
   preDefinedRecipient = { receiverId: null, senderNumber: null },
 }) {
+  const showToast = useToast();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -65,6 +67,7 @@ export default function MessageWriteTemplate({
     fetchNewMessageData(updatedFormData).then(() => {
       setModal(false);
       navigate('/message');
+      showToast('쪽지를 보냈어요.');
     });
   };
 
