@@ -12,6 +12,7 @@ import IcnNoChat from '../../../assets/chat/no-chat-icon.svg?react';
 import IcnDefaultProfile from '../../../assets/common/icon-profile-default.svg?react';
 import Toast from '../../../components/common/Toast';
 import { useAuthStore } from '../../../store/useAuthStore';
+import IconPinned from '../../../assets/common/icon-pinned.svg?react';
 
 export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast }) {
   const navigate = useNavigate();
@@ -39,7 +40,6 @@ export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast })
         groupTalk.push(newChat); // 가공된 단체 채팅방 정보 저장
       } else {
         const otherParticipant = chat.participants.find(p => p.userId !== myUserId);
-        console.log('Other Participant:', otherParticipant);
         const newChat = {
           ...chat,
           name: otherParticipant?.userName || '알 수 없는 사용자',
@@ -58,6 +58,7 @@ export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast })
 
   const chatsToShow = activeTab === 'direct' ? processedChats.directTalk : processedChats.groupTalk;
 
+  console.log(chatsToShow);
   return (
     <Page style={{ backgroundColor: '#f5f6f6', position: 'relative' }}>
       <Toast show={toast.open} onClose={closeToast} message={toast.message} duration={1000} />
@@ -113,6 +114,7 @@ export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast })
                         <SenderName>{chat.name}</SenderName>
                         {/* 개인톡이면서 상대방이 업체일 경우 태그 표시 */}
                         {chat.isVendor && <SenderType>업체</SenderType>}
+                        {chat.isLandlordChat && <IconPinned />}
                       </SenderInfo>
                       <Timestamp>{formatTodayTimeOrIsoTime(chat.lastMessageTime)}</Timestamp>
                     </MessageInfo>
