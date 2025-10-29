@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { apiGetEstimateInfo, apiGetEstimateList } from '../../../api/estimate-service';
+import { apiGetRepairDetail } from '../../../api/requestform-service';
 import TopBar from '../../../components/common/TopBar';
 import RepairProgressTemplate from '../../../templates/tenant/repair/RepairProgressTemplate';
-import { apiGetRepairDetail } from '../../../api/requestform-service';
-import { apiGetEstimateList, apiGetEstimateInfo } from '../../../api/estimate-service';
 import { getAccessToken } from '../../../utils/auth';
 import { formatYMDWithKoreanTime } from '../../../utils/dateFormat';
 
@@ -33,7 +33,6 @@ function mapEstimateToQuote(e) {
     price: e.price,
     schedule: e.estimateTime,
     decisionLater: e.decisionLater ?? e.discisionLater ?? false,
-    roomId: e.roomId,
   };
 }
 
@@ -55,6 +54,7 @@ function mapEstimateInfoToQuote(r) {
 }
 
 export default function RepairProgress() {
+  const [roomId, setRoomId] = useState(null);
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const requestFormId = params.get('id');
@@ -75,7 +75,6 @@ export default function RepairProgress() {
           return;
         }
         const d = res.data;
-        console.log(d);
 
         // 2) 견적서 목록
         const listRes = await apiGetEstimateList(token, requestFormId);
@@ -104,6 +103,8 @@ export default function RepairProgress() {
             const idx = quotes.findIndex(q => q.id === selectedId);
             if (idx === -1) quotes = [selectedQuote, ...quotes];
             else quotes[idx] = { ...quotes[idx], ...selectedQuote };
+            // roomId도 업데이트
+            setRoomId(selectedQuote.roomId);
           }
         }
 
@@ -122,7 +123,6 @@ export default function RepairProgress() {
             address: `${d.currentAddress} ${d.currentNumber || ''}`.trim(),
             description: d.description,
             images: d.imagesUrl || [],
-            roomId: d.roomId,
           },
           initialQuotes: quotes,
         });
@@ -155,5 +155,5 @@ export default function RepairProgress() {
       </>
     );
 
-  return <RepairProgressTemplate {...data} />;
+  return <RepairProgressTemplate {...data} roomId={roomId} />;
 }

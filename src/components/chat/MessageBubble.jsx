@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
-import styled, { css } from 'styled-components';
-import { color, typo } from '../../styles/tokens';
 import { useNavigate } from 'react-router-dom';
-import { Row } from '../../styles/flex';
-import { toKoreanTime } from '../../utils/dateFormat';
-import { formatIsTodayOrIsoTime, getHHMMTimeWithHour12 } from '../../utils/dateFormat';
+import styled, { css } from 'styled-components';
 import ProfileDefaultIcon from '../../assets/common/icon-profile-default.svg?react';
+import { Row } from '../../styles/flex';
+import { color, typo } from '../../styles/tokens';
+import {
+  formatIsTodayOrIsoTime,
+  getHHMMTimeWithHour12,
+  toKoreanTime,
+} from '../../utils/dateFormat';
 
 export default function Chat({ message, isMe, senderInfo, showDateSeparator }) {
   const navigate = useNavigate();
@@ -23,12 +26,10 @@ export default function Chat({ message, isMe, senderInfo, showDateSeparator }) {
     const jsonString = message.content;
 
     const data = JSON.parse(jsonString);
-    const estimateId = data.estimateId;
-    console.log('estimateId', estimateId);
 
     if (parsedData) {
       // 상세페이지가 따로 없으므로
-      navigate(`/repair-progress?id=${estimateId}`);
+      navigate(`/repair-progress?id=${data.requestFormId}`);
     }
   };
 
@@ -128,7 +129,8 @@ const BubbleContainer = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 4px;
-  flex-direction: ${({ isMe }) => (isMe ? 'row' : 'row-reverse')};
+
+  flex-direction: row;
 `;
 
 const Timestamp = styled.span`

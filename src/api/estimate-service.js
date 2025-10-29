@@ -60,7 +60,7 @@ export async function apiGetEstimateInfo(accessToken, estimateId) {
     const success = data?.isSuccess === true || data?.status === 200 || data?.code === 'COMMON200';
     return {
       success,
-      data: data?.result ?? null,
+      data: data?.data ?? null,
       message: data?.message ?? '',
     };
   } catch (e) {
@@ -68,3 +68,5 @@ export async function apiGetEstimateInfo(accessToken, estimateId) {
     return { success: false, data: null, message: e?.response?.data?.message || e.message };
   }
 }
+
+//http://localhost:5173/repair-progress?id=4

@@ -1,5 +1,4 @@
 // src/templates/landlord/repair/L_RepairProgressTemplate.jsx
-import React from 'react';
 import RepairProgressTemplate from '../../../templates/tenant/repair/RepairProgressTemplate';
 
 /**
@@ -15,8 +14,8 @@ export default function L_RepairProgressTemplate({
   initialSelectedQuoteId,
   mode = 'LANDLORD',
   landlordCanSelect = false,
+  roomId = null,
 }) {
-  console.log(request);
   return (
     <RepairProgressTemplate
       initialStep={initialStep}
@@ -26,6 +25,7 @@ export default function L_RepairProgressTemplate({
       initialQuotes={quotes}
       isLandlordView={true} //  집주인 권한 열기 (핵심)
       landlordCanSelect={landlordCanSelect}
+      roomId={roomId}
     />
   );
 }
