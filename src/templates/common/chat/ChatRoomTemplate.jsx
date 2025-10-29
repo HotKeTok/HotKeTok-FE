@@ -91,7 +91,7 @@ const InputContainer = styled.div`
   position: fixed;
   width: 390px;
   padding-bottom: 20px;
-  background-color: ${color('grayscale.200')};
+  background-color: ${color('grayscale.100')};
 
   bottom: 0;
   margin: 0 auto;
