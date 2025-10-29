@@ -18,15 +18,19 @@ export default function WriteChoiceContent({ handleSelectReceiver, selectedRecei
         <Caption1>이웃의 호수를 선택하고 전하고 싶은 메세지를 쪽지로 보내보세요.</Caption1>
       </Column>
       <ToggleContainer>
-        {sortedTenantList.map(data => (
-          <BoxToggle
-            key={data.floor}
-            handleSelectReceiver={handleSelectReceiver}
-            floor={data.floor}
-            units={data.units}
-            selectedId={selectedReceiver}
-          />
-        ))}
+        {sortedTenantList.length === 0 ? (
+          <div>우리 건물에 아직 입주한 이웃이 없어요.</div>
+        ) : (
+          sortedTenantList.map(data => (
+            <BoxToggle
+              key={data.floor}
+              handleSelectReceiver={handleSelectReceiver}
+              floor={data.floor}
+              units={data.units}
+              selectedId={selectedReceiver}
+            />
+          ))
+        )}
       </ToggleContainer>
     </>
   );
