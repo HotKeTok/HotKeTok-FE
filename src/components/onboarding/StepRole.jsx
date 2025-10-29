@@ -41,9 +41,8 @@ export default function StepRole({ onNext }) {
           </Column>
         </ModeItem>
       </Column>
-
       <Spacer />
-      <div style={{ padding: '30px 24px' }}>
+      <div style={{ padding: '30px 24px', position: 'sticky', bottom: '0' }}>
         <Button
           text="선택하기"
           active={!!selectedRole}
