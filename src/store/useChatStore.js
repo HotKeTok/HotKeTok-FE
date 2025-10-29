@@ -142,7 +142,7 @@ const useChatStore = create((set, get) => ({
     const client = get().stompClient;
     if (client && get().isConnected) {
       client.publish({
-        destination: '/topic/chat/message',
+        destination: '/pub/chat/message',
         body: JSON.stringify({
           roomId,
           senderId,
