@@ -124,6 +124,7 @@ const Container = styled.div`
   width: 100%;
   height: calc(100% - var(--top-bar-h));
   padding: 0px 24px;
+  background-color: #fff;
 
   display: flex;
   flex-direction: column;

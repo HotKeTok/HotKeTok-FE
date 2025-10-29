@@ -118,7 +118,7 @@ const Card = styled.div`
   scroll-snap-align: start;
   border-radius: 10px;
   background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
   overflow: hidden;
   display: grid;
   grid-template-rows: 1fr 160px;
