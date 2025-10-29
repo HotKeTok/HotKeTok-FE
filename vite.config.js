@@ -10,6 +10,9 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   base: '/', // ← 중요
   plugins: [react(), svgr({ exportAsDefault: true })],
+  define: {
+    global: 'window',
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),

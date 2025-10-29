@@ -17,6 +17,7 @@ export const HIDE_BOTTOM_BAR_PATHS = [
   '/message',
   '/alarm',
   '/admin/',
+  '/chat',
 ];
 export const HIDE_HEADER_PATHS = [];
 

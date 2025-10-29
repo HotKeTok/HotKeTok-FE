@@ -3,7 +3,6 @@ import NoticeComponent from '../../../components/communication/NoticeComponent';
 import { Page, ScrollableContent } from '../../../styles/layout';
 import { typo } from '../../../styles/tokens';
 import styled from 'styled-components';
-import { EXAMPLE_NOTICES } from '../../../mocks/main/notice';
 import { ADMIN_DASHBOARD_ITEMS, DASHBOARD_ITEMS } from '../../../constants/landlord/main';
 import { useNavigate } from 'react-router-dom';
 import { Column, Row } from '../../../styles/flex';

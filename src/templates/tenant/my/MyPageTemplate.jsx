@@ -15,6 +15,9 @@ import BottomSheet from '../../../components/common/BottomSheet';
 import Button from '../../../components/common/Button';
 import { useNavigate } from 'react-router-dom';
 
+import { useAuthStore } from '../../../store/useAuthStore';
+import useChatStore from '../../../store/useChatStore';
+
 /**
  * ✅ API 연동 버전 (UI 변경 없음)
  * props:
@@ -30,6 +33,8 @@ export default function MyPageTemplate({
   saving = false,
   onSaveProfile,
 }) {
+  const logout = useAuthStore(s => s.logout);
+  const disconnect = useChatStore(s => s.disconnect);
   const [name, setName] = useState(user?.name || '핫케톡');
   const [avatar, setAvatar] = useState(user?.profileImage || AvatarImg);
   const [avatarFile, setAvatarFile] = useState(null);
@@ -86,6 +91,12 @@ export default function MyPageTemplate({
 
   const moveAddressAdmin = () => {
     nav('/address-admin');
+  };
+
+  const handleLogout = () => {
+    disconnect(); // 채팅 연결 해제
+    logout(); // 로그아웃
+    nav('/sign-in');
   };
 
   // ✅ 로딩 상태
@@ -173,6 +184,9 @@ export default function MyPageTemplate({
                 조회하기 <img src={iconChevron} alt=">" />
               </MoveText>
             </Row>
+          </Column>
+          <Column style={{ marginTop: 30, cursor: 'pointer' }} onClick={handleLogout}>
+            <div>로그아웃</div>
           </Column>
         </EndSection>
 

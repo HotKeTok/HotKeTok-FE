@@ -1,5 +1,6 @@
 // src/Router.jsx
 import React from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, useLocation, Navigate } from 'react-router-dom';
 
 // 공통 관련
@@ -24,7 +25,7 @@ import AdminTenantsInfo from './pages/landlord/admin/AdminTenantsInfo';
 import AdminTenantsDetail from './pages/landlord/admin/AdminTenantsDetail';
 import AdminCommonBills from './pages/landlord/admin/AdminCommonBills';
 import AdminCommonBillsWrite from './pages/landlord/admin/AdminCommonBillsWrite';
-import ChatMainLandlord from './pages/landlord/communication/ChatMain';
+import ChatLandlord from './pages/landlord/communication/Chat';
 import ChatRoomLandlord from './pages/landlord/communication/ChatRoom';
 import MyPageLandlord from './pages/landlord/my/L_MyPage';
 import AddressAdminLandlord from './pages/landlord/my/L_AddressAdmin';
@@ -61,6 +62,10 @@ import { AppShell, MainContainer, BottomBar } from './styles/layout';
 // 상태
 import { useAuthStore } from './store/useAuthStore';
 import { getAccessToken } from './utils/auth';
+import useChatStore from './store/useChatStore';
+
+import * as StompJs from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 /* ---------- 인증 보호 ---------- */
 const ProtectedRoute = () => {
@@ -121,9 +126,22 @@ const Layout = ({ currentRole, onBoardingStageFlag }) => {
 
 /* ---------- 라우터 ---------- */
 export default function AppRouter() {
-  const currentRole = useAuthStore(s => s.role);
-  const hydrated = useAuthStore(s => s.hydrated);
-  const onBoardingStageFlag = useAuthStore(s => s.onBoardingStageFlag);
+  const currentRole = useAuthStore(state => state.role);
+  const { accessToken, hydrated, onBoardingStageFlag } = useAuthStore();
+  const { connect, disconnect } = useChatStore(); // 웹소켓 연결 액션
+
+  useEffect(() => {
+    // accessToken이 존재하면 (로그인 성공 시) 웹소켓 연결
+    if (accessToken !== '' && hydrated) {
+      connect(accessToken);
+    }
+
+    // accessToken이 사라지면 (로그아웃 시) 웹소켓 연결 해제
+    // useEffect의 클린업 함수를 활용
+    return () => {
+      disconnect();
+    };
+  }, [accessToken, connect, disconnect, hydrated]);
 
   if (!hydrated) return null;
 
@@ -168,7 +186,7 @@ export default function AppRouter() {
                 <Route path="/admin/tenants/detail/:id" element={<AdminTenantsDetail />} />
                 <Route path="/admin/common-bills" element={<AdminCommonBills />} />
                 <Route path="/admin/common-bills/write" element={<AdminCommonBillsWrite />} />
-                <Route path="/chat" element={<ChatMainLandlord />} />
+                <Route path="/chat" element={<ChatLandlord />} />
                 <Route path="/chat/chat-room/:id" element={<ChatRoomLandlord />} />
                 <Route path="/my-page" element={<MyPageLandlord />} />
                 <Route path="/address-admin" element={<AddressAdminLandlord />} />
@@ -192,7 +210,7 @@ export default function AppRouter() {
                 <Route path="/write-review" element={<WriteReview />} />
                 <Route path="/communication" element={<Communication />} />
                 <Route path="/chat" element={<Chat />} />
-                <Route path="/chat/chat-room" element={<ChatRoom />} />
+                <Route path="/chat/chat-room/:id" element={<ChatRoom />} />
                 <Route path="/message" element={<Message />} />
                 <Route path="/message/detail/:id" element={<MessageDetail />} />
                 <Route path="/message/write" element={<MessageWrite />} />
