@@ -91,17 +91,26 @@ export default function MainTemplate({ updateCurrentAddress, authRequestCount })
         <DashboardContainer>
           {filteredItems.map((item, index) => {
             const IconComponent = item.image;
+            const isDisabled = item.key === 3 && authRequestCount === 0;
+            const backgroundColor = isDisabled ? '#E6FBF3' : item.background;
 
             return (
               <Button
                 key={index}
                 onClick={() => navigate(item.route)}
-                style={{ background: item.background }}
+                style={{
+                  background: backgroundColor,
+                  cursor: isDisabled ? 'default' : 'pointer',
+                  transition: isDisabled ? 'none' : 'transform 0.2s ease-in-out, box-shadow 0.2s',
+                }}
+                disabled={isDisabled}
               >
                 <Row $gap={14} style={{ height: '100%' }}>
                   <TextWrapper>
                     <Title>{item.text}</Title>
-                    {item.description && <Description>요청 {authRequestCount}건</Description>}
+                    {item.description && authRequestCount > 0 && (
+                      <Description>요청 {authRequestCount}건</Description>
+                    )}
                   </TextWrapper>
                   <Column $justify={'center'} style={{ height: 38, width: 20, cursor: 'pointer' }}>
                     <StyleArrowRight width={7} height={11} stroke="#565656" />
@@ -167,16 +176,19 @@ const Button = styled.button`
   justify-content: space-between;
   text-align: left;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s;
   width: 166px;
   height: 140px;
 
   position: relative;
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
+    ${props =>
+      !props.disabled &&
+      `
+
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }`}
 `;
 
 const TextWrapper = styled.div`

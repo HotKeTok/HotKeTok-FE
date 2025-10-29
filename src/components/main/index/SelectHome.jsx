@@ -10,25 +10,22 @@ import { color, typo } from '../../../styles/tokens';
  * @param {(id: string | number) => void} onSelectAddress - 주소 선택 시 호출될 콜백 함수
  */
 export default function SelectHome({ addresses = [], onSelectAddress }) {
+  const currentHome = addresses.find(home => home.isCurrent) || null;
+  const alias = currentHome ? currentHome.alias : '주소를 선택하세요';
+
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const selectedHome = addresses.find(home => home.isCurrent === true);
-  const displayTitle = selectedHome ? selectedHome.alias : '주소를 선택하세요';
+  const handleSelect = selectedItem => {
+    onSelectAddress(selectedItem);
+    setIsOpen(false); // 드롭다운 닫기
+  };
 
   // 드롭다운 열기/닫기 토글
   const handleToggle = () => setIsOpen(!isOpen);
 
-  // 드롭다운 아이템 선택
-  const handleSelect = id => {
-    onSelectAddress(id); // 부모 컴포넌트에 알림
-    setIsOpen(false); // 드롭다운 닫기
-  };
-
   useEffect(() => {
-    // 문서 전체에 클릭 이벤트 리스너 추가
     function handleClickOutside(event) {
-      // 클릭된 위치가 dropdownRef(컴포넌트)의 바깥쪽인지 확인
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false); // 바깥쪽이면 드롭다운 닫기
       }
@@ -46,7 +43,7 @@ export default function SelectHome({ addresses = [], onSelectAddress }) {
 
       <DropdownWrapper ref={dropdownRef}>
         <TriggerRow $gap={6} $align={'center'} onClick={handleToggle}>
-          <Subtitle1>{displayTitle}</Subtitle1>
+          <Subtitle1>{alias}</Subtitle1>
           <ArrowDown $isOpen={isOpen} stroke={'#FFF'} />
         </TriggerRow>
 

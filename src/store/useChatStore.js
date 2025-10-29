@@ -89,12 +89,15 @@ const useChatStore = create((set, get) => ({
   },
 
   fetchChatRooms: async () => {
-    const accessToken = getAccessToken();
-    if (!accessToken) return;
+    const token = getAccessToken();
+    if (!token) return;
 
-    const { success, data } = await getChatroomList(accessToken);
+    const { success, data } = await getChatroomList(token);
+    const sortedData = data.sort((a, b) => {
+      return new Date(b.lastMessageTime) - new Date(a.lastMessageTime);
+    });
     if (success) {
-      set({ chatRooms: data });
+      set({ chatRooms: sortedData });
     }
   },
 
