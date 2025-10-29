@@ -93,11 +93,8 @@ const useChatStore = create((set, get) => ({
     if (!token) return;
 
     const { success, data } = await getChatroomList(token);
-    const sortedData = data.sort((a, b) => {
-      return new Date(b.lastMessageTime) - new Date(a.lastMessageTime);
-    });
     if (success) {
-      set({ chatRooms: sortedData });
+      set({ chatRooms: data });
     }
   },
 

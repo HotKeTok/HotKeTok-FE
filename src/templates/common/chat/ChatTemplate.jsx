@@ -4,7 +4,10 @@ import ButtonRound from '../../../components/common/ButtonRound';
 import TopBar from '../../../components/common/TopBar';
 import { Page, ScrollableNoBottomBarContent, TOP_BAR_HEIGHT } from '../../../styles/layout';
 import { useNavigate } from 'react-router-dom';
-import { formatTodayTimeOrIsoTime } from '../../../utils/dateFormat';
+import {
+  formatTodayTimeOrIsoTime,
+  sortChatRoomsByLastMessageTime,
+} from '../../../utils/dateFormat';
 import SwipeableChatItem from '../../../components/chat/SwipableChatItem';
 import { Column, Row } from '../../../styles/flex';
 import { color, typo } from '../../../styles/tokens';
@@ -13,6 +16,7 @@ import IcnDefaultProfile from '../../../assets/common/icon-profile-default.svg?r
 import Toast from '../../../components/common/Toast';
 import { useAuthStore } from '../../../store/useAuthStore';
 import IconPinned from '../../../assets/common/icon-pinned.svg?react';
+import { toKoreanTime } from '../../../utils/dateFormat';
 
 export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast }) {
   const navigate = useNavigate();
@@ -57,8 +61,19 @@ export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast })
   }, [chatRooms]);
 
   const chatsToShow = activeTab === 'direct' ? processedChats.directTalk : processedChats.groupTalk;
+  const sortedChats = sortChatRoomsByLastMessageTime(chatsToShow);
+  // 만약 롤이 'tenant'라면, 집주인 채팅방을 최상단에 고정
+  const finalChats = useMemo(() => {
+    if (useAuthStore.getState().role !== 'tenant') {
+      return sortedChats;
+    }
 
-  console.log(chatsToShow);
+    const landlordChats = sortedChats.filter(chat => chat.isLandlordChat);
+    const otherChats = sortedChats.filter(chat => !chat.isLandlordChat);
+
+    return [...landlordChats, ...otherChats];
+  }, [sortedChats]);
+
   return (
     <Page style={{ backgroundColor: '#f5f6f6', position: 'relative' }}>
       <Toast show={toast.open} onClose={closeToast} message={toast.message} duration={1000} />
@@ -94,7 +109,7 @@ export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast })
               height: `calc(100vh- ${TOP_BAR_HEIGHT}) -80px`,
             }}
           >
-            {chatsToShow.map(chat => (
+            {finalChats.map(chat => (
               <SwipeableChatItem
                 key={chat.roomId}
                 onDelete={() => onDelete(chat.roomId, chat.name)}
@@ -116,7 +131,9 @@ export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast })
                         {chat.isVendor && <SenderType>업체</SenderType>}
                         {chat.isLandlordChat && <IconPinned />}
                       </SenderInfo>
-                      <Timestamp>{formatTodayTimeOrIsoTime(chat.lastMessageTime)}</Timestamp>
+                      <Timestamp>
+                        {formatTodayTimeOrIsoTime(toKoreanTime(chat.lastMessageTime))}
+                      </Timestamp>
                     </MessageInfo>
                     <MessageContent>
                       <LastMessage

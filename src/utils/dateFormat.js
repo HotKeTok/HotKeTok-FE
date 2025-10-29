@@ -150,3 +150,13 @@ export function toKoreanTime(isoString) {
   date.setHours(date.getHours() + 9);
   return date.toISOString();
 }
+
+// 채팅방 목록을 최근 메시지 시간 순으로 정렬하는 함수
+export function sortChatRoomsByLastMessageTime(chatRooms) {
+  return [...chatRooms].sort((a, b) => {
+    const cleanTimeB = b.lastMessageTime.replace(/(\.\d{3})\d+/, '$1');
+    const cleanTimeA = a.lastMessageTime.replace(/(\.\d{3})\d+/, '$1');
+
+    return new Date(cleanTimeB) - new Date(cleanTimeA);
+  });
+}
