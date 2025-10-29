@@ -1,12 +1,11 @@
 // src/components/repair/repair-progress/StepCompleted.jsx
 import React from 'react';
 import styled from 'styled-components';
-import Button from '../../common/Button';
 import RepairDetailRows from '../repair-progress/RepairDetailRows';
 import { color, typo } from '../../../styles/tokens';
 import { useNavigate } from 'react-router-dom';
 
-export default function StepCompleted({ selectedQuote, onWriteReview, hopeAt }) {
+export default function StepCompleted({ selectedQuote, hopeAt }) {
   const nav = useNavigate();
   if (!selectedQuote) return null;
 
@@ -32,9 +31,6 @@ export default function StepCompleted({ selectedQuote, onWriteReview, hopeAt }) 
           }
         />
       </Card>
-      <StickyFooter>
-        <Button text="후기 작성하기" active onClick={onWriteReview} />
-      </StickyFooter>
     </>
   );
 }
@@ -54,10 +50,4 @@ const SectionHeader = styled.div`
 const Card = styled.div`
   padding: 16px 24px 24px 24px;
   background: #fff;
-`;
-const StickyFooter = styled.div`
-  position: sticky;
-  bottom: 0px;
-  background: #fff;
-  padding: 12px 24px 18px;
 `;

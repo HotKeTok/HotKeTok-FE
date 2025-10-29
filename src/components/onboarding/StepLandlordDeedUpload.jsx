@@ -69,7 +69,7 @@ export default function StepLandlordDeedUpload({
       </div>
 
       <Spacer />
-      <div style={{ padding: '30px 24px' }}>
+      <div style={{ padding: '30px 24px', position: 'sticky', bottom: '0' }}>
         <Button
           text={submitting ? '제출 중...' : '등록 완료'}
           active={!!file && !submitting}

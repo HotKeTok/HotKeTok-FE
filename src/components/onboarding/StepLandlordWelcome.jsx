@@ -31,7 +31,7 @@ export default function StepLandlordWelcome() {
           알림을 보내드릴게요.
         </SuccessSub>
       </ContentWrapCentered>
-      <div style={{ padding: '30px 24px' }}>
+      <div style={{ padding: '30px 24px', position: 'sticky', bottom: '0' }}>
         <FadeInWrap>
           <Button text="시작하기" active={showBtn} onClick={() => navigate('/')} />
         </FadeInWrap>

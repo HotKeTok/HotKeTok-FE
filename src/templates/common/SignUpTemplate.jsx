@@ -314,14 +314,14 @@ export default function SignUpTemplate({
 
         <Spacer />
 
-        <div style={{ padding: '30px 24px' }}>
+        <StickyFooter>
           <Button
             text={submitting ? '가입 중...' : '가입하기'}
             onClick={handleSubmit}
             disabled={submitting}
             active={name && phoneVerified && idCheckResult && isPasswordReSuccess}
           />
-        </div>
+        </StickyFooter>
       </Container>
     </>
   );
@@ -337,6 +337,7 @@ const FormWrapper = styled.div`
   flex-direction: column;
   padding: 30px 24px;
   gap: 30px;
+  overflow-y: auto;
 `;
 const TextFieldTitle = styled.div`
   ${typo('caption1')};
@@ -359,4 +360,11 @@ const CustomTitle = styled.div`
   ${typo('body1')};
   color: ${color('grayscale.800')};
   white-space: pre-wrap;
+`;
+
+const StickyFooter = styled.div`
+  position: sticky;
+  bottom: 0px;
+  background: #fff;
+  padding: 12px 24px 18px;
 `;

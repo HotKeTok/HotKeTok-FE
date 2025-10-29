@@ -66,7 +66,12 @@ export default function AdminTenantsDetailTemplate({
   return (
     <>
       <PageWithoutBottomBar
-        style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          backgroundColor: '#fff',
+        }}
       >
         {deleteModal && (
           <ConfirmModal

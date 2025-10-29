@@ -110,7 +110,13 @@ export default function AdminCommonBillsTemplate({
       <TopBar title="공동 관리비 현황" />
 
       <ScrollableNoBottomBarContent
-        style={{ paddingLeft: 27, paddingRight: 27, paddingBottom: 80, paddingTop: 0 }}
+        style={{
+          paddingLeft: 27,
+          paddingRight: 27,
+          paddingBottom: 80,
+          paddingTop: 0,
+          backgroundColor: '#fff',
+        }}
       >
         <FilterContainer>
           <Dropdown

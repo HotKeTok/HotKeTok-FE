@@ -87,7 +87,7 @@ export default function StepReview({ baseAddress, floor, ho, requesting, onReque
 
         <Spacer />
 
-        <div style={{ padding: '30px 24px' }}>
+        <div style={{ padding: '30px 24px', position: 'sticky', bottom: '0' }}>
           <Button
             text={requesting ? '요청 중...' : '요청하기'}
             active={!requesting}
@@ -110,7 +110,7 @@ export default function StepReview({ baseAddress, floor, ho, requesting, onReque
         <SuccessSub>인증이 완료되면 알림을 보내드릴게요!</SuccessSub>
       </ContentWrapCentered>
 
-      <div style={{ padding: '30px 24px' }}>
+      <div style={{ padding: '30px 24px', position: 'sticky', bottom: '0' }}>
         <FadeInWrap $show={showDoneBtn}>
           <Button text="완료하기" active={showDoneBtn} onClick={() => navigate('/')} />
         </FadeInWrap>

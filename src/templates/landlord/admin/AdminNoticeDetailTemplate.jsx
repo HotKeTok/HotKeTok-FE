@@ -1,5 +1,5 @@
 import TopBar from '../../../components/common/TopBar';
-import { Page, ScrollableNoBottomBarContent } from '../../../styles/layout';
+import { Page, PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../styles/layout';
 import styled from 'styled-components';
 import { color, typo } from '../../../styles/tokens';
 import { Row } from '../../../styles/flex';
@@ -47,41 +47,43 @@ export default function AdminNoticeDetailTemplate({ noticeDetail, onDelete }) {
   };
 
   return (
-    <Page>
+    <PageWithoutBottomBar>
       <TopBar title="공지사항" />
-      <Content>
-        <div>
-          <Row $justify="space-between" $align="center">
-            <H2>{noticeDetail.title}</H2>
-            <OptionsMenu options={optionsMenuItems} />
-          </Row>
-
-          <Row $justify="space-between" style={{ marginTop: 8 }}>
-            <Row $gap={8} $align={'center'}>
-              {noticeDetail.authorProfileImage ? (
-                <ProfileImage src={noticeDetail.authorProfileImage} alt="Profile" />
-              ) : (
-                <ProfileDefault width={24} height={24} />
-              )}
-              <Body2>{noticeDetail.author}</Body2>
+      <Container>
+        <Content>
+          <div>
+            <Row $justify="space-between" $align="center">
+              <H2>{noticeDetail.title}</H2>
+              <OptionsMenu options={optionsMenuItems} />
             </Row>
-            <Body2 style={{ color: theme.colors.grayscale[500] }}>
-              {formatDateToYMD(noticeDetail.createdAt)}
-            </Body2>
-          </Row>
-        </div>
-        <Divider />
-        <Body2>{noticeDetail.content}</Body2>
-      </Content>
-      <ConfirmModal
-        isOpen={modal}
-        onClose={() => setModal(false)}
-        onConfirm={confirmDelete}
-        title="공지 삭제"
-        description="공지를 삭제하시겠어요?"
-        confirmText="삭제하기"
-      />
-    </Page>
+
+            <Row $justify="space-between" style={{ marginTop: 8 }}>
+              <Row $gap={8} $align={'center'}>
+                {noticeDetail.authorProfileImage ? (
+                  <ProfileImage src={noticeDetail.authorProfileImage} alt="Profile" />
+                ) : (
+                  <ProfileDefault width={24} height={24} />
+                )}
+                <Body2>{noticeDetail.author}</Body2>
+              </Row>
+              <Body2 style={{ color: theme.colors.grayscale[500] }}>
+                {formatDateToYMD(noticeDetail.createdAt)}
+              </Body2>
+            </Row>
+          </div>
+          <Divider />
+          <Body2>{noticeDetail.content}</Body2>
+        </Content>
+        <ConfirmModal
+          isOpen={modal}
+          onClose={() => setModal(false)}
+          onConfirm={confirmDelete}
+          title="공지 삭제"
+          description="공지를 삭제하시겠어요?"
+          confirmText="삭제하기"
+        />
+      </Container>
+    </PageWithoutBottomBar>
   );
 }
 
