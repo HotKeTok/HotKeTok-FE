@@ -64,7 +64,9 @@ export default function AdminCommonBillsWriteTemplate({ fetchCommonBills }) {
   return (
     <PageWithoutBottomBar>
       <TopBar title="공동 관리비 기록" />
-      <ScrollableNoBottomBarContent style={{ paddingLeft: 24, paddingRight: 24 }}>
+      <ScrollableNoBottomBarContent
+        style={{ paddingLeft: 24, paddingRight: 24, backgroundColor: '#fff' }}
+      >
         <Column $gap={40} style={{ marginTop: 30, width: '100%' }}>
           {/* 날짜 영역 */}
           <Row $justify="space-between" $align="center" style={{ width: '100%' }}>

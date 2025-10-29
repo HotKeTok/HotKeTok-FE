@@ -35,7 +35,7 @@ export default function StepLandlordHouseholdCount({ defaultCount = '', onNext, 
       </div>
 
       <Spacer />
-      <div style={{ padding: '30px 24px' }}>
+      <div style={{ padding: '30px 24px', position: 'sticky', bottom: '0' }}>
         <Button text="다음" active={isValid} onClick={() => isValid && onNext(n)} />
       </div>
     </PageWrap>

@@ -13,7 +13,7 @@ export default function AdminTenantsInfoTemplate({ tenantsList, loading }) {
     <PageWithoutBottomBar>
       <TopBar title="입주민 목록" />
       <ScrollableNoBottomBarContent
-        style={{ paddingLeft: 10, paddingRight: 10, paddingBottom: 20 }}
+        style={{ paddingLeft: 10, paddingRight: 10, paddingBottom: 20, backgroundColor: '#fff' }}
       >
         {loading ? (
           <div>Loading...</div>
