@@ -20,7 +20,9 @@ export default function AdminTenantsInfoTemplate({ tenantsList, loading }) {
         ) : tenantsList.length === 0 ? (
           <Column $justify="center" $align="center" style={{ height: '100%' }}>
             <TenantsIcn width={70} height={70} />
-            <Description style={{ whiteSpace: 'pre-wrap' }}>{EMPTY_TEXT}</Description>
+            <Description style={{ whiteSpace: 'pre-wrap', textAlign: 'center' }}>
+              {EMPTY_TEXT}
+            </Description>
           </Column>
         ) : (
           <>
