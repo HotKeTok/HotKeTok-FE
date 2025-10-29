@@ -29,6 +29,7 @@ export default function RepairProgressTemplate({
   isLandlordView = false, // ✅ 집주인 화면 여부
   landlordCanSelect = false,
 } = {}) {
+  console.log(initialRequest);
   const [mode] = useState(initialMode ?? COST_MODE.SELF);
   const [step, setStep] = useState(initialStep ?? STEP.FINDING);
   const [selectedQuoteId, setSelectedQuoteId] = useState(initialSelectedQuoteId ?? null);

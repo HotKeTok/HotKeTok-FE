@@ -33,6 +33,7 @@ function mapEstimateToQuote(e) {
     price: e.price,
     schedule: e.estimateTime,
     decisionLater: e.decisionLater ?? e.discisionLater ?? false,
+    roomId: e.roomId,
   };
 }
 
@@ -49,6 +50,7 @@ function mapEstimateInfoToQuote(r) {
     price: r.estimatePrice,
     schedule: r.estimateTime,
     decisionLater: false,
+    roomId: r.roomId,
   };
 }
 
@@ -73,6 +75,7 @@ export default function RepairProgress() {
           return;
         }
         const d = res.data;
+        console.log(d);
 
         // 2) 견적서 목록
         const listRes = await apiGetEstimateList(token, requestFormId);
@@ -119,6 +122,7 @@ export default function RepairProgress() {
             address: `${d.currentAddress} ${d.currentNumber || ''}`.trim(),
             description: d.description,
             images: d.imagesUrl || [],
+            roomId: d.roomId,
           },
           initialQuotes: quotes,
         });

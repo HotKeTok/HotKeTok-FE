@@ -142,6 +142,8 @@ export default function ChatTemplate({ chatRooms, onDelete, toast, closeToast })
                       >
                         {chat.lastMessageContent === '아직 메시지가 없습니다.'
                           ? '대화를 시작해보세요!'
+                          : chat.lastMessageContent.startsWith('{')
+                          ? '견적서 내용'
                           : chat.lastMessageContent}
                       </LastMessage>
                       {chat.unreadCount > 0 && <UnreadBadge>{chat.unreadCount}</UnreadBadge>}

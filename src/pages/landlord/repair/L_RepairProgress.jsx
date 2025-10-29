@@ -28,6 +28,7 @@ function mapEstimateToQuote(e) {
     price: e.price,
     schedule: e.estimateTime,
     decisionLater: e.decisionLater ?? e.discisionLater ?? false,
+    roomId: e.roomId,
   };
 }
 
@@ -44,6 +45,7 @@ function mapEstimateInfoToQuote(r) {
     price: r.estimatePrice,
     schedule: r.estimateTime,
     decisionLater: false,
+    roomId: r.roomId,
   };
 }
 
@@ -135,6 +137,7 @@ export default function L_RepairProgress() {
           address: `${d.currentAddress} ${d.currentNumber || ''}`.trim(),
           description: d.description,
           images: d.imagesUrl || [],
+          roomId: d.roomId,
         };
 
         // 7) 집주인 선택 권한 (서버 정책과 맞춰 계산)

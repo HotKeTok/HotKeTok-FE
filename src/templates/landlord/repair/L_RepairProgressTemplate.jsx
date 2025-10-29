@@ -16,6 +16,7 @@ export default function L_RepairProgressTemplate({
   mode = 'LANDLORD',
   landlordCanSelect = false,
 }) {
+  console.log(request);
   return (
     <RepairProgressTemplate
       initialStep={initialStep}
