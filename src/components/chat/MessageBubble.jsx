@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import React from 'react';
 import { color, typo } from '../../styles/tokens';
 import { Row } from '../../styles/flex';
+import { toKoreanTime } from '../../utils/dateFormat';
 
 export default function MessageBubble({ message, isMe, senderInfo, showDateSeparator }) {
   return (
@@ -19,9 +20,13 @@ export default function MessageBubble({ message, isMe, senderInfo, showDateSepar
         )}
         <MessageContainer>
           <BubbleContainer>
-            {isMe && <Timestamp>{getHHMMTimeWithHour12(message.createdAt)}</Timestamp>}
+            {isMe && (
+              <Timestamp>{getHHMMTimeWithHour12(toKoreanTime(message.createdAt))}</Timestamp>
+            )}
             <MessageBubbleComp isMe={isMe}>{message.content}</MessageBubbleComp>
-            {!isMe && <Timestamp>{getHHMMTimeWithHour12(message.createdAt)}</Timestamp>}
+            {!isMe && (
+              <Timestamp>{getHHMMTimeWithHour12(toKoreanTime(message.createdAt))}</Timestamp>
+            )}
           </BubbleContainer>
         </MessageContainer>
       </MessageRow>
