@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import { Page, ScrollableNoBottomBarContent } from '../../../styles/layout';
 import TopBar from '../../../components/common/TopBar';
 import IcnSend from '../../../assets/chat/send-icon.svg?react';
-import { color } from '../../../styles/tokens';
+import { color, typo } from '../../../styles/tokens';
 import MessageBubble from '../../../components/chat/MessageBubble';
 import { useAuthStore } from '../../../store/useAuthStore';
 import useChatStore from '../../../store/useChatStore';
@@ -33,7 +33,11 @@ export default function ChatRoomTemplate({ onSendMessage }) {
     let lastDisplayedDate = null;
 
     if (!messages || messages.length === 0) {
-      return <div>대화 내용이 없습니다.</div>;
+      return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Body1>대화 내용이 없습니다.</Body1>
+        </div>
+      );
     }
 
     return messages.map(msg => {
@@ -163,4 +167,9 @@ const StyledSendIcn = styled(IcnSend)`
             stroke: black;
           }
         `}
+`;
+
+const Body1 = styled.div`
+  ${typo('body1')};
+  color: ${color('grayscale.600')};
 `;
