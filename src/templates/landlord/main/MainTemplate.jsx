@@ -38,7 +38,9 @@ export default function MainTemplate({ updateCurrentAddress, authRequestCount })
     setSelected(currAddress ? currAddress.address : '주소가 없습니다');
   }, [addressList]);
 
-  const filteredItems = Object.values(DASHBOARD_ITEMS).filter(item =>
+  const DASH_ITEMS = DASHBOARD_ITEMS(authRequestCount);
+
+  const filteredItems = Object.values(DASH_ITEMS).filter(item =>
     MAIN_DASHBOARD_ITEMS.includes(item.key)
   );
 

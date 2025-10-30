@@ -11,9 +11,11 @@ import ArrowRight from '../../../assets/common/icon-arrow-right.svg?react';
 export default function AdminHomeTemplate({ noticeList }) {
   const navigate = useNavigate();
 
+  const DASH_ITEMS = DASHBOARD_ITEMS(0);
+
   const filteredItems = ADMIN_DASHBOARD_ITEMS.map(key =>
-    Object.values(DASHBOARD_ITEMS).find(item => item.key === key)
-  );
+    Object.values(DASH_ITEMS).find(item => item.key === key)
+  ).filter(Boolean); // 매칭 실패 방어
 
   return (
     <Page>
@@ -23,13 +25,14 @@ export default function AdminHomeTemplate({ noticeList }) {
 
         <DashboardContainer>
           {filteredItems.map((item, index) => {
-            const IconComponent = item.image;
+            const IconComponent = item?.image;
+            if (!item) return null; // 방어 코드
 
             return (
               <Button
                 key={index}
                 onClick={() => navigate(item.route)}
-                style={{ background: item.background }}
+                style={{ background: item.background || '#F5F6F6' }}
               >
                 <Row $gap={14}>
                   <TextWrapper>
@@ -41,9 +44,7 @@ export default function AdminHomeTemplate({ noticeList }) {
                     <StyleArrowRight width={7} height={11} stroke="#565656" />
                   </Column>
                 </Row>
-                <Icon>
-                  <IconComponent />
-                </Icon>
+                <Icon>{IconComponent ? <IconComponent /> : null}</Icon>
               </Button>
             );
           })}
