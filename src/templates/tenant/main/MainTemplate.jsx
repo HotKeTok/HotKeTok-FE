@@ -37,6 +37,7 @@ export default function MainTemplate({
           leftComponent={
             <SelectHome addresses={sortedAddressList} onSelectAddress={updateCurrentAddress} />
           }
+          color="white"
         />
         <Content>
           <H3 style={{ color: '#fff', marginBottom: 16 }}>

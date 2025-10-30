@@ -3,7 +3,7 @@ import AuthIcon from '../../assets/landlord/main/icon-auth.svg?react';
 import BillsIcon from '../../assets/landlord/main/icon-clipboard.svg?react';
 import TenantsIcon from '../../assets/landlord/main/icon-tenants.svg?react';
 
-export const DASHBOARD_ITEMS = {
+export const DASHBOARD_ITEMS = (authRequestCount = 0) => ({
   bills: {
     key: 1,
     text: '공동관리비 기록',
@@ -27,7 +27,8 @@ export const DASHBOARD_ITEMS = {
     description: true,
     route: '/admin/auth',
     backgroundColor: 'transparent',
-    background: 'linear-gradient(125deg, #37E887 0%, #54C8C8 100%)',
+    background:
+      authRequestCount === 0 ? '#E6FBF3' : 'linear-gradient(125deg, #37E887 0%, #54C8C8 100%)',
   },
   tenantsInfo: {
     key: 4,
@@ -45,7 +46,7 @@ export const DASHBOARD_ITEMS = {
     route: '/admin/common-bills',
     background: 'rgba(1, 210, 129, 0.10)',
   },
-};
+});
 
 export const MAIN_DASHBOARD_ITEMS = [1, 2, 3, 4];
 export const ADMIN_DASHBOARD_ITEMS = [5];
