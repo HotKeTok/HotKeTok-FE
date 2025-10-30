@@ -1,21 +1,21 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { Row, Column } from '../../../styles/flex';
-import { color, typo } from '../../../styles/tokens';
+import { Column, Row } from '../../../styles/flex';
 import { PageWithoutBottomBar, ScrollableNoBottomBarContent } from '../../../styles/layout';
+import { color, typo } from '../../../styles/tokens';
 
 import TopBar from '../../../components/common/TopBar';
 
 // 분리 컴포넌트
 import RequestAccordion from '../../../components/repair/repair-progress/RequestAccordion';
-import StepSearching from '../../../components/repair/repair-progress/StepSearching';
 import StepChoosing from '../../../components/repair/repair-progress/StepChoosing';
-import StepMatching from '../../../components/repair/repair-progress/StepMatching';
 import StepCompleted from '../../../components/repair/repair-progress/StepCompleted';
+import StepMatching from '../../../components/repair/repair-progress/StepMatching';
+import StepSearching from '../../../components/repair/repair-progress/StepSearching';
 
-import { formatCategoryName } from '../../../utils/format';
 import { apiSelectEstimate } from '../../../api/estimate-service';
 import { getAccessToken } from '../../../utils/auth';
+import { formatCategoryName } from '../../../utils/format';
 
 const COST_MODE = { SELF: 'SELF', LANDLORD: 'LANDLORD' };
 const STEP = { FINDING: 1, CHOOSE: 2, MATCHED: 3, DONE: 4 };
@@ -28,6 +28,7 @@ export default function RepairProgressTemplate({
   initialQuotes,
   isLandlordView = false, // ✅ 집주인 화면 여부
   landlordCanSelect = false,
+  roomId = null,
 } = {}) {
   const [mode] = useState(initialMode ?? COST_MODE.SELF);
   const [step, setStep] = useState(initialStep ?? STEP.FINDING);
@@ -130,6 +131,7 @@ export default function RepairProgressTemplate({
             selectedQuote={selectedQuote}
             hopeAt={request?.hopeAt}
             onCancel={() => setStep(STEP.CHOOSE)}
+            roomId={roomId}
           />
         )}
 

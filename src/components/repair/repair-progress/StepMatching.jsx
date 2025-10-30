@@ -1,16 +1,16 @@
 // src/components/repair/repair-progress/StepMatching.jsx
-import React from 'react';
-import styled from 'styled-components';
-import RepairDetailRows from '../repair-progress/RepairDetailRows';
-import { color, typo } from '../../../styles/tokens';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { color, typo } from '../../../styles/tokens';
 import Button from '../../common/Button';
+import RepairDetailRows from '../repair-progress/RepairDetailRows';
 
-export default function StepMatching({ mode, selectedQuote, hopeAt }) {
+export default function StepMatching({ mode, selectedQuote, hopeAt, roomId }) {
   const nav = useNavigate();
 
   const handleChat = () => {
-    alert('채팅페이지로 이동처리해야함');
+    if (!roomId) return;
+    nav(`/chat/chat-room/${roomId}`);
   };
 
   if (!selectedQuote) return null;

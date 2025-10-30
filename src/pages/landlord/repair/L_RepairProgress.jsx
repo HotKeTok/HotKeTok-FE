@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { apiGetEstimateInfo, apiGetEstimateList } from '../../../api/estimate-service';
+import { apiGetRepairDetail } from '../../../api/requestform-service';
 import L_RepairProgressTemplate from '../../../templates/landlord/repair/L_RepairProgressTemplate';
 import { getAccessToken } from '../../../utils/auth';
-import { apiGetRepairDetail } from '../../../api/requestform-service';
-import { apiGetEstimateList, apiGetEstimateInfo } from '../../../api/estimate-service';
 import { formatYMDWithKoreanTime } from '../../../utils/dateFormat';
 // (선택) JWT에서 사용자/역할을 읽어 권한 판단 강화하려면 주석 해제
 // import { decodeJwt } from '../../../utils/jwt';
@@ -44,6 +44,7 @@ function mapEstimateInfoToQuote(r) {
     price: r.estimatePrice,
     schedule: r.estimateTime,
     decisionLater: false,
+    roomId: r.roomId,
   };
 }
 
@@ -70,6 +71,7 @@ function computeLandlordCanSelect(d /*, token */) {
 }
 
 export default function L_RepairProgress() {
+  const [roomId, setRoomId] = useState(null);
   const [params] = useSearchParams();
   const id = params.get('id');
   const token = useMemo(() => getAccessToken(), []);
@@ -118,6 +120,7 @@ export default function L_RepairProgress() {
           const infoRes = await apiGetEstimateInfo(token, selectedId);
           if (infoRes.success && infoRes.data) {
             const selectedQuote = mapEstimateInfoToQuote(infoRes.data);
+            setRoomId(infoRes.data.roomId);
             const idx = quotes.findIndex(q => q.id === selectedId);
             if (idx === -1) quotes = [selectedQuote, ...quotes];
             else quotes[idx] = { ...quotes[idx], ...selectedQuote };
@@ -169,6 +172,7 @@ export default function L_RepairProgress() {
       initialSelectedQuoteId={mapped.initialSelectedQuoteId}
       mode="LANDLORD"
       landlordCanSelect={mapped.landlordCanSelect}
+      roomId={roomId}
     />
   );
 }

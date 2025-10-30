@@ -20,8 +20,9 @@ export default function ChatMainCommon() {
   const postDemoChatroom = async () => {
     if (!accessToken) return;
     const payload = {
-      participantUserIds: [16, 15],
-      roomType: 'GENERAL',
+      participantUserIds: [51, 15],
+      roomType: 'VENDOR_ESTIMATE',
+      requestFormId: 10,
     };
     const response = await postNewChatroom(accessToken, payload);
     if (response) openToast('채팅방이 생성되었어요.');
@@ -39,10 +40,10 @@ export default function ChatMainCommon() {
           let processedData = data; // 원본 데이터
 
           if (role === 'tenant') {
-            // 입주민일 경우: VENDOR(집주인) 채팅방을 상단으로 정렬
+            // 입주민일 경우: OWNER(집주인) 채팅방을 상단으로 정렬
             processedData = [...data].sort((a, b) => {
-              const isALandlord = a.participants.some(p => p.senderType === 'VENDOR');
-              const isBLandlord = b.participants.some(p => p.senderType === 'VENDOR');
+              const isALandlord = a.participants.some(p => p.senderType === 'OWNER');
+              const isBLandlord = b.participants.some(p => p.senderType === 'OWNER');
               if (isALandlord) return -1; // a가 집주인이면 위로
               if (isBLandlord) return 1; // b가 집주인이면 위로
               return 0;
@@ -51,6 +52,7 @@ export default function ChatMainCommon() {
 
           processedData = processedData.map(room => ({
             ...room,
+            isLandlordChat: room.participants.some(p => p.senderType === 'OWNER'),
             participants: room.participants.map(p => ({
               ...p,
               isMe: p.userId === userId, // 'isMe' 속성 추가
