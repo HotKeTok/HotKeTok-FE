@@ -166,7 +166,7 @@ export default function ReviewTab({
       </ScrollWrapper>
 
       {/* 작성 가능할 때만 노출 */}
-      {canWriteReview && (
+      {canWriteReview || (
         <Row style={{ paddingTop: '16px' }}>
           <WriteButton text="후기 작성하기" onClick={goWriteReview} />
         </Row>
