@@ -44,11 +44,11 @@ function mapEstimateInfoToQuote(r) {
     vendorId: r.vendorId,
     companyName: r.vendorName,
     avatar: r.vendorProfileImage,
-    phone: r.phoneNumber,
+    phone: r.vendorNumber,
     content: r.content,
-    price: r.estimatePrice,
+    price: r.price,
     schedule: r.estimateTime,
-    decisionLater: false,
+    decisionLater: r.decisionLater ?? false,
     roomId: r.roomId,
   };
 }

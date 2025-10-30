@@ -5,7 +5,7 @@ import { color, typo } from '../../../styles/tokens';
 import Button from '../../common/Button';
 import RepairDetailRows from '../repair-progress/RepairDetailRows';
 
-export default function StepMatching({ mode, selectedQuote, hopeAt, roomId }) {
+export default function StepMatching({ selectedQuote, hopeAt, roomId }) {
   const nav = useNavigate();
 
   const handleChat = () => {

@@ -36,10 +36,9 @@ export default function StepCompleted({ selectedQuote, hopeAt }) {
 }
 
 const Divider = styled.div`
-  height: 8px;
-  background: ${color('grayscale.100')};
+  height: 10px;
+  background: #f5f6f6;
   width: 100%;
-  margin-top: 6px;
 `;
 const SectionHeader = styled.div`
   padding: 16px 24px 8px 24px;
