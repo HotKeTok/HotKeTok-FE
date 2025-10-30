@@ -102,10 +102,9 @@ export default function MainTemplate({ updateCurrentAddress, authRequestCount })
                 onClick={() => navigate(item.route)}
                 style={{
                   background: backgroundColor,
-                  cursor: isDisabled ? 'default' : 'pointer',
-                  transition: isDisabled ? 'none' : 'transform 0.2s ease-in-out, box-shadow 0.2s',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s',
                 }}
-                disabled={isDisabled}
               >
                 <Row $gap={14} style={{ height: '100%' }}>
                   <TextWrapper>
